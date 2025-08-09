@@ -19,7 +19,7 @@ const CASE_STUDIES = [
       'Decision-makers received automated weekly insights via scheduled email',
     ],
     tools: ['Power BI', 'DAX', 'Python', 'SQL'],
-    thumbnail: '/assets/increase.png',
+    thumbnail: `${import.meta.env.BASE_URL}assets/increase.png`,
   },
   {
     id: 2,
@@ -37,7 +37,7 @@ const CASE_STUDIES = [
       'Estimated potential revenue retention: ~$120k/year',
     ],
     tools: ['Python', 'Power BI', 'DAX', 'Excel'],
-    thumbnail: '/assets/customer.png',
+    thumbnail: `${import.meta.env.BASE_URL}assets/customer.png`,
   },
   {
     id: 3,
@@ -55,7 +55,7 @@ const CASE_STUDIES = [
       'Board reports generated automatically saving 8 person-hours/week',
     ],
     tools: ['Power BI', 'DAX', 'Power Automate'],
-    thumbnail: '/assets/budget.png',
+    thumbnail: `${import.meta.env.BASE_URL}assets/budget.png`,
   },
 ];
 
@@ -90,7 +90,7 @@ export default function App() {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <a href="https://github.com/idealidler" target="_blank" rel="noopener noreferrer"
+            <a href="https://github.com/idealidler?tab=repositories" target="_blank" rel="noopener noreferrer"
               className="px-4 py-2 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-400 transition"
             >View Projects</a>
             <a href="/resume.pdf"
@@ -151,7 +151,7 @@ export default function App() {
           </div>
           <div className="hidden md:flex items-center justify-center">
             <div className="w-56 h-56 rounded-2xl overflow-hidden shadow-xl bg-white flex items-center justify-center border border-indigo-100">
-              <img src="/assets/profile.jpg" alt="Akshay" className="w-full h-full object-cover" />
+              <img src={`${import.meta.env.BASE_URL}assets/profile.jpg`} alt="Akshay" className="w-full h-full object-cover" />
             </div>
           </div>
         </section>
