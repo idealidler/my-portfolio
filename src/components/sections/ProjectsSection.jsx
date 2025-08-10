@@ -26,6 +26,7 @@ const CASE_STUDIES = [
     id: 2,
     title: 'Solve Simple Handwritten Math Problems Using Computer Vision',
     client: 'Capstone Project',
+    industry: 'Pune University',
     problem: 'Enable a system that detects handwritten numbers and operators from an image, then automatically computes the result of the math problem — bridging visual input and computation seamlessly.',
     summary: 'Developed a computer vision pipeline to detect and solve handwritten math problems from images.',
     approach: [
@@ -45,6 +46,7 @@ const CASE_STUDIES = [
     id: 3,
     title: 'E-Commerce Customer Purchase Analysis: What Makes Reviewers Recommend Products',
     client: 'College Project',
+    industry: 'Drexel University',
     problem: 'Dig into women’s e-commerce clothing reviews to discover what influences shoppers to recommend (or not recommend) a product.',
     summary: 'Explored customer purchasing behavior in e-commerce to uncover trends and patterns for better decision-making.',
     approach: [
