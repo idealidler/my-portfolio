@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import FocusSection from './components/FocusSection';
+
 
 const CASE_STUDIES = [
   {
@@ -30,7 +32,7 @@ const CASE_STUDIES = [
     summary: 'Developed a computer vision pipeline to detect and solve handwritten math problems from images.',
     approach: [
       'Preprocess and Train: Used image processing techniques and a custom neural network to detect handwritten digits and basic operators (+, –, ×), using a curated 45×45 pixel dataset.',
-      'Model Deployment: Trained your model (model_final.h5) to recognize and classify the handwritten inputs accurately.',
+      'Model Deployment: Trained the model (model_final.h5) to recognize and classify the handwritten inputs accurately.',
       'Image-to-Solution Pipeline: Captured a picture of the handwritten math problem, processed it to detect each component, and programmatically solved it using the neural network outputs.',
     ],
     results: [
@@ -83,6 +85,14 @@ export default function App() {
   const [selectedCase, setSelectedCase] = useState(null);
   const [filter, setFilter] = useState('all');
 
+  const [focusedSection, setFocusedSection] = useState(null);
+
+  const handleNavClick = (sectionId, e) => {
+    e.preventDefault();
+    setFocusedSection(sectionId);
+  };
+
+
   const openCase = (c) => setSelectedCase(c);
   const closeCase = () => setSelectedCase(null);
 
@@ -100,15 +110,17 @@ export default function App() {
           </div>
           <ul className="flex gap-6 items-center">
             {NAV_LINKS.map(link => (
-              <li key={link.href}>
-                <a
-                  href={link.href}
-                  className="text-gray-700 hover:text-indigo-600 font-medium transition-colors duration-200"
-                >
-                  {link.label}
-                </a>
-              </li>
-            ))}
+  <li key={link.href}>
+    <a
+      href={link.href}
+      onClick={(e) => handleNavClick(link.href.substring(1), e)}
+      className="text-gray-700 hover:text-indigo-600 font-medium transition-colors duration-200 cursor-pointer"
+    >
+      {link.label}
+    </a>
+  </li>
+))}
+
             <li>
               <a
                 href={`${import.meta.env.BASE_URL}resume.pdf`}
@@ -158,13 +170,7 @@ export default function App() {
             </div>
           </div>
           <div className="flex-shrink-0">
-            <div className="w-48 h-48 rounded-2xl overflow-hidden shadow-xl bg-white flex items-center justify-center border border-indigo-100">
-              <img
-                src={`${import.meta.env.BASE_URL}assets/profile.jpg`}
-                alt="Akshay"
-                className="w-full h-full object-cover"
-              />
-            </div>
+           
           </div>
         </section>
 
@@ -410,6 +416,24 @@ export default function App() {
           animation: fadeInUp 0.4s;
         }
       `}</style>
+
+      {focusedSection && (
+  <FocusSection onClose={() => setFocusedSection(null)}>
+    {focusedSection === 'about' && document.getElementById('about')?.innerHTML && (
+      <div dangerouslySetInnerHTML={{ __html: document.getElementById('about').innerHTML }} />
+    )}
+    {focusedSection === 'projects' && document.getElementById('projects')?.innerHTML && (
+      <div dangerouslySetInnerHTML={{ __html: document.getElementById('projects').innerHTML }} />
+    )}
+    {focusedSection === 'skills' && document.getElementById('skills')?.innerHTML && (
+      <div dangerouslySetInnerHTML={{ __html: document.getElementById('skills').innerHTML }} />
+    )}
+    {focusedSection === 'contact' && document.getElementById('contact')?.innerHTML && (
+      <div dangerouslySetInnerHTML={{ __html: document.getElementById('contact').innerHTML }} />
+    )}
+  </FocusSection>
+)}
+
 
       <footer className="w-full text-center py-6 text-gray-400 text-sm">
         &copy; {new Date().getFullYear()} Akshay Jain. Built with ChatGPT and Copilot with absolute zero web development knowledge.
