@@ -231,34 +231,45 @@ export default function App() {
           </div>
         </section>
 
-        {/* Contact Section */}
-        <section id="contact" className="mb-16">
-          <div className="bg-white/90 backdrop-blur rounded-3xl shadow-2xl p-10 flex flex-col md:flex-row gap-10 items-center">
-            <div className="flex-1">
-              <h2 className="text-4xl font-bold text-indigo-700 mb-4">Contact</h2>
-              <p className="text-gray-600 mb-6">If you'd like to discuss a role or project, email me or schedule a quick call.</p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <h4 className="font-semibold">Email</h4>
-                  <a className="text-indigo-600 hover:underline" href="mailto:akshayjain128@gmail.com">akshayjain128@gmail.com</a>
-                </div>
-                <div>
-                  <h4 className="font-semibold">Availability</h4>
-                  <p className="text-gray-600">Open to full-time roles. Available for interviews. Mornings ET preferred.</p>
-                </div>
-              </div>
-            </div>
-            <div className="flex-shrink-0 hidden md:block">
-              <div className="w-40 h-40 rounded-2xl overflow-hidden shadow-xl bg-white flex items-center justify-center border border-indigo-100">
-                <img
-                  src={`${import.meta.env.BASE_URL}assets/profile.jpg`}
-                  alt="Akshay"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            </div>
-          </div>
-        </section>
+{/* Contact Section */}
+<section id="contact" className="mb-16">
+  <div className="bg-white/90 backdrop-blur rounded-3xl shadow-2xl p-10 flex flex-col md:flex-row gap-10 items-center">
+    <div className="flex-1 w-full">
+      <h2 className="text-4xl font-bold text-indigo-700 mb-4">Contact</h2>
+      <p className="text-gray-600 mb-6">
+        If you'd like to discuss a role or project, email me or schedule a quick call.
+      </p>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+        <div className="w-full">
+          <h4 className="font-semibold">Email</h4>
+          <a
+            className="text-indigo-600 hover:underline break-all"
+            href="mailto:akshayjain128@gmail.com"
+          >
+            akshayjain128@gmail.com
+          </a>
+        </div>
+        <div className="w-full">
+          <h4 className="font-semibold">Availability</h4>
+          <p className="text-gray-600">
+            Open to full-time roles. Available for interviews. Mornings ET preferred.
+          </p>
+        </div>
+        <div className="w-full">
+          <h4 className="font-semibold">Schedule a Call</h4>
+          <a
+            href="https://calendly.com/akshayjain128/30min"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block mt-1 px-4 py-2 bg-indigo-600 text-white rounded-full shadow hover:bg-indigo-700 transition"
+          >
+            Book 30-min Call
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
       </main>
 
       {/* Modal for Case Study */}
@@ -354,7 +365,7 @@ export default function App() {
       `}</style>
 
       <footer className="w-full text-center py-6 text-gray-400 text-sm">
-        &copy; {new Date().getFullYear()} Akshay Jain. Built with ❤️ using React & Vite.
+        &copy; {new Date().getFullYear()} Akshay Jain. Built with ChatGPT and Copilot with absolute zero web development knowledge.
       </footer>
     </div>
   );
