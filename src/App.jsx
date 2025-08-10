@@ -7,6 +7,7 @@ const CASE_STUDIES = [
     client: 'Retail Client',
     industry: 'Retail',
     problem: 'I wanted to understand what topics Starbucks fans were talking about online and whether those conversations shifted before versus after the pandemic. Specifically, the goal was to identify dominant discussion themes and pinpoint when users were most active throughout the day.',
+    summary: 'Analyzed Starbucks’ brand perception by applying sentiment analysis to thousands of social media posts.',
     approach: [
       'Collect the Data: Used the Pushshift API to pull thousands of Starbucks subreddit posts from before and after COVID-19.',
       'Clean and Prepare: Removed extra symbols, punctuation, and filler words so the text was ready for analysis.',
@@ -26,6 +27,7 @@ const CASE_STUDIES = [
     title: 'Solve Simple Handwritten Math Problems Using Computer Vision',
     client: 'Capstone Project',
     problem: 'Enable a system that detects handwritten numbers and operators from an image, then automatically computes the result of the math problem — bridging visual input and computation seamlessly.',
+    summary: 'Developed a computer vision pipeline to detect and solve handwritten math problems from images.',
     approach: [
       'Preprocess and Train: Used image processing techniques and a custom neural network to detect handwritten digits and basic operators (+, –, ×), using a curated 45×45 pixel dataset.',
       'Model Deployment: Trained your model (model_final.h5) to recognize and classify the handwritten inputs accurately.',
@@ -44,6 +46,7 @@ const CASE_STUDIES = [
     title: 'E-Commerce Customer Purchase Analysis: What Makes Reviewers Recommend Products',
     client: 'College Project',
     problem: 'Dig into women’s e-commerce clothing reviews to discover what influences shoppers to recommend (or not recommend) a product.',
+    summary: 'Explored customer purchasing behavior in e-commerce to uncover trends and patterns for better decision-making.',
     approach: [
       'Clean & Prep the Data: Used Pandas and NLTK to remove duplicates, punctuation, numbers, and stop words, and then performed lemmatization and one-hot encoding of categories.',
       'Explore & Visualize Trends: Created visuals like donut charts, bar plots, histograms, word clouds, and correlation matrices to uncover how age, department, sentiment, and other features relate to recommendations.',
@@ -189,9 +192,7 @@ export default function App() {
                 <div className="p-6 flex-1 flex flex-col">
                   <h4 className="font-semibold text-lg text-indigo-700">{c.title}</h4>
                   <p className="text-xs text-gray-500 mt-1">{c.client} • {c.industry}</p>
-                  <ul className="mt-3 text-sm text-gray-700 space-y-1 flex-1">
-                    <li className="truncate">{c.problem}</li>
-                  </ul>
+                  <p className="mt-3 text-sm text-gray-700 flex-1">{c.summary}</p>
                   <div className="mt-4 flex items-center justify-between">
                     <div className="text-sm text-gray-600">{c.tools.join(' • ')}</div>
                     <button
