@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 import {
   Briefcase,
   GraduationCap,
@@ -9,9 +10,16 @@ import {
 } from "lucide-react";
 
 const RecruiterFriendly = ({ setMode }) => {
-  return (
-    <section className="max-w-5xl mx-auto p-8 bg-gradient-to-br from-blue-50 via-white to-purple-50 backdrop-blur-lg rounded-3xl shadow-2xl space-y-10 border border-gray-200">
-      
+  return (     
+<motion.section
+      initial={{ opacity: 0, x: 30 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -30 }}
+      transition={{ duration: 0.9 }}
+      className="max-w-5xl mx-auto p-8 bg-gradient-to-br from-blue-50 via-white to-purple-50 backdrop-blur-lg rounded-3xl shadow-2xl space-y-10 border border-gray-200"
+    >
+    
+
       {/* Header / Summary Snapshot */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 border-b border-gray-300 pb-6">
         <div>
@@ -119,8 +127,10 @@ const RecruiterFriendly = ({ setMode }) => {
           View Hiring Manager Version
         </button>
       </div>
-    </section>
+     
+    </motion.section>
+    
   );
 };
-
+    
 export default RecruiterFriendly;
