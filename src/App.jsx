@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import LandingPage from './components/LandingPage';
 import RecruiterFriendly from './components/RecruiterFriendly';
 import HiringManagerApp from './components/HiringManagerApp';
+import AkshayGPT from './components/AkshayGPT';
 
 export default function App() {
   const [version, setVersion] = useState(null);
@@ -21,6 +22,14 @@ export default function App() {
   if (version === 'hiringManager') {
     return (
       <HiringManagerApp
+        switchVersion={() => setVersion('recruiter')}
+      />
+    );
+  }
+
+    if (version === 'AkshayGPT') {
+    return (
+      <AkshayGPT
         switchVersion={() => setVersion('recruiter')}
       />
     );

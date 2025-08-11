@@ -14,7 +14,7 @@ const CASE_STUDIES = [
       'Analyze and Visualize: Applied LDA topic modeling to find the main themes, and created charts to see how posting activity changed over time.',
     ],
     results: [
-      'Identified “Employee discussion” and “Drink recommendations” as the most dominant conversation topics on r/Starbucks.',
+      'Identified “Employee discussions” and “Drink recommendations” as the most dominant conversation topics on r/Starbucks.',
       'Discovered distinct discussion topics such as seasonal drinks, service quality, and brand loyalty trends.',
       'Quantified a notable drop in in-store experience discussions and a rise in convenience-related themes post-pandemic.',
     ],
@@ -31,14 +31,14 @@ const CASE_STUDIES = [
     summary: 'Developed a computer vision pipeline to detect and solve handwritten math problems from images.',
     approach: [
       'Preprocess and Train: Used image processing techniques and a custom neural network to detect handwritten digits and basic operators (+, –, ×), using a curated 45×45 pixel dataset.',
-      'Model Deployment: Trained the model (model_final.h5) to recognize and classify the handwritten inputs accurately.',
+      'Model Deployment: Trained the model to recognize and classify the handwritten inputs accurately.',
       'Image-to-Solution Pipeline: Captured a picture of the handwritten math problem, processed it to detect each component, and programmatically solved it using the neural network outputs.',
     ],
     results: [
       'Built a working end-to-end recognition system that reads a snapped image of a handwritten equation and outputs the correct solution.',
       'Demonstrates the potential of combining CV and ML to automate handwriting-to-computation tasks — a useful foundation for educational tools or smart calculators.',
     ],
-    tools: ['Python', 'OpenCV ', 'pytesseract', 'TensorFlow', 'Keras', 'NumPy', 'Scikit-learn'],
+    tools: ['Python', 'OpenCV ', 'TensorFlow', 'Keras', 'NumPy', 'Scikit-learn'],
     thumbnail: `${import.meta.env.BASE_URL}assets/equation.jpg`,
     github: 'https://github.com/idealidler/Solve-basic-math-problem-using-computer-vision'
   },

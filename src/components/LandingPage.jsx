@@ -1,4 +1,4 @@
-import { Briefcase, FileText } from "lucide-react";
+import { BotMessageSquare, Briefcase, FileText } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function LandingPage({ onSelect }) {
@@ -33,7 +33,7 @@ export default function LandingPage({ onSelect }) {
             className="w-64 p-6 rounded-3xl bg-white/60 backdrop-blur-md shadow-xl text-yellow-900 border border-yellow-200 hover:shadow-2xl transition"
           >
             <Briefcase size={32} className="mx-auto mb-3 text-yellow-600" />
-            <span className="block text-lg font-semibold">Recruiter Friendly</span>
+            <span className="block text-lg font-semibold">Recruiter Friendly Experience</span>
             <small className="text-xs font-normal block mt-2 text-gray-700">
               Skills, Job availability, Work authorization, Education
             </small>
@@ -47,9 +47,23 @@ export default function LandingPage({ onSelect }) {
             className="w-64 p-6 rounded-3xl bg-white/60 backdrop-blur-md shadow-xl text-indigo-900 border border-indigo-200 hover:shadow-2xl transition"
           >
             <FileText size={32} className="mx-auto mb-3 text-indigo-600" />
-            <span className="block text-lg font-semibold">Hiring Manager Friendly</span>
+            <span className="block text-lg font-semibold">Hiring Manager Friendly Experience</span>
             <small className="text-xs font-normal block mt-2 text-gray-700">
               Detailed, Technical, Project-heavy experience
+            </small>
+          </motion.button>
+
+          {/* Chatbot Card */}
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.97 }}
+            onClick={() => onSelect("AkshayGPT")}
+            className="w-64 p-6 rounded-3xl bg-white/60 backdrop-blur-md shadow-xl text-indigo-900 border border-indigo-200 hover:shadow-2xl transition"
+          >
+            <BotMessageSquare size={32} className="mx-auto mb-3 text-indigo-600" />
+            <span className="block text-lg font-semibold">Akshay GPT</span>
+            <small className="text-xs font-normal block mt-2 text-gray-700">
+              Ask questions, get answers, and explore your experience interactively
             </small>
           </motion.button>
         </div>
