@@ -3,6 +3,7 @@ import AboutSection from './sections/AboutSection';
 import ProjectsSection from './sections/ProjectsSection';
 import SkillsSection from './sections/SkillsSection';
 import ContactSection from './sections/ContactSection';
+import WorkExperience from './sections/WorkExperience';
 import FocusSectionSimple from './FocusSectionSimple';
 import FocusSectionDetailed from './FocusSectionDetailed';
 
@@ -17,7 +18,7 @@ export default function App({ switchVersion }) {
     { label: 'About', id: 'about' },
     { label: 'Projects', id: 'projects' },
     { label: 'Skills', id: 'skills' },
-    { label: 'Contact', id: 'contact' },
+    { label: 'Contact', id: 'contact' }
   ];
 
   const handleNavClick = (id, e) => {
@@ -70,6 +71,7 @@ export default function App({ switchVersion }) {
         {!focusedSection && (
           <>
             <AboutSection />
+            <WorkExperience />
             <ProjectsSection openCase={openCase} />
             <SkillsSection />
             <ContactSection />
