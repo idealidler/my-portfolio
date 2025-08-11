@@ -48,16 +48,19 @@ export default function App({ switchVersion }) {
                 </a>
               </li>
             ))}
-            {/* Add Switch Version Button */}
-            <li>
-              <button
-                onClick={() => setMode("recruiter")}
-                className="ml-4 px-4 py-2 bg-yellow-400 text-yellow-900 rounded-full shadow hover:bg-yellow-500 transition font-semibold"
-                aria-label="Switch between Hiring Manager and Recruiter versions"
-              >
-                Switch to Recruiter Version
-              </button>
-            </li>
+            {/* Switch Version Button */}
+      <div className="flex justify-center pt-1">
+  <button
+    onClick={() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      switchVersion();
+    }}
+    className="ml-4 px-4 py-2 bg-yellow-400 text-yellow-900 rounded-full shadow hover:bg-yellow-500 transition font-semibold"
+  >
+    Switch to Recruiter Version
+  </button>
+</div>
           </ul>
         </nav>
       </header>
