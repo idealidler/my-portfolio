@@ -38,11 +38,11 @@ export default function WorkExperience() {
       role: "Analytics Engineer",
       date: "July 2023 – Present",
       points: [
-        "Collaborated with Data Science & Engineering to build an enterprise-scale semantic model powering the Annual Business Review.",
-        "Utilized CI/CD pipelines and Git for collaborative development of Power BI semantic models using .pbip and .tmdl files.",
-        "Developed advanced SQL logic (T-SQL, Oracle SQL, PySQL) to translate complex business requirements into scalable data models.",
-        "Built ETL pipelines and statistical models in Microsoft Fabric notebooks using Python to normalize client KPIs.",
-        "Effectively managed competing priorities and cross-functional stakeholders across multiple high-impact initiatives.",
+        "Collaborated with Data Science & Engineering to build an enterprise-scale semantic model powering the Annual Business Review, enabling 200+ stakeholders to replace 15+ legacy reports with a unified Power BI dashboard, saving 30–40 hours per consultant",
+        "UUtilized CI/CD pipelines and Git for collaborative development of Power BI semantic models using .pbip and .tmdl files, enabling version control, streamlined deployment, and efficient teamwork across projects",
+        "Developed advanced SQL logic (T-SQL, Oracle SQL, PySQL) using Window Functions and CTEs to translate complex business requirements into scalable data models powering Power BI dashboards for KPI-based employee performance tracking",
+        "Built ETL pipelines and statistical models in Microsoft Fabric notebooks using Python to normalize 20 client KPIs, enabling client benchmarking, health scoring, and peer-to-peer performance comparison across business units",
+        "Effectively managed competing priorities and cross-functional stakeholders across multiple high-impact initiatives, leveraging strong time management, prioritization, and communication skills to deliver under tight deadlines",
       ],
     },
     {
@@ -51,9 +51,9 @@ export default function WorkExperience() {
       role: "Data Analyst Intern",
       date: "May 2023 – July 2023",
       points: [
-        "Optimized SQL queries and utilized Power BI data modeling techniques to reduce report generation time by 30%.",
-        "Implemented a Dimensional Calendar in Power BI using DAX functions tailored to the company’s specific needs.",
-        "Developed a dashboard analyzing key business KPIs, delivering actionable insights to drive business outcomes.",
+        "Optimized SQL queries and utilized Power BI data modeling techniques to integrate and join data from multiple tables, enhancing the robustness of the Power BI Dashboard and reducing report generation time by 30%",
+        "Implemented a Dimensional Calendar in Power BI using DAX functions tailored to the company’s specific needs. Integrated the calendar with the SQL Server database, leading to a 15% improvement in efficiency within data reporting processes",
+        "Initiated and developed a dashboard (Power BI) analyzing key business KPIs, stemming from brainstormed improvement strategies; delivered actionable insights and recommendations designed to drive positive business outcomes at Collabera",
       ],
     },
     {
@@ -62,9 +62,9 @@ export default function WorkExperience() {
       role: "Data Science Intern",
       date: "June 2022 – September 2022",
       points: [
-        "Developed an end-to-end ETL pipeline for Crime data analysis using Python, AWS S3, and Snowflake.",
-        "Engineered an XGBoost model to predict crime types with 80% accuracy, supporting proactive law enforcement.",
-        "Integrated machine learning insights into Tableau dashboards for intuitive data exploration.",
+        "Developed end-to-end ETL pipeline for Crime data analysis using Python for transformation, AWS S3 as the data lake, and Snowflake for warehousing",
+        "Engineered an XGBoost model to predict crime types with 80% accuracy, identifying key features to support proactive law enforcement strategies",
+        "Integrated machine learning insights into Tableau dashboards, enabling intuitive data exploration and decision-making for non-technical stakeholders",
       ],
     },
   ];
