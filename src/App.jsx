@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import LandingPage from './components/LandingPage';
 import RecruiterFriendly from './components/RecruiterFriendly';
-import ActualAppContent from './components/ActualAppContent';
+import HiringManagerApp from './components/HiringManagerApp';
 
 export default function App() {
   const [version, setVersion] = useState(null);
@@ -11,8 +11,20 @@ export default function App() {
   }
 
   if (version === 'recruiter') {
-    return <RecruiterFriendly switchVersion={() => setVersion('hiringManager')} />;
+    return (
+      <RecruiterFriendly
+        switchVersion={() => setVersion('hiringManager')}
+      />
+    );
   }
 
-  return <ActualAppContent switchVersion={() => setVersion('recruiter')} />;
+  if (version === 'hiringManager') {
+    return (
+      <HiringManagerApp
+        switchVersion={() => setVersion('recruiter')}
+      />
+    );
+  }
+
+  return null; // fallback
 }

@@ -21,7 +21,7 @@ export default function LandingPage({ onSelect }) {
           Choose Your Experience
         </h1>
         <p className="max-w-lg mx-auto mb-12 text-gray-800">
-          Welcome! Select the version of this website that fits you best:
+          Glad you’re here! Select the path that fits your needs, whether you want a high-level overview or a deep dive.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-10 justify-center">
@@ -35,7 +35,7 @@ export default function LandingPage({ onSelect }) {
             <Briefcase size={32} className="mx-auto mb-3 text-yellow-600" />
             <span className="block text-lg font-semibold">Recruiter Friendly</span>
             <small className="text-xs font-normal block mt-2 text-gray-700">
-              Basic skills, job availability, work authorization checks
+              Skills, Job availability, Work authorization, Education
             </small>
           </motion.button>
 
@@ -49,10 +49,11 @@ export default function LandingPage({ onSelect }) {
             <FileText size={32} className="mx-auto mb-3 text-indigo-600" />
             <span className="block text-lg font-semibold">Hiring Manager Friendly</span>
             <small className="text-xs font-normal block mt-2 text-gray-700">
-              Detailed, technical, project-heavy experience
+              Detailed, Technical, Project-heavy experience
             </small>
           </motion.button>
         </div>
+        
       </motion.div>
     </div>
   );
