@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
-import { getAnswer } from "./ChatLogic";
 
 export default function AkshayGPT() {
   const [question, setQuestion] = useState("");
