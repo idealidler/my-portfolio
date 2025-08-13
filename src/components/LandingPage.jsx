@@ -21,7 +21,7 @@ export default function LandingPage({ onSelect }) {
           Choose Your Experience
         </h1>
         <p className="max-w-lg mx-auto mb-12 text-gray-800">
-          Glad you’re here! Select the path that fits your needs, whether you want a high-level overview or a deep dive.
+          To make your visit as productive as possible, please select the option that best fits your needs.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-10 justify-center">
@@ -58,9 +58,9 @@ export default function LandingPage({ onSelect }) {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.97 }}
             onClick={() => onSelect("AkshayGPT")}
-            className="w-64 p-6 rounded-3xl bg-white/60 backdrop-blur-md shadow-xl text-indigo-900 border border-indigo-200 hover:shadow-2xl transition"
+            className="w-64 p-6 rounded-3xl bg-white/60 backdrop-blur-md shadow-xl text-red-900 border border-red-200 hover:shadow-2xl transition"
           >
-            <BotMessageSquare size={32} className="mx-auto mb-3 text-indigo-600" />
+            <BotMessageSquare size={32} className="mx-auto mb-3 text-red-600" />
             <span className="block text-lg font-semibold">Akshay GPT</span>
             <small className="text-xs font-normal block mt-2 text-gray-700">
               Ask questions, get answers, and explore your experience interactively

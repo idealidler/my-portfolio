@@ -1,122 +1,140 @@
-import React, { useState, useEffect } from "react";
+import React from 'react';
+import { motion } from 'framer-motion';
+import { Briefcase, MapPin, Calendar, CheckCircle2 } from 'lucide-react';
 
-// A simple icon for list items to add a polished touch.
-const ChevronRightIcon = (props) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    {...props}
-  >
-    <path d="m9 18 6-6-6-6" />
-  </svg>
-);
+// --- DATA ---
+// I've added a 'tech' array to each experience object.
+// This is a powerful way to show recruiters your skills in context.
+const experiences = [
+  {
+    company: "HOLMAN",
+    location: "Mt Laurel, New Jersey",
+    role: "Analytics Engineer",
+    date: "July 2023 – Present",
+    tech: ["Power BI", "SQL", "Python", "Microsoft Fabric", "CI/CD", "Git", "DAX"],
+    points: [
+      "Collaborated with Data Science & Engineering to build an enterprise-scale semantic model powering the Annual Business Review, enabling 200+ stakeholders to replace 15+ legacy reports with a unified Power BI dashboard, saving 30–40 hours per consultant.",
+      "Utilized CI/CD pipelines and Git for collaborative development of Power BI semantic models using .pbip and .tmdl files, enabling version control and streamlined deployment.",
+      "Developed advanced SQL (T-SQL, Oracle SQL) using Window Functions and CTEs to translate complex business requirements into scalable data models.",
+      "Built ETL pipelines and statistical models in Microsoft Fabric notebooks using Python to normalize 20 client KPIs for benchmarking and health scoring.",
+      "Effectively managed competing priorities and cross-functional stakeholders across multiple high-impact initiatives, delivering under tight deadlines.",
+    ],
+  },
+  {
+    company: "COLLABERA",
+    location: "Basking Ridge, New Jersey",
+    role: "Data Analyst Intern",
+    date: "May 2023 – July 2023",
+    tech: ["Power BI", "DAX", "SQL Server"],
+    points: [
+      "Optimized SQL queries and Power BI data modeling to integrate data from multiple tables, reducing report generation time by 30%.",
+      "Implemented a Dimensional Calendar in Power BI using DAX, improving data reporting efficiency by 15%.",
+      "Developed a Power BI dashboard to analyze key business KPIs, delivering actionable insights to drive business improvements.",
+    ],
+  },
+  {
+    company: "LABWARE",
+    location: "Wilmington, Delaware",
+    role: "Data Science Intern",
+    date: "June 2022 – September 2022",
+    tech: ["Python", "Tableau", "AWS S3", "Snowflake", "XGBoost"],
+    points: [
+      "Developed an end-to-end ETL pipeline for Crime data analysis using Python, AWS S3, and Snowflake.",
+      "Engineered an XGBoost model to predict crime types with 80% accuracy, supporting proactive law enforcement strategies.",
+      "Integrated machine learning insights into Tableau dashboards for intuitive data exploration by non-technical stakeholders.",
+    ],
+  },
+];
 
+// --- ANIMATION VARIANTS ---
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.3 },
+  },
+};
 
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+};
+
+// --- COMPONENT ---
 export default function WorkExperience() {
-  // State to trigger animations on mount for a smooth entrance effect.
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    // Set mounted to true after a short delay to allow the component to render first.
-    const timer = setTimeout(() => {
-      setIsMounted(true);
-    }, 100);
-    return () => clearTimeout(timer);
-  }, []);
-
-  const experiences = [
-    {
-      company: "HOLMAN",
-      location: "Mt Laurel, New Jersey",
-      role: "Analytics Engineer",
-      date: "July 2023 – Present",
-      points: [
-        "Collaborated with Data Science & Engineering to build an enterprise-scale semantic model powering the Annual Business Review, enabling 200+ stakeholders to replace 15+ legacy reports with a unified Power BI dashboard, saving 30–40 hours per consultant",
-        "UUtilized CI/CD pipelines and Git for collaborative development of Power BI semantic models using .pbip and .tmdl files, enabling version control, streamlined deployment, and efficient teamwork across projects",
-        "Developed advanced SQL logic (T-SQL, Oracle SQL, PySQL) using Window Functions and CTEs to translate complex business requirements into scalable data models powering Power BI dashboards for KPI-based employee performance tracking",
-        "Built ETL pipelines and statistical models in Microsoft Fabric notebooks using Python to normalize 20 client KPIs, enabling client benchmarking, health scoring, and peer-to-peer performance comparison across business units",
-        "Effectively managed competing priorities and cross-functional stakeholders across multiple high-impact initiatives, leveraging strong time management, prioritization, and communication skills to deliver under tight deadlines",
-      ],
-    },
-    {
-      company: "COLLABERA",
-      location: "Basking Ridge, New Jersey",
-      role: "Data Analyst Intern",
-      date: "May 2023 – July 2023",
-      points: [
-        "Optimized SQL queries and utilized Power BI data modeling techniques to integrate and join data from multiple tables, enhancing the robustness of the Power BI Dashboard and reducing report generation time by 30%",
-        "Implemented a Dimensional Calendar in Power BI using DAX functions tailored to the company’s specific needs. Integrated the calendar with the SQL Server database, leading to a 15% improvement in efficiency within data reporting processes",
-        "Initiated and developed a dashboard (Power BI) analyzing key business KPIs, stemming from brainstormed improvement strategies; delivered actionable insights and recommendations designed to drive positive business outcomes at Collabera",
-      ],
-    },
-    {
-      company: "LABWARE",
-      location: "Wilmington, Delaware",
-      role: "Data Science Intern",
-      date: "June 2022 – September 2022",
-      points: [
-        "Developed end-to-end ETL pipeline for Crime data analysis using Python for transformation, AWS S3 as the data lake, and Snowflake for warehousing",
-        "Engineered an XGBoost model to predict crime types with 80% accuracy, identifying key features to support proactive law enforcement strategies",
-        "Integrated machine learning insights into Tableau dashboards, enabling intuitive data exploration and decision-making for non-technical stakeholders",
-      ],
-    },
-  ];
-
   return (
-    // Section styling updated to match the 'About' section's spacing.
-    // Assuming the parent container will handle max-width and horizontal padding.
-    <section id="experience" className="mb-16">
-      {/* Section Heading updated to match 'About' section style */}
-      <h2 className="text-4xl font-bold mb-12 text-indigo-700 text-left">
-        Work Experience
-      </h2>
+    <motion.section
+      id="experience"
+      className="py-5"
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.2 }}
+      variants={containerVariants}
+    >
+      <div className="max-w-10xl mx-auto px-4">
+        <motion.h2
+          className="text-4xl lg:text-4xl font-bold mb-12 text-left bg-gradient-to-r from-indigo-600 to-blue-500 bg-clip-text text-transparent"
+          variants={itemVariants}
+        >
+          Work Experience
+        </motion.h2>
 
-      {/* Experience Cards Container */}
-      <div className="space-y-10">
-        {experiences.map((exp, i) => (
-          <div
-            key={i}
-            // Card animations are kept for a dynamic feel.
-            className={`bg-white rounded-xl shadow-md border border-slate-200/80 transition-all duration-500 ease-out hover:shadow-xl hover:-translate-y-1
-              ${isMounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`
-            }
-            style={{ transitionDelay: `${i * 150}ms` }}
-          >
-            <div className="p-6 sm:p-8">
-              {/* Card Header */}
-              <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-2">
-                <h3 className="text-xl font-bold text-slate-900">{exp.role}</h3>
-                {/* Company name color updated for consistency */}
-                <p className="text-indigo-600 font-semibold text-sm mt-1 sm:mt-0">{exp.company}</p>
-              </div>
-              {/* Meta info (location, date) color updated to gray for consistency */}
-              <div className="flex flex-col sm:flex-row justify-between text-sm text-gray-600 mb-5">
-                <span>{exp.location}</span>
-                <span className="italic">{exp.date}</span>
+        {/* Timeline Container */}
+        <div className="relative">
+          {/* The vertical line */}
+          <div className="absolute left-5 top-2 w-0.5 h-screen bg-indigo-200/80"></div>
+
+          {experiences.map((exp, i) => (
+            <motion.div key={i} className="relative pl-12 pb-12" variants={itemVariants}>
+              {/* Timeline Dot */}
+              <div className="absolute left-0 top-1">
+                <div className="w-10 h-10 bg-white border-2 border-indigo-500 rounded-full flex items-center justify-center">
+                  <Briefcase className="w-5 h-5 text-indigo-500" />
+                </div>
               </div>
 
-              {/* Experience Points - text color updated to gray-700 */}
-              <ul className="space-y-3">
-                {/* FIXED: Now mapping over the 'points' for the current experience */}
-                {exp.points.map((point, idx) => (
-                  <li key={idx} className="flex items-start">
-                    {/* Icon color uses a lighter indigo to match button styles from 'About' */}
-                    <ChevronRightIcon className="w-5 h-5 text-indigo-500 mt-0.5 flex-shrink-0" />
-                    <span className="ml-3 text-base text-gray-700">{point}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        ))}
+              {/* Card Content */}
+              <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl shadow-md border border-slate-200/80 hover:shadow-xl transition-shadow duration-300">
+                <div className="flex flex-col md:flex-row justify-between md:items-center mb-2">
+                  <h3 className="text-xl font-bold text-slate-900">{exp.role}</h3>
+                  <p className="text-indigo-600 font-semibold text-base mt-1 md:mt-0">{exp.company}</p>
+                </div>
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-600 mb-4">
+                  <div className="flex items-center gap-1.5">
+                    <Calendar className="w-4 h-4" />
+                    <span>{exp.date}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <MapPin className="w-4 h-4" />
+                    <span>{exp.location}</span>
+                  </div>
+                </div>
+
+                <ul className="space-y-3 mb-5">
+                  {exp.points.map((point, idx) => (
+                    <li key={idx} className="flex items-start">
+                      <CheckCircle2 className="w-4 h-4 text-indigo-500 mt-1 flex-shrink-0" />
+                      <span className="ml-3 text-base text-gray-700">{point}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                {/* Tech Stack Badges */}
+                <div className="flex flex-wrap gap-2">
+                  {exp.tech.map((skill) => (
+                    <span
+                      key={skill}
+                      className="px-3 py-1 rounded-full bg-indigo-100 text-indigo-800 text-xs font-medium"
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
       </div>
-    </section>
+    </motion.section>
   );
 }

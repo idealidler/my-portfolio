@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
+import { getAnswer } from "./ChatLogic";
 
 export default function AkshayGPT() {
   const [question, setQuestion] = useState("");
   const [typedText, setTypedText] = useState("");
+  const [knowledgeBaseText, setKnowledgeBaseText] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [answer, setAnswer] = useState("");
+  const [isAnswering, setIsAnswering] = useState(false);
 
-  // Recruiter-focused phrases
   const phrases = [
     "I turn complex data into clear business wins.",
     "Helping companies make smarter, faster decisions.",
-    "From raw numbers to real impact — I deliver results."
+    "From raw numbers to real impact — I deliver results.",
   ];
 
   // Typewriter effect
@@ -25,7 +29,7 @@ export default function AkshayGPT() {
         charIndex++;
         if (charIndex === currentPhrase.length) {
           deleting = true;
-          setTimeout(typeEffect, 1600); // pause before deleting
+          setTimeout(typeEffect, 1600);
           return;
         }
       } else {
@@ -42,58 +46,94 @@ export default function AkshayGPT() {
     typeEffect();
   }, []);
 
-  const handleAsk = (e) => {
+  // Load knowledge base from AkshayData.txt in public folder
+  useEffect(() => {
+    setLoading(true);
+    fetch("/AkshayData.txt")
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch knowledge base");
+        return res.text();
+      })
+      .then((text) => {
+        setKnowledgeBaseText(text);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error loading knowledge base:", err);
+        setLoading(false);
+      });
+  }, []);
+
+  const handleAsk = async (e) => {
     e.preventDefault();
     if (!question.trim()) return;
-    console.log("User asked:", question);
+
+    if (loading) {
+      alert("Knowledge base is still loading, please wait...");
+      return;
+    }
+
+    setIsAnswering(true);
+    const response = await getAnswer(question, knowledgeBaseText);
+    setAnswer(response);
     setQuestion("");
+    setIsAnswering(false);
   };
 
   return (
     <section className="min-h-screen flex flex-col items-center justify-center px-6 bg-gradient-to-b from-indigo-50 via-white to-indigo-100">
-      {/* Title */}
       <h1 className="text-6xl font-extrabold text-indigo-700 mb-2 tracking-tight">
         Akshay<span className="text-blue-500">GPT</span>
       </h1>
 
-      {/* Typing Animation */}
       <p className="text-lg text-gray-500 h-6 mb-6">
         {typedText}
         <span className="animate-pulse">|</span>
       </p>
 
-      {/* Hire Me (Fade-in from left) */}
       <p className="text-lg text-gray-600 mb-8 animate-slideIn">
         💼 Looking for your next data & AI expert?{" "}
         <span className="font-semibold text-indigo-600">Hire Me!</span>
       </p>
 
-      {/* Input Box */}
       <form
         onSubmit={handleAsk}
         className="w-full max-w-3xl flex items-center bg-white rounded-full shadow-lg overflow-hidden border border-gray-200 focus-within:ring-2 focus-within:ring-indigo-500 transition"
       >
         <input
           type="text"
-          placeholder="Type your question here..."
+          placeholder={
+            loading ? "Loading knowledge base..." : "Ask about Akshay here..."
+          }
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
           className="flex-1 px-6 py-4 text-gray-700 focus:outline-none text-lg"
+          disabled={loading || isAnswering}
         />
         <button
           type="submit"
-          className="p-4 bg-indigo-600 text-white hover:bg-indigo-700 transition flex items-center justify-center"
+          disabled={loading || isAnswering}
+          className={`p-4 text-white flex items-center justify-center transition ${
+            loading || isAnswering
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-indigo-600 hover:bg-indigo-700"
+          }`}
         >
           <PaperAirplaneIcon className="h-6 w-6 transform rotate-45 hover:translate-x-1 transition" />
         </button>
       </form>
 
-      {/* Footer / Tagline */}
+      {answer && (
+        <div className="mt-8 max-w-3xl bg-white rounded-lg shadow p-6 text-gray-800 text-lg whitespace-pre-wrap">
+          {answer}
+        </div>
+      )}
+
       <p className="mt-10 text-sm text-gray-500">
-        Powered by AI & backed by <span className="text-indigo-500">real experience</span>.
+        Powered by AI & backed by{" "}
+        <span className="text-indigo-500">real experience</span>.
       </p>
 
-      {/* Custom Animation Style */}
       <style>{`
         @keyframes slideIn {
           0% { opacity: 0; transform: translateX(-30px); }
