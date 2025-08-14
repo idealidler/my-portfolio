@@ -14,7 +14,7 @@ export default function App() {
   if (version === 'recruiter') {
     return (
       <RecruiterFriendly
-        switchVersion={() => setVersion('hiringManager')}
+        switchVersion={setVersion} // Pass setVersion directly
       />
     );
   }
@@ -22,7 +22,7 @@ export default function App() {
   if (version === 'hiringManager') {
     return (
       <HiringManagerApp
-        switchVersion={() => setVersion('recruiter')}
+        switchVersion={setVersion} // Pass setVersion directly
       />
     );
   }
@@ -30,10 +30,10 @@ export default function App() {
   if (version === 'AkshayGPT') {
     return (
       <AkshayGPT
-        switchVersion={setVersion} // Pass setVersion directly to allow flexible switching
+        switchVersion={setVersion} // Pass setVersion directly
       />
     );
   }
 
-  return null; // Fallback
+  return null;
 }

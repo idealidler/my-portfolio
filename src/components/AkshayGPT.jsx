@@ -87,7 +87,7 @@ export default function AkshayGPT({ switchVersion }) {
         <button
           onClick={() => {
               window.scrollTo({ top: 0, behavior: "smooth" });
-              switchVersion();
+              switchVersion(null);
             }}
             className="px-8 py-3 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all transform flex items-center"
           >

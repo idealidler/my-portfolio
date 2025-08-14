@@ -51,26 +51,31 @@ export default function App({ switchVersion }) {
             ))}
             {/* Switch Version Button */}
   
-  <div className="flex justify-center pt-1">      
+<div className="flex justify-center pt-1">
+  {/* Switch to Recruiter */}
   <button
     onClick={() => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-
-      switchVersion();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      switchVersion("recruiter"); // Show RecruiterFriendly
     }}
     className="ml-4 px-4 py-2 bg-yellow-400 text-yellow-900 rounded-full shadow hover:bg-yellow-500 transition font-semibold"
   >
     Switch to Recruiter Version
   </button>
-  <a
-    href="/"
-      className="ml-4 px-4 py-2 bg-indigo-600 text-white rounded-full shadow hover:bg-indigo-700 transition font-semibold"
-      style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+
+  {/* Back to Landing Page */}
+  <button
+    onClick={() => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      switchVersion(null); // Show LandingPage
+    }}
+    className="ml-4 px-4 py-2 bg-indigo-600 text-white rounded-full shadow hover:bg-indigo-700 transition font-semibold flex items-center gap-2"
   >
-        <Home size={18} />
+    <Home size={18} />
     Back to Landing Page
-            </a>
+  </button>
 </div>
+
 
           </ul>
         </nav>

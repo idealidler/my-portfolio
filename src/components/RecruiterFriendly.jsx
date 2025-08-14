@@ -303,29 +303,36 @@ const RecruiterView = ({ switchVersion }) => {
       </main>
 
       {/* --- Footer with Home Button --- */}
-      <footer className="text-center pt-16">
-        <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
-          <a
-            href="/"
-            className="flex items-center gap-2 px-6 py-3 rounded-full border-2 border-indigo-400 text-indigo-600 font-semibold hover:bg-indigo-50 hover:border-indigo-500 transition-colors duration-300"
-          >
-            <Home size={18} />
-            Back to Landing Page
-          </a>
-          <button
-            onClick={() => {
-              window.scrollTo({ top: 0, behavior: "smooth" });
-              switchVersion();
-            }}
-            className="px-8 py-3 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all transform"
-          >
-            Switch to Hiring Manager version
-          </button>
-        </div>
-        <p className="mt-8 text-sm text-gray-500">
-          Designed & Built by Akshay Jain © {new Date().getFullYear()}
-        </p>
-      </footer>
+ <footer className="text-center pt-16">
+  <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
+    {/* Back to Landing Page */}
+    <button
+      onClick={() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        switchVersion(null); // Show LandingPage
+      }}
+      className="flex items-center gap-2 px-6 py-3 rounded-full border-2 border-indigo-400 text-indigo-600 font-semibold hover:bg-indigo-50 hover:border-indigo-500 transition-colors duration-300"
+    >
+      <Home size={18} />
+      Back to Landing Page
+    </button>
+
+    {/* Switch to Hiring Manager */}
+    <button
+      onClick={() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        switchVersion("hiringManager"); // Show HiringManagerApp
+      }}
+      className="px-8 py-3 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all transform"
+    >
+      Switch to Hiring Manager version
+    </button>
+  </div>
+  <p className="mt-8 text-sm text-gray-500">
+    Designed & Built by Akshay Jain © {new Date().getFullYear()}
+  </p>
+</footer>
+
     </motion.div>
   );
 };
