@@ -27,13 +27,13 @@ export default function App() {
     );
   }
 
-    if (version === 'AkshayGPT') {
+  if (version === 'AkshayGPT') {
     return (
       <AkshayGPT
-        switchVersion={() => setVersion('recruiter')}
+        switchVersion={setVersion} // Pass setVersion directly to allow flexible switching
       />
     );
   }
 
-  return null; // fallback
+  return null; // Fallback
 }

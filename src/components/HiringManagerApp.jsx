@@ -4,8 +4,8 @@ import ProjectsSection from './sections/ProjectsSection';
 import SkillsSection from './sections/SkillsSection';
 import ContactSection from './sections/ContactSection';
 import WorkExperience from './sections/WorkExperience';
-import FocusSectionSimple from './FocusSectionSimple';
 import FocusSectionDetailed from './FocusSectionDetailed';
+import { Home } from "lucide-react";
 
 export default function App({ switchVersion }) {
   const [selectedCase, setSelectedCase] = useState(null);
@@ -50,7 +50,8 @@ export default function App({ switchVersion }) {
               </li>
             ))}
             {/* Switch Version Button */}
-      <div className="flex justify-center pt-1">
+  
+  <div className="flex justify-center pt-1">      
   <button
     onClick={() => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -61,7 +62,16 @@ export default function App({ switchVersion }) {
   >
     Switch to Recruiter Version
   </button>
+  <a
+    href="/"
+      className="ml-4 px-4 py-2 bg-indigo-600 text-white rounded-full shadow hover:bg-indigo-700 transition font-semibold"
+      style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+  >
+        <Home size={18} />
+    Back to Landing Page
+            </a>
 </div>
+
           </ul>
         </nav>
       </header>

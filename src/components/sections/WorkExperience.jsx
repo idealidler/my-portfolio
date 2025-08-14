@@ -27,7 +27,7 @@ const experiences = [
     date: "May 2023 – July 2023",
     tech: ["Power BI", "DAX", "SQL Server"],
     points: [
-      "Optimized SQL queries and Power BI data modeling to integrate data from multiple tables, reducing report generation time by 30%.",
+      "Optimized SQL queries and Power BI data modeling to integrate data from multiple sources, reducing rendering time by 30%.",
       "Implemented a Dimensional Calendar in Power BI using DAX, improving data reporting efficiency by 15%.",
       "Developed a Power BI dashboard to analyze key business KPIs, delivering actionable insights to drive business improvements.",
     ],
@@ -68,7 +68,7 @@ export default function WorkExperience() {
       className="py-5"
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, amount: 0.2 }}
+      viewport={{ once: true, amount: 0.1 }}
       variants={containerVariants}
     >
       <div className="max-w-10xl mx-auto px-4">

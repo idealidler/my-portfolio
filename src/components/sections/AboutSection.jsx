@@ -56,7 +56,7 @@ export default function AboutSection() {
           <motion.p variants={itemVariants} className="text-lg text-gray-700 mb-8 leading-relaxed">
             Hi, I am Akshay. I help businesses make sense of their data. Over the years, I’ve built dashboards, models,
             and analytics solutions that have turned messy spreadsheets and complex databases into clear, actionable stories.
-            I work with Power BI, Python, SQL, and DAX to solve real problems — whether that’s improving reporting speed,
+            I work with Power BI, Python, SQL, and DAX to solve real problems whether that’s improving reporting speed,
             uncovering hidden trends, or giving teams the tools they need to make faster, smarter decisions.
             I love digging into the details, but my real focus is always on the bigger picture: delivering something useful
             that people can actually act on.
@@ -107,8 +107,6 @@ export default function AboutSection() {
             </a>
           </motion.div>
         </div>
-
-        {/* Right Column: Image */}
         
       </div>
     </motion.section>

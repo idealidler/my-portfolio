@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
+import { PaperAirplaneIcon, HomeIcon } from "@heroicons/react/24/solid";
 
-export default function AkshayGPT() {
+export default function AkshayGPT({ switchVersion }) {
   const [question, setQuestion] = useState("");
   const [typedText, setTypedText] = useState("");
   const [knowledgeBaseText, setKnowledgeBaseText] = useState("");
@@ -80,7 +80,22 @@ export default function AkshayGPT() {
   };
 
   return (
-    <section className="min-h-screen flex flex-col items-center justify-center px-6 bg-gradient-to-b from-indigo-50 via-white to-indigo-100">
+    <section 
+    className="min-h-screen flex flex-col items-center justify-center px-6 bg-gradient-to-b from-indigo-50 via-white to-indigo-100">
+      {/* Home Button */}
+      <div className="fixed top-4 left-4 z-10">
+        <button
+          onClick={() => {
+              window.scrollTo({ top: 0, behavior: "smooth" });
+              switchVersion();
+            }}
+            className="px-8 py-3 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all transform flex items-center"
+          >
+          <HomeIcon className="h-5 w-5 mr-2" />
+          Home
+        </button>
+      </div>
+
       <h1 className="text-6xl font-extrabold text-indigo-700 mb-2 tracking-tight">
         Akshay<span className="text-blue-500">GPT</span>
       </h1>
