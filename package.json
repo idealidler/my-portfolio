@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
+    "@xenova/transformers": "^2.17.2",
     "axios": "^1.11.0",
     "framer-motion": "^12.23.12",
     "fuse.js": "^7.1.0",

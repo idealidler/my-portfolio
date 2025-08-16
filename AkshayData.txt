@@ -1,0 +1,45 @@
+Q: Who is Akshay Jain? A: Akshay Jain is a data scientist and analytics engineer specializing in Power BI, SQL (PySQL, MSSQL, T-SQL, Oracle SQL), and Python for Microsoft Fabric pipelines and automation. He uses AI tools like ChatGPT and Copilot, excels in problem-solving, Agile workflows, and translating data insights for non-technical stakeholders.
+
+Q: What is Akshay Jain's contact information? A: Akshay Jain's email is akshayjain128@gmail.com. His phone number is 445-208-1735. He is located in the United States. His LinkedIn profile is https://www.linkedin.com/in/akshayjain128. His portfolio website is https://idealidler.github.io/my-portfolio.
+
+Q: What is Akshay Jain's education background? A: Akshay Jain holds a Master's degree in Business Analytics from Drexel University, Philadelphia, PA, completed in 2023. Relevant courses include Data Analysis and Interpretation, Database Analysis and Design for Business, Aligning Information Systems and Business Strategies, Hadoop and MapReduce, and Data Mining for Business Analytics. He also has a Bachelor's degree in Electronics and Communication Engineering from Pune University, Pune, India, completed in 2020, with courses like Applied ML for Data Science, Data Structures & Algorithms, Object Oriented Programming, Business Management, and Machine Learning.
+
+Q: What is Akshay Jain's current job and responsibilities? A: Akshay Jain is currently an Analytics Engineer at Holman (July 2023–Present). He develops Power BI dashboards to improve fleet management visibility, reducing call center answering time by 30 seconds. He creates Power BI Metrics for Client Relations, improving service quality by 12%. Akshay Jain collaborates with data scientists and stakeholders, presents at conferences like IBIS 2024, builds semantic models replacing legacy reports (saving 30–40 hours per consultant), uses CI/CD pipelines and Git, writes advanced SQL for KPIs, builds ETL pipelines in Microsoft Fabric with Python, creates reusable analysis frameworks (reducing turnaround by 50%), and provides Power BI training.
+
+Q: What was Akshay Jain's role at Collabera? A: Akshay Jain was a Data Analyst Intern at Collabera (May 2023–July 2023). He developed interactive Power BI dashboards for KPI tracking, optimized SQL queries and data modeling (reducing report time by 30%), implemented a Dimensional Calendar in Power BI using DAX (improving efficiency by 15%), collaborated with teams, and provided end-user training.
+
+Q: What was Akshay Jain's role at Labware? A: Akshay Jain was a Data Science Intern at Labware (June 2022–September 2023). He developed an ETL pipeline for crime data using Python, AWS S3, and Snowflake. He engineered an XGBoost model predicting crime types with 80% accuracy, integrated ML insights into Tableau dashboards, and extracted/cleaned data from six sources (400k rows in Python).
+
+Q: What projects has Akshay Jain worked on? A: Akshay Jain's projects include Automating Municipal Bond Ratings using Python, Power BI, and PowerPoint for EDA, dashboards, and summaries (reducing rating time by 50%). Another project is a Personal Website with AI Chatbot built using React, Tailwind CSS, ChatGPT API, and GitHub Pages to showcase qualifications and provide interactive recruiter experiences.
+
+Q: What are Akshay Jain's technical and soft skills? A: Akshay Jain's technical skills include Power BI, SQL (PySQL, MSSQL, T-SQL, Oracle SQL), Python (Microsoft Fabric pipelines, automation), Microsoft Fabric, React, Tailwind CSS, and AI tools (ChatGPT, Copilot). His soft skills include communication (translating technical to non-technical), problem-solving, Agile workflow management, consultative stakeholder engagement, requirements scoping, and time estimation.
+
+Q: What certifications does Akshay Jain have? A: Akshay Jain holds the Associate Power BI Data Analyst certification.
+
+Q: What awards and achievements does Akshay Jain have? A: Akshay Jain's awards and achievements include presenting at IBIS 2024 Conference, Data Science Internship at Labware, Data Analyst Internship at Collabera, and Analytics Engineer role at Holman.
+
+Q: What are Akshay Jain's portfolio links? A: Akshay Jain's GitHub is https://github.com/idealidler?tab=repositories. His portfolio website is https://idealidler.github.io/my-portfolio.
+
+
+
+2. Paragraph Format (Narrative Synthesis)
+
+Akshay Jain is a skilled data scientist and analytics engineer based in the United States. With expertise in Power BI, various SQL dialects like PySQL, MSSQL, T-SQL, and Oracle SQL, and Python for automation and Microsoft Fabric pipelines, Akshay Jain leverages AI tools such as ChatGPT and Copilot. He excels in problem-solving, scoping projects, estimating timelines, and managing Agile workflows, including sprint planning. Akshay Jain effectively translates complex data insights into actionable recommendations for non-technical stakeholders, enhancing decision-making and client services in collaborative environments.
+
+Contact Akshay Jain at akshayjain128@gmail.com or 445-208-1735. His LinkedIn profile is available at https://www.linkedin.com/in/akshayjain128, and his portfolio can be viewed at https://idealidler.github.io/my-portfolio.
+
+Akshay Jain's educational background includes a Master's in Business Analytics from Drexel University (2023), where he studied Data Analysis and Interpretation, Database Analysis and Design, Information Systems Alignment, Hadoop and MapReduce, and Data Mining. Prior to that, he earned a Bachelor's in Electronics and Communication Engineering from Pune University (2020), with coursework in Applied ML for Data Science, Data Structures & Algorithms, Object Oriented Programming, Business Management, and Machine Learning.
+
+Since July 2023, Akshay Jain has served as an Analytics Engineer at Holman. In this role, he developed Power BI dashboards that improved fleet management visibility and reduced call center response times by 30 seconds. He also created Power BI Metrics for Client Relations, boosting service quality by 12%. Collaborating with data scientists and stakeholders, Akshay Jain aligned projects with business goals and presented at IBIS 2024, receiving positive feedback. He built an enterprise-scale semantic model that replaced over 15 legacy reports, saving 30–40 hours per consultant. Using CI/CD pipelines and Git, he facilitated team development, wrote advanced SQL for KPI dashboards, and constructed ETL pipelines in Microsoft Fabric with Python to normalize 20 client KPIs. Additionally, Akshay Jain designed a reusable, parameter-driven analysis framework that cut turnaround time by 50% and delivered Power BI training sessions.
+
+From May to July 2023, Akshay Jain interned as a Data Analyst at Collabera. He built interactive Power BI dashboards for KPI tracking, enhancing operational visibility. By optimizing SQL queries and Power BI data modeling, he reduced report generation time by 30%. He implemented a Dimensional Calendar in Power BI using DAX, improving reporting efficiency by 15%, and provided team collaboration and end-user training.
+
+Between June 2022 and September 2023, Akshay Jain was a Data Science Intern at Labware. He developed an ETL pipeline for crime data analysis using Python, AWS S3, and Snowflake. He created an XGBoost model to predict crime types with 80% accuracy and integrated machine learning insights into Tableau dashboards. Akshay Jain extracted and cleaned data from six sources, handling 400k rows in Python.
+
+Akshay Jain's notable projects include Automating Municipal Bond Ratings, where he used Python, Power BI, and PowerPoint for exploratory data analysis, dashboard creation, and findings summarization, reducing rating time by 50%. Another project is his Personal Website with an AI Chatbot, developed using React, Tailwind CSS, ChatGPT API, and GitHub Pages to highlight his qualifications and offer an interactive experience for recruiters.
+
+Akshay Jain possesses strong technical skills in Power BI, SQL variants (PySQL, MSSQL, T-SQL, Oracle SQL), Python for Microsoft Fabric and automation, Microsoft Fabric, React, Tailwind CSS, and AI tools like ChatGPT and Copilot. His soft skills encompass effective communication for non-technical audiences, problem-solving, Agile management, stakeholder consultation, requirements scoping, and timeline estimation.
+
+Akshay Jain is certified as an Associate Power BI Data Analyst. His achievements include presenting at the IBIS 2024 Conference, completing internships in data science at Labware and data analysis at Collabera, and his current role as Analytics Engineer at Holman.
+
+Explore Akshay Jain's work on GitHub at https://github.com/idealidler?tab=repositories or his portfolio website at https://idealidler.github.io/my-portfolio.
