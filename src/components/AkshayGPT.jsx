@@ -77,7 +77,7 @@ export default function AkshayGPT({ switchVersion }) {
       console.error("Error fetching answer:", error);
       setMessages((prev) => [
         ...prev,
-        { role: "bot", content: "Error connecting to the server.", id: Date.now() + 1 },
+        { role: "bot", content: "I am currenlty working on deploying the backed, so hold tight :) ", id: Date.now() + 1 },
       ]);
     }
     setIsAnswering(false);
