@@ -59,7 +59,7 @@ export default function AkshayGPTChat({ switchToLanding, initialQuestion, switch
       console.error("Error fetching answer:", error);
       setMessages((prev) => [
         ...prev,
-        { role: "bot", content: "I am currenlty working on deploying the backed, so hold tight :)", id: Date.now() + 1 },
+        { role: "bot", content: "I am currenlty working on deploying the backend, so hold tight :)", id: Date.now() + 1 },
       ]);
     }
     setIsAnswering(false);
