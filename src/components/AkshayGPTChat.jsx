@@ -6,16 +6,39 @@ export default function AkshayGPTChat({ switchToLanding, initialQuestion, switch
   const [question, setQuestion] = useState("");
   const [messages, setMessages] = useState([]);
   const [isAnswering, setIsAnswering] = useState(false);
+  const [docContent, setDocContent] = useState(null);
+  const [currentStreamingId, setCurrentStreamingId] = useState(null);
   const chatContainerRef = useRef(null);
   const hasProcessedInitial = useRef(false);
 
+  // Load Akshay.txt on component mount
   useEffect(() => {
-    if (initialQuestion && !hasProcessedInitial.current) {
+    async function loadDocument() {
+      try {
+        const response = await fetch("data/AkshayData.txt");
+        if (!response.ok) throw new Error("Failed to load Akshay.txt");
+        const text = await response.text();
+        setDocContent(text);
+      } catch (error) {
+        console.error("Error loading document:", error);
+        setMessages((prev) => [
+          ...prev,
+          { role: "bot", content: "Error: Could not load Akshay.txt. Ensure it's in the public folder.", id: Date.now() + 1 },
+        ]);
+      }
+    }
+    loadDocument();
+  }, []);
+
+  // Handle initial question
+  useEffect(() => {
+    if (initialQuestion && docContent && !hasProcessedInitial.current) {
       hasProcessedInitial.current = true;
       handleAsk({ preventDefault: () => {} }, initialQuestion);
     }
-  }, [initialQuestion]);
+  }, [initialQuestion, docContent]);
 
+  // Auto-scroll to latest message
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
@@ -27,9 +50,8 @@ export default function AkshayGPTChat({ switchToLanding, initialQuestion, switch
     const query = overrideQuestion || question;
     if (!query.trim()) return;
 
-    const isDuplicate = messages.some(
-      (msg) => msg.role === "user" && msg.content === query
-    );
+    // Check for duplicate user question
+    const isDuplicate = messages.some((msg) => msg.role === "user" && msg.content === query);
     if (isDuplicate) return;
 
     const newUserMessage = { role: "user", content: query, id: Date.now() };
@@ -38,31 +60,76 @@ export default function AkshayGPTChat({ switchToLanding, initialQuestion, switch
     setIsAnswering(true);
 
     try {
-      const response = await fetch("http://localhost:8000/ask", {
+      if (!docContent) {
+        throw new Error("Document not loaded");
+      }
+
+      const response = await fetch("http://127.0.0.1:11434/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: query }),
+        body: JSON.stringify({
+          model: "mistral",
+          messages: [
+            {
+              role: "system",
+              content: `You are an AI assistant that answers questions strictly based on the following document. Do not use external knowledge. Document: ${docContent}`,
+            },
+            { role: "user", content: query },
+          ],
+          stream: true,
+        }),
       });
-      const data = await response.json();
-      const answer = data.error ? "Error: " + data.error : data.answer;
 
-      const isAnswerDuplicate = messages.some(
-        (msg) => msg.role === "bot" && msg.content === answer
-      );
-      if (!isAnswerDuplicate) {
-        setMessages((prev) => [
-          ...prev,
-          { role: "bot", content: answer, id: Date.now() + 1 },
-        ]);
+      if (!response.ok) throw new Error("Ollama API error");
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let accumulatedContent = "";
+      const botId = Date.now() + 1;
+      setMessages((prev) => [...prev, { role: "bot", content: "", id: botId }]);
+      setCurrentStreamingId(botId);
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value);
+        const lines = chunk.split("\n");
+        for (const line of lines) {
+          if (line.trim() === "") continue;
+          try {
+            const data = JSON.parse(line);
+            if (data.message && data.message.content) {
+              accumulatedContent += data.message.content;
+              setMessages((prev) => {
+                const newMessages = [...prev];
+                newMessages[newMessages.length - 1].content = accumulatedContent;
+                return newMessages;
+              });
+            }
+            if (data.done) {
+              break;
+            }
+          } catch (parseError) {
+            console.error("Error parsing stream line:", parseError);
+          }
+        }
+      }
+
+      // Check for duplicate bot response
+      const isAnswerDuplicate = messages.some((msg) => msg.role === "bot" && msg.content === accumulatedContent && msg.id !== botId);
+      if (isAnswerDuplicate) {
+        setMessages((prev) => prev.filter((msg) => msg.id !== botId));
       }
     } catch (error) {
       console.error("Error fetching answer:", error);
       setMessages((prev) => [
         ...prev,
-        { role: "bot", content: "I am currenlty working on deploying the backend, so hold tight :)", id: Date.now() + 1 },
+        { role: "bot", content: "Error: Could not get a response from Ollama. Ensure it's running and the model is loaded.", id: Date.now() + 1 },
       ]);
+    } finally {
+      setIsAnswering(false);
+      setCurrentStreamingId(null);
     }
-    setIsAnswering(false);
   };
 
   const clearChat = () => {
@@ -71,8 +138,8 @@ export default function AkshayGPTChat({ switchToLanding, initialQuestion, switch
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-indigo-50 via-white to-indigo-100">
-      <div className="fixed top-0 left-0 right-0 z-10 bg-white/80 backdrop-blur-sm shadow-sm p-4">
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-blue-50 via-white to-blue-50 font-sans antialiased">
+      <div className="fixed top-0 left-0 right-0 z-10 bg-white/70 backdrop-blur-md shadow-sm p-4">
         <div className="max-w-4xl mx-auto flex justify-between items-center">
           <div className="flex items-center space-x-4">
             <button
@@ -80,19 +147,23 @@ export default function AkshayGPTChat({ switchToLanding, initialQuestion, switch
                 switchToLanding();
                 switchVersion(null);
               }}
-              className="p-2 rounded-full bg-indigo-500 text-white hover:bg-indigo-600 transition"
+              className="p-2 rounded-full bg-blue-500/80 text-white hover:bg-blue-600 transition-colors"
               title="Back to Home"
             >
               <ArrowLeftIcon className="h-5 w-5" />
             </button>
-            <h1 className="text-3xl font-extrabold text-indigo-700 tracking-tight">
+            <h1 className="text-3xl font-bold text-blue-700 tracking-tight">
               Akshay<span className="text-blue-500">GPT</span>
             </h1>
           </div>
         </div>
       </div>
 
-      <div className="flex-1 max-w-4xl mx-auto w-full pt-20 pb-24 px-4 overflow-y-auto" ref={chatContainerRef} style={{ scrollBehavior: 'smooth' }}>
+      <div
+        className="flex-1 max-w-4xl mx-auto w-full pt-20 pb-24 px-4 overflow-y-auto"
+        ref={chatContainerRef}
+        style={{ scrollBehavior: "smooth" }}
+      >
         {messages.length === 0 && !isAnswering && (
           <div className="text-center text-gray-500 mt-10">
             Start the conversation by asking a question below!
@@ -102,50 +173,57 @@ export default function AkshayGPTChat({ switchToLanding, initialQuestion, switch
         {messages.map((msg) => (
           <div
             key={msg.id}
-            className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} mb-4 animate-slideIn`}
+            className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} mb-4 animate-fadeIn`}
           >
             <div
-              className={`max-w-[70%] p-4 rounded-lg ${
-                msg.role === "user" ? "bg-indigo-500 text-white" : "bg-gray-100 text-gray-800"
+              className={`max-w-[70%] p-3 rounded-2xl shadow-sm ${
+                msg.role === "user"
+                  ? "bg-blue-500 text-white"
+                  : "bg-white border border-gray-100 text-gray-900"
               }`}
             >
               {msg.role === "bot" && (
                 <div className="flex items-center mb-1">
-                  <div className="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-sm font-bold mr-2">
+                  <div className="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm font-bold mr-2">
                     A
                   </div>
                   <span className="text-xs text-gray-500">AkshayGPT</span>
                 </div>
               )}
-              <p>{msg.content}</p>
+              <p className="whitespace-pre-wrap">
+                {msg.content}
+                {isAnswering && msg.id === currentStreamingId && (
+                  <span className="inline-block ml-1 animate-pulse text-gray-500">▋</span>
+                )}
+              </p>
             </div>
           </div>
         ))}
 
-        {isAnswering && (
-          <div className="flex justify-start mb-4 animate-slideIn">
-            <div className="max-w-[70%] p-4 rounded-lg bg-gray-100 text-gray-800">
+        {isAnswering && !currentStreamingId && (
+          <div className="flex justify-start mb-4 animate-fadeIn">
+            <div className="max-w-[70%] p-3 rounded-2xl bg-white border border-gray-100 text-gray-900 shadow-sm">
               <div className="flex items-center mb-1">
-                <div className="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-sm font-bold mr-2">
+                <div className="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm font-bold mr-2">
                   A
                 </div>
                 <span className="text-xs text-gray-500">AkshayGPT</span>
               </div>
-              <div className="flex space-x-2">
-                <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"></div>
-                <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce delay-100"></div>
-                <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce delay-200"></div>
+              <div className="flex space-x-1">
+                <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"></div>
+                <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce delay-150"></div>
+                <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce delay-300"></div>
               </div>
             </div>
           </div>
         )}
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-sm shadow-t p-4">
+      <div className="fixed bottom-0 left-0 right-0 bg-white/70 backdrop-blur-md shadow-t p-4">
         <div className="max-w-4xl mx-auto flex items-center space-x-4">
           <button
             onClick={clearChat}
-            className="p-2 rounded-full bg-red-500 text-white hover:bg-red-600 transition"
+            className="p-2 rounded-full bg-red-500/80 text-white hover:bg-red-600 transition-colors"
             title="Clear Chat"
           >
             <TrashIcon className="h-5 w-5" />
@@ -161,25 +239,25 @@ export default function AkshayGPTChat({ switchToLanding, initialQuestion, switch
 
       <div className="text-center py-4 text-sm text-gray-500">
         Powered by AI & backed by{" "}
-        <span className="text-indigo-500">real experience</span>.
+        <span className="text-blue-500">real experience</span>.
       </div>
 
       <style>{`
-        @keyframes slideIn {
-          0% { opacity: 0; transform: translateY(20px); }
+        @keyframes fadeIn {
+          0% { opacity: 0; transform: translateY(10px); }
           100% { opacity: 1; transform: translateY(0); }
         }
-        .animate-slideIn {
-          animation: slideIn 0.3s ease-out forwards;
+        .animate-fadeIn {
+          animation: fadeIn 0.4s ease-out forwards;
         }
         .shadow-t {
-          box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.05);
         }
-        .delay-100 {
-          animation-delay: 0.1s;
+        .delay-150 {
+          animation-delay: 0.15s;
         }
-        .delay-200 {
-          animation-delay: 0.2s;
+        .delay-300 {
+          animation-delay: 0.3s;
         }
       `}</style>
     </div>
