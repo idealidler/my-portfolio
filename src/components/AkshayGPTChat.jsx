@@ -16,7 +16,7 @@ export default function AkshayGPTChat({ switchToLanding, initialQuestion, switch
     async function loadDocument() {
       try {
         const response = await fetch("data/AkshayData.txt");
-        if (!response.ok) throw new Error("Failed to load Akshay.txt");
+        if (!response.ok) throw new Error("Failed to load AkshayData.txt");
         const text = await response.text();
         setDocContent(text);
       } catch (error) {

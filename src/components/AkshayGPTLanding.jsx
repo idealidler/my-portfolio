@@ -82,7 +82,7 @@ export default function AkshayGPTLanding({ switchToChat, setInitialQuestion, swi
       {/* Centered main content */}
       <div className="flex-grow flex flex-col items-center justify-center px-6 text-center">
         {/* Title */}
-        <h1 className="text-5xl md:text-7xl font-extrabold text-indigo-700 mb-4 tracking-tight drop-shadow-sm animate-fadeInUp">
+        <h1 className="text-5xl md:text-7xl font-extrabold text-indigo-700 mb-4 tracking-tight drop-shadow-sm">
           Akshay<span className="text-blue-500">GPT</span>
         </h1>
 
@@ -113,7 +113,7 @@ export default function AkshayGPTLanding({ switchToChat, setInitialQuestion, swi
       </div>
 
       {/* Footer note */}
-      <div className="mt-8 mb-8 max-w-lg mx-auto text-xs sm:text-sm text-gray-500 italic leading-relaxed px-4 text-center animate-fadeInUp">
+      <div className="mt-8 mb-8 max-w-lg mx-auto text-xs sm:text-sm text-gray-500 italic leading-relaxed px-4 text-center">
         I had no prior experience building AI chatbots, but I figured it out.  
         My strongest skill is <span className="font-medium text-indigo-600">the ability to learn</span>.  
         I’m a problem solver who knows how to navigate the unknown.

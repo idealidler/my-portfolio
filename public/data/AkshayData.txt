@@ -1,24 +1,130 @@
-About Akshay Akshay Jain is a data scientist and analytics engineer with expertise in Power BI, SQL (PySQL, MSSQL, T-SQL, Oracle SQL), and Python (Microsoft Fabric pipelines, automation). He is skilled in AI tools like ChatGPT and Copilot. Akshay excels at problem-solving, project scoping, timeline estimation, and Agile workflow management, including sprint planning and execution. He translates complex data insights into clear, actionable recommendations for non-technical stakeholders, improving decision-making and client service. Akshay works effectively in collaborative and consultative roles.
+Akshay Jain is a Data Scientist and Analytics Engineer with expertise in data visualization, data engineering, and business analytics. With strong proficiency in Power BI, SQL, Python, and Microsoft Fabric, he helps organizations optimize decision-making and improve efficiency by transforming complex datasets into actionable intelligence. He is also highly skilled in AI-driven tools (ChatGPT, Copilot) and has hands-on experience in automation, ML pipelines, and dashboarding for enterprise clients.
 
-Contact Information Akshay’s email: akshayjain128@gmail.com Akshay’s phone: 445-208-1735 Akshay’s location: United States Akshay’s LinkedIn: https://www.linkedin.com/in/akshayjain128 Akshay’s portfolio: https://idealidler.github.io/my-portfolio
+Akshay combines technical expertise with strong business communication skills, making him effective at collaborating with stakeholders, translating technical outputs for executives, and leading Agile-driven development projects.
 
-Education Akshay’s education: Master’s degree in Business Analytics from Drexel University, Philadelphia, PA, completed in 2023. Courses included Data Analysis and Interpretation, Database Analysis and Design for Business, Aligning Information Systems and Business Strategies, Hadoop and MapReduce, and Data Mining for Business Analytics. Akshay also holds a Bachelor’s degree in Electronics and Communication Engineering from Pune University, Pune, India, completed in 2020. Courses included Applied ML for Data Science, Data Structures & Algorithms, Object Oriented Programming, Business Management, and Machine Learning.
+Contact Information
+Email: akshayjain128@gmail.com
 
-Professional Experience Akshay’s current job: Analytics Engineer at Holman (July 2023–Present). At Holman, Akshay developed a Power BI dashboard to improve fleet management visibility and reduce call center answering time by 30 seconds. He created Power BI Metrics for Client Relations, improving service quality by 12%. He collaborated with data scientists and stakeholders to align projects with goals. Akshay presented Power BI projects at IBIS 2024, earning positive feedback. He built an enterprise-scale semantic model for the Annual Business Review, replacing 15+ legacy reports and saving 30–40 hours per consultant. He used CI/CD pipelines and Git for collaborative development, wrote advanced SQL logic for KPI dashboards, and built ETL pipelines in Microsoft Fabric using Python to normalize 20 client KPIs. Akshay created a reusable, parameter-driven analysis framework, reducing turnaround time by 50%, and provided Power BI training.
+Phone: 445-208-1735
 
-Akshay’s past role: Data Analyst Intern at Collabera (May 2023–July 2023). At Collabera, Akshay developed interactive Power BI dashboards to track KPIs, improving operational visibility. He optimized SQL queries and Power BI data modeling, reducing report generation time by 30%. He implemented a Dimensional Calendar in Power BI using DAX, improving reporting efficiency by 15%. Akshay collaborated with teams and provided end-user training.
+Location: United States
 
-Akshay’s past role: Data Science Intern at Labware (June 2022–September 2023). At Labware, Akshay developed an ETL pipeline for crime data analysis using Python, AWS S3, and Snowflake. He engineered an XGBoost model to predict crime types with 80% accuracy. Akshay integrated machine learning insights into Tableau dashboards and extracted data from six sources, cleaning 400k rows in Python.
+LinkedIn: linkedin.com/in/akshayjain128
 
-Projects Akshay’s project: Automating Municipal Bond Ratings. Akshay automated municipal bond ratings using Python, Power BI, and PowerPoint. He created a Python script for automation, performed EDA, developed a dashboard, and summarized findings. This reduced rating time by 50%.
+Portfolio: idealidler.github.io/my-portfolio
 
-Akshay’s project: Personal Website with AI Chatbot. Akshay built a portfolio site with an AI chatbot using React, Tailwind CSS, ChatGPT API, and GitHub Pages. The site showcases his qualifications and provides an interactive experience for recruiters.
+Education
+Master’s in Business Analytics – Drexel University, Philadelphia, PA (2023)
 
-Skills Akshay’s technical skills: Power BI, SQL (PySQL, MSSQL, T-SQL, Oracle SQL), Python (Microsoft Fabric pipelines, automation), Microsoft Fabric, React, Tailwind CSS, AI tools (ChatGPT, Copilot). Akshay’s soft skills: Communication (translating technical to non-technical), problem-solving, Agile workflow management, consultative stakeholder engagement, requirements scoping, time estimation.
+Highlighted coursework: Data Analysis & Interpretation, Data Mining, Database Design, Hadoop & MapReduce, Business Strategy Alignment
 
-Certifications Akshay’s certification: Associate Power BI Data Analyst.
+Bachelor’s in Electronics & Communication Engineering – Pune University, India (2020)
 
-Awards and Achievements Akshay’s awards: IBIS 2024 Conference Presenter, Data Science Internship at Labware, Data Analyst Internship at Collabera, Analytics Engineer at Holman.
+Highlighted coursework: Applied ML, Data Structures, Algorithms, Object-Oriented Programming, Business Management
 
-Portfolio Links Akshay’s GitHub: https://github.com/idealidler?tab=repositories Akshay’s portfolio website: https://idealidler.github.io/my-portfolio
+Professional Experience
+Analytics Engineer | Holman (Jul 2023 – Present)
 
+Built Power BI dashboards for fleet management → reduced call center response time by 30 seconds.
+
+Developed Power BI Metrics for Client Relations → improved service quality by 12%.
+
+Created enterprise-scale semantic models replacing 15+ legacy reports → saving 30–40 hours per consultant.
+
+Delivered Annual Business Review dashboard framework, reusable and parameter-driven, cutting turnaround time by 50%.
+
+Collaborated using CI/CD pipelines + Git to streamline team development workflows.
+
+Developed ETL workflows in Microsoft Fabric using Python to normalize KPIs across 20+ clients.
+
+Recognition: Presented Power BI innovations at IBIS 2024 conference.
+
+Conducted Power BI training workshops for business teams.
+
+Data Analyst Intern | Collabera (May 2023 – Jul 2023)
+
+Built interactive KPI dashboards in Power BI → improved operational insights.
+
+Optimized SQL queries and Power BI models → reduced report time by 30%.
+
+Designed DAX-powered Dimensional Calendar → improved reporting efficiency by 15%.
+
+Provided end-user training and collaborated with business teams.
+
+Data Science Intern | Labware (Jun 2022 – Sep 2022)
+
+Developed ETL pipeline for crime data (Python, AWS S3, Snowflake).
+
+Built XGBoost model predicting crime type with 80% accuracy.
+
+Integrated ML insights into Tableau dashboards.
+
+Cleaned and transformed 400k+ data rows from 6+ sources.
+
+Projects
+Automating Municipal Bond Ratings
+
+Automated workflow using Python + Power BI + PPT → reduced rating time by 50%.
+
+AI-Integrated Personal Website
+
+Portfolio site using React, Tailwind CSS, ChatGPT API with a recruiter-facing AI chatbot.
+
+Technical Skills
+Data Visualization / BI: Power BI (advanced modeling, DAX, Metrics), Tableau
+
+Databases & SQL: PySQL, MSSQL, T-SQL, Oracle SQL
+
+Programming & Data Engineering: Python, Microsoft Fabric pipelines, ETL, Automation
+
+Version Control & DevOps: Git, CI/CD pipelines
+
+Web Development: React, Tailwind CSS (for portfolio/AI chatbot projects)
+
+AI / Productivity Tools: ChatGPT, Copilot
+
+Soft Skills
+Communication: explaining technical insights to non-technical stakeholders
+
+Business Acumen: aligning data projects with business strategy
+
+Agile Workflow: sprint planning, execution, and stakeholder updates
+
+Problem-Solving: analytical mindset and troubleshooting expertise
+
+Team Collaboration: works well in cross-functional settings
+
+Strengths
+Strong cross-functional communicator, bridging technical and non-technical teams
+
+Expertise in Power BI and data storytelling with measurable business impact
+
+Research-driven → combines academic and real-world analytics experience
+
+Adaptable to new technologies, quickly upskilling in tools like Fabric and AI APIs
+
+Recognized for delivering time-saving frameworks and standardized enterprise solutions
+
+Weaknesses (Growth Areas)
+Can sometimes focus too much on technical detail rather than quick prototyping
+
+Prefers structured environments, so sudden scope changes can be challenging
+
+Seeks more in-depth cloud engineering expertise (Azure, AWS, GCP) to complement analytics skillset
+
+Certifications
+Microsoft Certified: Associate Power BI Data Analyst
+
+Awards & Achievements
+Conference Presenter at IBIS 2024 (recognized for Power BI innovation)
+
+Internship Achievements: Collabera (KPI Dashboards), Labware (ETL & ML Project)
+
+Rapid promotion to Analytics Engineer role at Holman post-Master’s graduation
+
+Career Goals
+To advance into Senior Analytics Engineer / Data Science Lead roles
+
+To specialize in enterprise-scale BI architectures and applied AI for analytics
+
+To mentor junior data professionals and contribute to data literacy programs within organizations
