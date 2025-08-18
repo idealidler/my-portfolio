@@ -1,340 +1,210 @@
-import React from "react";
-import { motion } from "framer-motion";
+import React from 'react';
+import { motion } from 'framer-motion';
 import {
   Briefcase,
   GraduationCap,
-  UserCheck,
-  Phone,
   Mail,
   Linkedin,
   MapPin,
   Star,
-  Code,
-  Database,
-  BriefcaseBusiness,
-  Lightbulb,
-  Github,
-  ExternalLink,
-  Home // Added Home icon
-} from "lucide-react";
+  Home,
+  FileText,
+  CheckCircle2,
+} from 'lucide-react';
 
-// Global animation variants for smoother, modern transitions
-const fadeInUp = {
-  hidden: { opacity: 0, y: 30, scale: 0.98 },
-  visible: { 
-    opacity: 1, 
-    y: 0, 
-    scale: 1,
-    transition: { 
-      duration: 0.8, 
-      ease: [0.16, 1, 0.3, 1], // Custom bezier for smooth, subtle acceleration
-      type: "spring",
-      damping: 25,
-      stiffness: 120
-    } 
-  }
+// --- ANIMATION VARIANTS ---
+// A single, clean animation for all sections to use as they enter the viewport.
+const sectionAnimation = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: [0.25, 1, 0.5, 1] }, // A smooth ease-out curve
+  },
 };
 
-const slideInLeft = {
-  hidden: { opacity: 0, x: -30 },
-  visible: { 
-    opacity: 1, 
-    x: 0,
-    transition: { 
-      duration: 0.7, 
-      ease: [0.25, 0.1, 0.25, 1],
-      type: "spring",
-      damping: 20
-    } 
-  }
-};
-
-// Helper components for better structure and reusability
-
-const Section = ({ icon, title, children, className = "" }) => (
-  <motion.div
-    initial="hidden"
-    whileInView="visible"
-    viewport={{ once: true, amount: 0.2 }}
-    variants={fadeInUp}
-    className={`mb-8 ${className}`}
-  >
-    <h2 className="text-xl font-bold flex items-center gap-3 text-indigo-800 mb-4">
-      {icon}
-      {title}
-    </h2>
-    {children}
-  </motion.div>
-);
-
-const TimelineItem = ({ title, company, date, details }) => (
-  <motion.div
-    initial="hidden"
-    whileInView="visible"
-    viewport={{ once: true }}
-    variants={slideInLeft}
-    className="relative pl-8 pb-8 border-l-2 border-indigo-200 last:border-l-transparent"
-  >
-    <div className="absolute -left-[11px] top-1 h-5 w-5 bg-white border-2 border-indigo-500 rounded-full flex items-center justify-center">
-      <Briefcase className="text-indigo-500" size={12} />
-    </div>
-    <p className="font-semibold text-lg text-indigo-700">{title}</p>
-    <p className="font-medium text-gray-600">{company}</p>
-    <p className="text-sm text-gray-500 mb-2">{date}</p>
-    <ul className="list-disc list-inside text-gray-700 space-y-1.5 marker:text-indigo-400">
-      {details.map((point, index) => (
-        <li key={index}>{point}</li>
-      ))}
-    </ul>
-  </motion.div>
-);
-
-const SkillBadge = ({ skill, className = "" }) => (
-  <motion.span
-    whileHover={{ scale: 1.05, transition: { duration: 0.3, ease: "easeOut" } }}
-    className={`px-3 py-1.5 rounded-full bg-indigo-100 text-indigo-800 text-sm font-medium tracking-wide ${className}`}
-  >
+// --- HELPER COMPONENT (This was the missing piece) ---
+/**
+ * A styled badge for displaying skills.
+ * @param {string} skill - The name of the skill/technology to display.
+ */
+const SkillBadge = ({ skill }) => (
+  <span className="px-3 py-1 rounded-full bg-indigo-100 text-indigo-800 text-xs font-medium">
     {skill}
-  </motion.span>
+  </span>
 );
 
-const ProjectCard = ({ title, description, tech, github, live }) => (
-  <motion.div
-    initial="hidden"
-    whileInView="visible"
-    viewport={{ once: true }}
-    variants={fadeInUp}
-    whileHover={{ y: -5, transition: { duration: 0.3, ease: "easeOut" } }}
-    className="p-5 rounded-xl bg-white/60 shadow-md hover:shadow-lg border border-gray-200 transition-shadow duration-300"
-  >
-    <div className="flex justify-between items-start">
-      <h3 className="font-bold text-indigo-700 text-lg">{title}</h3>
-      <div className="flex items-center gap-3">
-        {github && (
-          <a
-            href={github}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-gray-500 hover:text-indigo-600 transition-colors"
-            aria-label="GitHub repository"
-          >
-            <Github size={20} />
-          </a>
-        )}
-        {live && (
-          <a
-            href={live}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-gray-500 hover:text-indigo-600 transition-colors"
-            aria-label="Live demo"
-          >
-            <ExternalLink size={20} />
-          </a>
-        )}
+// --- DATA ---
+// Centralizing data makes the component cleaner and easier to update.
+const workExperience = [
+    {
+    company: "HOLMAN",
+    location: "Mt Laurel, New Jersey",
+    role: "Analytics Engineer",
+    date: "July 2023 – Present",
+    tech: ["Power BI", "SQL", "Python", "Microsoft Fabric", "CI/CD", "Git", "DAX"],
+    points: [
+      "Built an enterprise Power BI dashboard replacing 15+ legacy reports, saving 40+ hours per consultant.",
+      "Developed scalable data models and ETL pipelines using SQL and Python in Microsoft Fabric.",
+      "Managed cross-functional projects, ensuring timely delivery in an Agile environment.",
+    ],
+  },
+  {
+    company: "COLLABERA",
+    location: "Basking Ridge, New Jersey",
+    role: "Data Analyst Intern",
+    date: "May 2023 – July 2023",
+    tech: ["Power BI", "DAX", "SQL Server"],
+    points: [
+      "Optimized SQL queries and Power BI models, reducing report rendering time by 30%.",
+      "Delivered key KPI dashboards providing actionable insights for business improvement.",
+    ],
+  },
+  {
+    company: "LABWARE",
+    location: "Wilmington, Delaware",
+    role: "Data Science Intern",
+    date: "June 2022 – September 2022",
+    tech: ["Python", "Tableau", "AWS S3", "Snowflake", "XGBoost"],
+    points: [
+      "Engineered an XGBoost model to predict crime types with 80% accuracy.",
+      "Built an end-to-end ETL pipeline for crime data analysis using Python, AWS S3, and Snowflake.",
+    ],
+  },
+];
+
+const coreTechnologies = ["Power BI", "SQL", "Python", "Microsoft Fabric", "DAX", "Tableau", "Git", "CI/CD"];
+const education = [
+    {
+        degree: "M.S. in Business Analytics",
+        school: "Drexel University, Philadelphia, PA",
+        date: "2021 – 2023",
+    },
+    {
+        degree: "B.S. in Electronics & Telecom",
+        school: "Pune University, India",
+        date: "2016 – 2020",
+    }
+];
+
+// --- MAIN COMPONENT ---
+export default function RecruiterFriendly({ switchVersion }) {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-pink-50 to-white">
+      <div className="max-w-4xl mx-auto p-4 sm:p-6 md:p-8">
+        {/* --- PROFILE HEADER --- */}
+        {/* This header section contains all critical info and actions. */}
+        <motion.header
+          initial="hidden"
+          animate="visible"
+          variants={sectionAnimation}
+          className="bg-white/70 backdrop-blur-lg p-6 sm:p-8 rounded-2xl shadow-lg border border-slate-200/80"
+        >
+          <div className="flex flex-col sm:flex-row items-start gap-6">
+            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-indigo-500 to-pink-500 flex-shrink-0 flex items-center justify-center text-white font-bold text-4xl shadow-md">
+              AJ
+            </div>
+            <div className="flex-grow">
+              <h1 className="text-4xl font-extrabold text-indigo-800">Akshay Jain</h1>
+              <p className="text-xl font-medium text-gray-600 mt-1">Analytics Engineer</p>
+              <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm">
+                <a href="mailto:akshayjain128@gmail.com" className="flex items-center gap-2 text-indigo-600 hover:underline">
+                  <Mail size={16} /> akshayjain128@gmail.com
+                </a>
+                <a href="https://www.linkedin.com/in/akshayjain128" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-indigo-600 hover:underline">
+                  <Linkedin size={16} /> LinkedIn Profile
+                </a>
+                <div className="flex items-center gap-2 text-gray-600">
+                  <MapPin size={16} /> Philadelphia, PA
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="mt-6 pt-6 border-t border-indigo-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <ul className="text-sm text-gray-700 space-y-1">
+              <li className="flex items-center gap-2"><CheckCircle2 size={16} className="text-indigo-500" /> Authorized to work in the U.S. (F1 OPT STEM Ext. until May 2026)</li>
+              <li className="flex items-center gap-2"><CheckCircle2 size={16} className="text-indigo-500" /> Open to relocation & available for immediate start</li>
+            </ul>
+            <div className="flex items-center gap-3 flex-shrink-0">
+              <button
+                onClick={() => switchVersion(null)}
+                className="p-2 rounded-full border-2 border-indigo-400 text-indigo-600 font-semibold hover:bg-indigo-50 transition-colors"
+                title="Back to Home"
+              >
+                <Home size={18} />
+              </button>
+              <button
+                onClick={() => switchVersion("hiringManager")}
+                className="flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-600 text-white font-semibold shadow-lg hover:bg-indigo-700 hover:scale-105 transition-all"
+              >
+                <FileText size={16} />
+                View Detailed Version
+              </button>
+            </div>
+          </div>
+        </motion.header>
+
+        {/* --- MAIN CONTENT SECTIONS --- */}
+        <main className="mt-8 space-y-8">
+          {/* --- Summary --- */}
+          <motion.section variants={sectionAnimation} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+            <p className="text-center text-lg text-gray-700 bg-white/50 p-6 rounded-2xl border border-slate-200/80">
+              I translate complex data into actionable insights and clear stories. My expertise lies in building efficient data models and dashboards with Power BI, SQL, and Python to drive smarter business decisions.
+            </p>
+          </motion.section>
+
+          {/* --- Work Experience --- */}
+          <motion.section variants={sectionAnimation} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+            <h2 className="text-2xl font-bold text-indigo-800 mb-4 flex items-center gap-3"><Briefcase size={22} /> Work Experience</h2>
+            <div className="space-y-6">
+              {workExperience.map(job => (
+                <div key={job.company} className="p-5 rounded-xl bg-white/70 shadow-md border border-slate-200/80">
+                  <div className="flex flex-col sm:flex-row justify-between sm:items-center">
+                    <h3 className="text-lg font-bold text-indigo-700">{job.role}</h3>
+                    <p className="text-sm font-semibold text-gray-500 mt-1 sm:mt-0">{job.date}</p>
+                  </div>
+                  <p className="font-medium text-gray-600">{job.company}</p>
+                  <ul className="list-disc list-inside text-gray-700 space-y-1 mt-3 text-sm">
+                    {job.points.map((point, i) => <li key={i}>{point}</li>)}
+                  </ul>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {job.tech.map(t => <SkillBadge key={t} skill={t} />)}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.section>
+
+          {/* --- Core Technologies --- */}
+          <motion.section variants={sectionAnimation} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+            <h2 className="text-2xl font-bold text-indigo-800 mb-4 flex items-center gap-3"><Star size={22} /> Core Technologies</h2>
+            <div className="p-5 rounded-xl bg-white/70 shadow-md border border-slate-200/80 flex flex-wrap gap-3">
+              {coreTechnologies.map(tech => <SkillBadge key={tech} skill={tech} />)}
+            </div>
+          </motion.section>
+
+          {/* --- Education --- */}
+          <motion.section variants={sectionAnimation} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+            <h2 className="text-2xl font-bold text-indigo-800 mb-4 flex items-center gap-3"><GraduationCap size={22} /> Education</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {education.map(edu => (
+                <div key={edu.school} className="p-5 rounded-xl bg-white/70 shadow-md border border-slate-200/80">
+                  <h3 className="font-bold text-indigo-700">{edu.degree}</h3>
+                  <p className="text-gray-600">{edu.school}</p>
+                  <p className="text-sm text-gray-500 mt-1">{edu.date}</p>
+                </div>
+              ))}
+            </div>
+          </motion.section>
+        </main>
+
+        {/* --- Footer --- */}
+        <motion.footer variants={sectionAnimation} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center pt-12 mt-8">
+          <p className="text-sm text-gray-500">
+            Akshay Jain © {new Date().getFullYear()}
+          </p>
+        </motion.footer>
       </div>
     </div>
-    <p className="text-gray-700 my-2 text-sm">{description}</p>
-    <div className="flex flex-wrap gap-2 mt-3">
-      {tech.map((skill) => (
-        <SkillBadge key={skill} skill={skill} className="!px-2 !py-0.5 !text-xs !bg-gray-200 !text-gray-700" />
-      ))}
-    </div>
-  </motion.div>
-);
-
-// Main Component
-const RecruiterView = ({ switchVersion }) => {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.15,
-        delayChildren: 0.3,
-        duration: 0.5,
-        ease: "easeOut"
-      },
-    },
-  };
-
-  return (
-    <motion.div
-      initial="hidden"
-      animate="visible"
-      exit={{ opacity: 0, transition: { duration: 0.5, ease: "easeInOut" } }}
-      variants={containerVariants}
-      className="max-w-6xl mx-auto p-6 md:p-10 bg-gradient-to-br from-blue-50 via-white to-purple-50"
-    >
-      <main className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-        {/* === LEFT COLUMN (Main Content) === */}
-        <div className="lg:col-span-2">
-          {/* --- Header --- */}
-          <motion.div
-            variants={fadeInUp}
-            className="border-b border-gray-200 pb-6 mb-8"
-          >
-            <motion.h1 
-              variants={fadeInUp}
-              className="text-5xl font-extrabold bg-gradient-to-r from-indigo-600 to-blue-500 bg-clip-text text-transparent"
-            >
-              Akshay Jain
-            </motion.h1>
-            <p className="text-xl text-gray-700 mt-1">Analytics Engineer | Data Consultant</p>
-            <p className="mt-4 text-gray-800 leading-relaxed max-w-2xl">
-              A results-driven data professional adept at transforming complex data into actionable insights. I bridge the gap between technical teams and business stakeholders, delivering high-impact solutions using Power BI, SQL, and Python. My expertise lies in building efficient data models, DAX in PowerBI and managing projects in fast-paced Agile environments.
-            </p>
-          </motion.div>
-
-          {/* --- Experience Timeline --- */}
-          <Section icon={<BriefcaseBusiness size={24} />} title="Work Experience">
-            <div className="relative">
-              <TimelineItem
-                title="Analytics Engineer"
-                company="Holman"
-                date="July 2023 – Present"
-                details={[
-                  "Built enterprise Power BI dashboard replacing 15+ reports, saving 40+ hours per consultant.",
-                  "Developed scalable SQL and Python-based data pipelines in Microsoft Fabric for KPI tracking and benchmarking.",
-                  "Managed cross-functional projects with strong prioritization and communication skills.",
-                ]}
-              />
-              <TimelineItem
-                title="Data Analyst"
-                company="Collabera"
-                date="May 2023 – July 2023"
-                details={[
-                  "Optimized SQL and Power BI models, reducing report generation time by 30%.",
-                  "Created a custom Dimensional Calendar, improving reporting efficiency by 15%.",
-                  "Delivered KPI dashboards with actionable insights for business improvement.",
-                ]}
-              />
-              <TimelineItem
-                title="Data Science Intern"
-                company="Labware"
-                date="June 2022 – September 2022"
-                details={[
-                  "Built ETL pipelines using Python, AWS S3, and Snowflake for crime data analysis.",
-                  "Developed an XGBoost model predicting crime types with 80% accuracy.",
-                  "Integrated ML results into Tableau dashboards for non-technical users.",
-                ]}
-              />
-            </div>
-          </Section>
-          
-          {/* --- Featured Projects Section --- */}
-          <Section icon={<Lightbulb size={24} />} title="Featured Projects">
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <ProjectCard 
-                  title="Starbucks Reddit Review Analysis"
-                  description="Analyzed Starbucks’ brand perception by applying sentiment analysis to thousands of social media posts."
-                  tech={["Python", "Scikit-learn", "seaborn", "Pushshift API", "pandas"]}
-                />
-                 <ProjectCard 
-                  title="E-Commerce Customer Purchase Analysis"
-                  description="Explored customer purchasing behavior in e-commerce to uncover trends and patterns by analysing customer reviews."
-                  tech={["PowerBI", "DAX", "Python", "Azure"]}
-                />
-             </div>
-          </Section>
-        </div>
-
-        {/* === RIGHT COLUMN (Sidebar) === */}
-        <aside className="lg:col-span-1 lg:sticky top-10 h-min">
-          <motion.div 
-            variants={fadeInUp}
-            className="p-6 rounded-2xl bg-white/80 backdrop-blur-sm shadow-lg border border-gray-200"
-          >
-            {/* --- Contact & Location --- */}
-            <div className="space-y-3.5 text-gray-700 text-sm border-b border-gray-200 pb-6 mb-6">
-               <a href="mailto:akshayjain128@gmail.com" className="flex items-center gap-3 text-indigo-600 hover:underline">
-                <Mail size={18} /> akshayjain128@gmail.com
-              </a>
-              <div className="flex items-center gap-3">
-                <Phone size={18} /> +1 (445) 208-1735
-              </div>
-              <a href="https://www.linkedin.com/in/akshayjain128" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-indigo-600 hover:underline">
-                 <Linkedin size={18} /> LinkedIn
-              </a>
-              <div className="flex items-center gap-3">
-                <MapPin size={18} /> Philadelphia, PA • Open to Relocation
-              </div>
-            </div>
-            
-            {/* --- Categorized Skills, Key Info, Education sections --- */}
-            <Section icon={<Star size={22} />} title="Core Competencies" className="!mb-6">
-                <div className="space-y-4">
-                  <div>
-                    <h3 className="font-semibold text-gray-600 mb-2 flex items-center gap-2"><Database size={16} /> Data & Analytics</h3>
-                    <div className="flex flex-wrap gap-2">
-                        {["Power BI", "Microsoft Fabric", "Tableau", "Databricks", "Business Objects"].map(skill => <SkillBadge key={skill} skill={skill} />)}
-                    </div>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-600 mb-2 flex items-center gap-2"><Code size={16} /> Languages & Databases</h3>
-                    <div className="flex flex-wrap gap-2">
-                        {["Python", "SQL", "JavaScript"].map(skill => <SkillBadge key={skill} skill={skill} />)}
-                    </div>
-                  </div>
-                   <div>
-                    <h3 className="font-semibold text-gray-600 mb-2 flex items-center gap-2"><Briefcase size={16} /> Professional</h3>
-                    <div className="flex flex-wrap gap-2">
-                        {["Agile Methodologies", "Git CI/CD", "Azure DevOps", "Problem Solving", "Effective Communication"].map(skill => <SkillBadge key={skill} skill={skill} />)}
-                    </div>
-                  </div>
-                </div>
-            </Section>
-            
-            <Section icon={<UserCheck size={22} />} title="Key Info" className="!mb-6">
-                <ul className="list-disc list-inside text-gray-700 space-y-2 marker:text-indigo-400 text-sm">
-                  <li>Authorized to work in the U.S. (F1 OPT STEM Ext. until May 2026)</li>
-                  <li>Available for immediate start</li>
-                </ul>
-            </Section>
-
-            <Section icon={<GraduationCap size={22} />} title="Education" className="!mb-0">
-                <div className="space-y-2 text-gray-700 text-sm">
-                    <div><p className="font-semibold">M.S. in Business Analytics</p><p>Drexel University, 2023</p></div>
-                    <div><p className="font-semibold">B.S. in Electronics & Telecom</p><p>Pune University, 2020</p></div>
-                </div>
-            </Section>
-          </motion.div>
-        </aside>
-      </main>
-
-      {/* --- Footer with Home Button --- */}
- <footer className="text-center pt-16">
-  <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
-    {/* Back to Landing Page */}
-    <button
-      onClick={() => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-        switchVersion(null); // Show LandingPage
-      }}
-      className="flex items-center gap-2 px-6 py-3 rounded-full border-2 border-indigo-400 text-indigo-600 font-semibold hover:bg-indigo-50 hover:border-indigo-500 transition-colors duration-300"
-    >
-      <Home size={18} />
-      Back to Landing Page
-    </button>
-
-    {/* Switch to Hiring Manager */}
-    <button
-      onClick={() => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-        switchVersion("hiringManager"); // Show HiringManagerApp
-      }}
-      className="px-8 py-3 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all transform"
-    >
-      Switch to Hiring Manager version
-    </button>
-  </div>
-  <p className="mt-8 text-sm text-gray-500">
-    Designed & Built by Akshay Jain © {new Date().getFullYear()}
-  </p>
-</footer>
-
-    </motion.div>
   );
-};
-
-export default RecruiterView;
+}

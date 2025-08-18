@@ -1,7 +1,10 @@
+// src/components/sections/ProjectsSection.jsx
+
 import React from 'react';
 
+// Data for the case studies. Using a constant makes it easy to manage and update projects.
 const CASE_STUDIES = [
-  {
+    {
     id: 1,
     title: 'Studying Starbucks Through the Lens of Social Media',
     client: 'Retail Client',
@@ -65,42 +68,36 @@ const CASE_STUDIES = [
   },
 ];
 
+
+/**
+ * Renders the "Featured Case Studies" section.
+ * It maps over the CASE_STUDIES array to display a grid of project cards.
+ * @param {function} openCase - A function passed from the parent to open the details modal.
+ */
 export default function ProjectsSection({ openCase }) {
   return (
-    <section id="projects" className="mb-16">
-      <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8">
-        <div>
-          <h2 className="text-4xl font-bold text-indigo-700 mb-2">Featured Case Studies</h2>
-          <p className="text-gray-600">Projects that drove measurable outcomes.</p>
-        </div>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {CASE_STUDIES.map((c) => (
-          <article
-            key={c.id}
-            className="bg-white/90 backdrop-blur rounded-2xl shadow-xl hover:shadow-2xl transition transform hover:-translate-y-1 cursor-pointer group flex flex-col"
-            onClick={() => openCase(c)}
-            tabIndex={0}
-            onKeyPress={e => (e.key === 'Enter' ? openCase(c) : null)}
-          >
-            <div className="h-48 bg-gray-100 flex items-center justify-center overflow-hidden rounded-t-2xl">
-              <img src={c.thumbnail} alt={c.title} className="w-full h-full object-cover group-hover:scale-105 transition" />
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {CASE_STUDIES.map((c) => (
+        <article
+          key={c.id}
+          className="bg-white/70 backdrop-blur rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer group flex flex-col overflow-hidden border border-slate-200/80"
+          onClick={() => openCase(c)}
+          tabIndex={0}
+          onKeyPress={e => (e.key === 'Enter' ? openCase(c) : null)}
+        >
+          <div className="h-48 overflow-hidden">
+            <img src={c.thumbnail} alt={c.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+          </div>
+          <div className="p-6 flex-1 flex flex-col">
+            <h4 className="font-bold text-lg text-indigo-800">{c.title}</h4>
+            <p className="text-xs text-gray-500 mt-1">{c.client} • {c.industry}</p>
+            <p className="mt-3 text-sm text-gray-700 flex-1">{c.summary}</p>
+            <div className="mt-4 pt-4 border-t border-indigo-100">
+               <span className="text-sm font-semibold text-indigo-600">Read Case Study →</span>
             </div>
-            <div className="p-6 flex-1 flex flex-col">
-              <h4 className="font-semibold text-lg text-indigo-700">{c.title}</h4>
-              <p className="text-xs text-gray-500 mt-1">{c.client} • {c.industry}</p>
-              <p className="mt-3 text-sm text-gray-700 flex-1">{c.summary}</p>
-              <div className="mt-4 flex items-center justify-between">
-                <div className="text-sm text-gray-600">{c.tools.join(' • ')}</div>
-                <button
-                  onClick={e => { e.stopPropagation(); openCase(c); }}
-                  className="px-3 py-1 text-sm bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-400 transition"
-                >Read</button>
-              </div>
-            </div>
-          </article>
-        ))}
-      </div>
-    </section>
+          </div>
+        </article>
+      ))}
+    </div>
   );
 }

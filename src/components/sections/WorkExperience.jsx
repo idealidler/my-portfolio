@@ -1,12 +1,12 @@
+// src/components/sections/WorkExperience.jsx
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Briefcase, MapPin, Calendar, CheckCircle2 } from 'lucide-react';
 
-// --- DATA ---
-// I've added a 'tech' array to each experience object.
-// This is a powerful way to show recruiters your skills in context.
+// Data for work experience, including a 'tech' array for each role.
 const experiences = [
-  {
+    {
     company: "HOLMAN",
     location: "Mt Laurel, New Jersey",
     role: "Analytics Engineer",
@@ -46,95 +46,67 @@ const experiences = [
   },
 ];
 
-// --- ANIMATION VARIANTS ---
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.3 },
-  },
-};
 
+// Animation variants for the timeline items
 const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+  hidden: { opacity: 0, y: 50 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
 };
 
-// --- COMPONENT ---
+/**
+ * Renders the work experience content as a vertical timeline.
+ * Each job is a card with details, responsibilities, and a tech stack.
+ */
 export default function WorkExperience() {
   return (
-    <motion.section
-      id="experience"
-      className="py-5"
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.1 }}
-      variants={containerVariants}
-    >
-      <div className="max-w-10xl mx-auto px-4">
-        <motion.h2
-          className="text-4xl lg:text-4xl font-bold mb-12 text-left bg-gradient-to-r from-indigo-600 to-blue-500 bg-clip-text text-transparent"
+    <div className="relative max-w-5xl mx-auto">
+      {/* The vertical timeline bar */}
+      <div className="absolute left-5 top-2 w-0.5 h-full bg-indigo-200/80 -z-10"></div>
+
+      {experiences.map((exp, i) => (
+        <motion.div
+          key={i}
+          className="relative pl-16 pb-12"
           variants={itemVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
         >
-          Work Experience
-        </motion.h2>
+          {/* Timeline Dot with Icon */}
+          <div className="absolute left-0 top-1">
+            <div className="w-10 h-10 bg-white border-2 border-indigo-500 rounded-full flex items-center justify-center">
+              <Briefcase className="w-5 h-5 text-indigo-500" />
+            </div>
+          </div>
 
-        {/* Timeline Container */}
-        <div className="relative">
-          {/* The vertical line */}
-          <div className="absolute left-5 top-2 w-0.5 h-screen bg-indigo-200/80"></div>
+          {/* Experience Card */}
+          <div className="bg-white/60 backdrop-blur-sm p-6 rounded-xl shadow-md border border-slate-200/80 hover:shadow-xl transition-shadow duration-300">
+            <div className="flex flex-col md:flex-row justify-between md:items-center mb-2">
+              <h3 className="text-xl font-bold text-slate-900">{exp.role}</h3>
+              <p className="text-indigo-600 font-semibold text-base mt-1 md:mt-0">{exp.company}</p>
+            </div>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-600 mb-4">
+              <div className="flex items-center gap-1.5"><Calendar className="w-4 h-4" /><span>{exp.date}</span></div>
+              <div className="flex items-center gap-1.5"><MapPin className="w-4 h-4" /><span>{exp.location}</span></div>
+            </div>
 
-          {experiences.map((exp, i) => (
-            <motion.div key={i} className="relative pl-12 pb-12" variants={itemVariants}>
-              {/* Timeline Dot */}
-              <div className="absolute left-0 top-1">
-                <div className="w-10 h-10 bg-white border-2 border-indigo-500 rounded-full flex items-center justify-center">
-                  <Briefcase className="w-5 h-5 text-indigo-500" />
-                </div>
-              </div>
+            <ul className="space-y-3 mb-5">
+              {exp.points.map((point, idx) => (
+                <li key={idx} className="flex items-start">
+                  <CheckCircle2 className="w-4 h-4 text-indigo-500 mt-1 flex-shrink-0" />
+                  <span className="ml-3 text-base text-gray-700">{point}</span>
+                </li>
+              ))}
+            </ul>
 
-              {/* Card Content */}
-              <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl shadow-md border border-slate-200/80 hover:shadow-xl transition-shadow duration-300">
-                <div className="flex flex-col md:flex-row justify-between md:items-center mb-2">
-                  <h3 className="text-xl font-bold text-slate-900">{exp.role}</h3>
-                  <p className="text-indigo-600 font-semibold text-base mt-1 md:mt-0">{exp.company}</p>
-                </div>
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-600 mb-4">
-                  <div className="flex items-center gap-1.5">
-                    <Calendar className="w-4 h-4" />
-                    <span>{exp.date}</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <MapPin className="w-4 h-4" />
-                    <span>{exp.location}</span>
-                  </div>
-                </div>
-
-                <ul className="space-y-3 mb-5">
-                  {exp.points.map((point, idx) => (
-                    <li key={idx} className="flex items-start">
-                      <CheckCircle2 className="w-4 h-4 text-indigo-500 mt-1 flex-shrink-0" />
-                      <span className="ml-3 text-base text-gray-700">{point}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                {/* Tech Stack Badges */}
-                <div className="flex flex-wrap gap-2">
-                  {exp.tech.map((skill) => (
-                    <span
-                      key={skill}
-                      className="px-3 py-1 rounded-full bg-indigo-100 text-indigo-800 text-xs font-medium"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </motion.section>
+            <div className="flex flex-wrap gap-2">
+              {exp.tech.map((skill) => (
+                <span key={skill} className="px-3 py-1 rounded-full bg-indigo-100 text-indigo-800 text-xs font-medium">{skill}</span>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+      ))}
+    </div>
   );
 }
