@@ -9,6 +9,8 @@ export default function InputBar({ value, onChange, onSubmit, isDisabled, onProm
   const prompts = [
     "What are Akshay's key technical skills?",
     "Why is Akshay passionate about learning new things?",
+    "What are Akshay's career goals?",
+    "How does Akshay approach problem-solving?",
   ];
 
   // Filter suggestions based on input

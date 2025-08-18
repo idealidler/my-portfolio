@@ -8,7 +8,7 @@ const SuggestedPrompts = ({ onPromptClick }) => {
     "What are Akshay's key technical skills?",
     "Why is Akshay passionate about learning new things?",
     "What are Akshay's career goals?",
-    "How does Akshay approach problem-solving?"
+    "How does Akshay approach problem-solving?",
   ];
 
   return (
