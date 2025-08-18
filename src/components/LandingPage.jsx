@@ -69,6 +69,14 @@ export default function LandingPage({ onSelect }) {
         </div>
         
       </motion.div>
+      {/* Footer note */}
+      <div className="absolute bottom-4 w-full px-4 text-xs text-gray-500 italic leading-relaxed">
+        <p className="text-center">
+        Even with no prior web development experience, I made it work.
+        My strongest skill is <span className="font-medium text-indigo-600">the ability to learn</span>.<br />
+        I solve problems by exploring the unknown and making it work.
+      </p>
+      </div>
     </div>
   );
 }

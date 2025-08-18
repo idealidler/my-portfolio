@@ -64,23 +64,26 @@ export default function AkshayGPTChat({ switchToLanding, initialQuestion, switch
         throw new Error("Document not loaded");
       }
 
-      const response = await fetch("http://127.0.0.1:11434/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "mistral",
-          messages: [
-            {
-              role: "system",
-              content: `You are an AI assistant that answers questions strictly based on the following document. Do not use external knowledge. Document: ${docContent}`,
-            },
-            { role: "user", content: query },
-          ],
-          stream: true,
-        }),
-      });
+    // ... inside handleAsk function
+    const response = await fetch("/api/chat", { // <-- CHANGED URL
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        // We only need to send the messages and the document now
+        docContent: docContent,
+        messages: [
+            // You could also send the whole message history if you want context
+            { role: "user", content: query }
+        ]
+      }),
+    });
+    // ...
 
-      if (!response.ok) throw new Error("Ollama API error");
+      if (!response.ok) {
+        const errorData = await response.json();
+        // This makes the error much more useful for debugging!
+        throw new Error(errorData.error || "API request failed");
+      }
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
@@ -120,13 +123,15 @@ export default function AkshayGPTChat({ switchToLanding, initialQuestion, switch
       if (isAnswerDuplicate) {
         setMessages((prev) => prev.filter((msg) => msg.id !== botId));
       }
-    } catch (error) {
+ } catch (error) {
       console.error("Error fetching answer:", error);
       setMessages((prev) => [
         ...prev,
-        { role: "bot", content: "Error: Could not get a response from Ollama. Ensure it's running and the model is loaded.", id: Date.now() + 1 },
+        // A more generic and accurate error message for the user.
+        { role: "bot", content: `Error: Could not get a response. ${error.message}`, id: Date.now() + 1 },
       ]);
     } finally {
+// ...
       setIsAnswering(false);
       setCurrentStreamingId(null);
     }

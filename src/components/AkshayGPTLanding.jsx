@@ -11,7 +11,7 @@ export default function AkshayGPTLanding({ switchToChat, setInitialQuestion, swi
   const phrases = [
     "I turn complex data into clear business wins.",
     "Helping companies make smarter, faster decisions.",
-    "From raw numbers to real impact I deliver results.",
+    "From raw numbers to real impact. I deliver results.",
   ];
 
   // Typing effect
@@ -113,10 +113,12 @@ export default function AkshayGPTLanding({ switchToChat, setInitialQuestion, swi
       </div>
 
       {/* Footer note */}
-      <div className="mt-8 mb-8 max-w-lg mx-auto text-xs sm:text-sm text-gray-500 italic leading-relaxed px-4 text-center">
-        I had no prior experience building AI chatbots, but I figured it out.  
-        My strongest skill is <span className="font-medium text-indigo-600">the ability to learn</span>.  
+      <div className="absolute bottom-4 w-full px-4 text-xs text-gray-500 italic leading-relaxed">
+        <p className="text-center">
+        I had no prior experience building AI Chatbot, but I figured it out.
+        My strongest skill is <span className="font-medium text-indigo-600">the ability to learn</span>.<br />
         I’m a problem solver who knows how to navigate the unknown.
+      </p>
       </div>
 
       {/* Animations */}
