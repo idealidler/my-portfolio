@@ -33,8 +33,25 @@ export default async function handler(req) {
 
     // Construct the full prompt for Gemini
     const userQuery = messages[messages.length - 1].content;
-    const fullPrompt = `You are an AI assistant that answers questions strictly based on the following document. Do not use external knowledge. Document: ${docContent}\n\nQuestion: ${userQuery}`;
+    //const fullPrompt = `You are an AI assistant that answers questions strictly based on the following document. Do not use external knowledge. Document: ${docContent}\n\nQuestion: ${userQuery}`;
+    // For concise, professional answers
+    const fullPrompt = `
+    You are a professional AI assistant providing information about Akshay.
+    Your role is to answer questions strictly based on the provided document. Do not use external knowledge.
 
+    **Your response style must follow these rules:**
+    1.  **Be Concise:** Keep your answers as brief and to-the-point as possible.
+    2.  **Use Bullet Points:** Whenever the answer involves a list or multiple steps, you MUST use bullet points for clarity.
+    3.  **Professional Tone:** Maintain a formal and professional tone throughout your response.
+
+    **Document:**
+    ${docContent}
+
+    ---
+
+    **Question:**
+    ${userQuery}
+    `;
     const result = await model.generateContentStream(fullPrompt);
 
     // Create a new stream to send back to the client
