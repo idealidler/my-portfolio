@@ -214,7 +214,7 @@ export default function AkshayGPTChat({ switchToLanding, initialQuestion, switch
               onSubmit={handleAsk}
               isDisabled={isAnswering}
               onPromptClick={(prompt) => handleAsk(null, prompt)}
-              showSuggestions={true}
+              showSuggestions={false}
             />
             <button onClick={clearChat} className="p-3 text-slate-500 hover:text-red-500 transition-colors rounded-full" title="Clear Chat">
               <TrashIcon className="h-5 w-5" />
