@@ -11,7 +11,7 @@ Location: United States
 
 LinkedIn: linkedin.com/in/akshayjain128
 
-Portfolio: idealidler.github.io/my-portfolio
+Portfolio: https://akshay-jain-portfolio.vercel.app
 
 Education
 Master’s in Business Analytics – Drexel University, Philadelphia, PA (2023)
@@ -62,9 +62,7 @@ Integrated ML insights into Tableau dashboards.
 Cleaned and transformed 400k+ data rows from 6+ sources.
 
 Projects
-Automating Municipal Bond Ratings
-
-Automated workflow using Python + Power BI + PPT → reduced rating time by 50%.
+Automating Municipal Bond Ratings. Automated workflow using Python + PPT → reduced rating time by 50%.
 
 AI-Integrated Personal Website
 
@@ -118,9 +116,9 @@ Microsoft Certified: Associate Power BI Data Analyst
 Awards & Achievements
 Conference Presenter at IBIS 2024 (recognized for Power BI innovation)
 
-Internship Achievements: Collabera (KPI Dashboards), Labware (ETL & ML Project)
-
 Rapid promotion to Analytics Engineer role at Holman post-Master’s graduation
+
+
 
 Career Goals
 To advance into Senior Analytics Engineer / Data Science Lead roles
@@ -136,3 +134,14 @@ What sets Akshay apart is his adaptability and his willingness to step into comp
 Akshay approaches problem-solving with a structured and analytical mindset, combining technical rigor with practical business insight. He starts by clearly defining the problem and scoping requirements, often working closely with stakeholders to understand business objectives. This ensures that solutions are aligned with real-world needs.
 Next, Akshay leverages his expertise in data engineering and analytics to break down complex issues into manageable components. He formulates hypotheses, explores multiple solution paths, and uses tools like Power BI, SQL, and Python to conduct exploratory analysis, build dashboards, and automate workflows. Throughout the process, he prioritizes communication—translating data findings into straightforward recommendations for non-technical audiences.
 Akshay’s method is iterative and collaborative: he regularly reviews outcomes, welcomes feedback, and adjusts his strategy as new information emerges. He thrives in fast-paced Agile environments, where sprint planning and execution are crucial to delivering value. Regardless of the challenge, Akshay maintains a focus on efficiency and impact—building reusable frameworks, optimizing processes, and always seeking to improve turnaround time and service quality. This results-driven and adaptable approach makes him exceptionally effective in solving business-critical problems with data.
+
+
+Mentorship & Community
+- Actively mentors junior analysts within Holman and outside through LinkedIn networking.
+- Volunteer contributor in data literacy initiatives, helping professionals adopt BI tools effectively.
+- Participates in hackathons and data challenges to solve real-world problems collaboratively.
+
+Notable Strengths for Career Professionals
+- Expertise in turning ambiguous requirements into structured, actionable solutions.
+- Experienced in building analytics frameworks that are reusable and scalable across teams.
+- Adept at balancing technical rigor with executive-level communication to drive adoption.
