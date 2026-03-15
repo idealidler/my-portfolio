@@ -1,0 +1,148 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #f4f7fb;
+  --surface: rgba(255, 255, 255, 0.74);
+  --surface-strong: rgba(255, 255, 255, 0.92);
+  --surface-dark: #0f172a;
+  --text: #0f172a;
+  --muted: #526077;
+  --line: rgba(148, 163, 184, 0.25);
+  --line-strong: rgba(71, 85, 105, 0.2);
+  --primary: #3b82f6;
+  --primary-strong: #1d4ed8;
+  --accent: #f97316;
+  --success: #0f766e;
+  --shadow: 0 24px 80px rgba(15, 23, 42, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background:
+    radial-gradient(circle at top, rgba(59, 130, 246, 0.14), transparent 30%),
+    radial-gradient(circle at 20% 20%, rgba(249, 115, 22, 0.08), transparent 18%),
+    linear-gradient(180deg, #f8fbff 0%, #eef4fb 55%, #f8fafc 100%);
+  color: var(--text);
+  font-family:
+    "Satoshi",
+    "Avenir Next",
+    "Segoe UI",
+    "Helvetica Neue",
+    sans-serif;
+  text-rendering: optimizeLegibility;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+::selection {
+  background: rgba(59, 130, 246, 0.16);
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+.surface {
+  background: var(--surface);
+  backdrop-filter: blur(18px);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+}
+
+.surface-strong {
+  background: var(--surface-strong);
+  backdrop-filter: blur(22px);
+  border: 1px solid var(--line-strong);
+  box-shadow: var(--shadow);
+}
+
+.grid-pattern {
+  background-image:
+    linear-gradient(rgba(148, 163, 184, 0.14) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.14) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+.hero-orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(18px);
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.hero-orb-one {
+  width: 16rem;
+  height: 16rem;
+  background: rgba(59, 130, 246, 0.18);
+}
+
+.hero-orb-two {
+  width: 20rem;
+  height: 20rem;
+  background: rgba(249, 115, 22, 0.12);
+}
+
+.hero-orb-three {
+  width: 14rem;
+  height: 14rem;
+  background: rgba(14, 165, 233, 0.16);
+}
+
+.bg-shimmer {
+  background: linear-gradient(90deg, rgba(59, 130, 246, 0.1), rgba(125, 211, 252, 0.18), rgba(249, 115, 22, 0.12), rgba(59, 130, 246, 0.1));
+  background-size: 200% 100%;
+}
+
+.ticker-mask {
+  overflow: hidden;
+  position: relative;
+}
+
+.ticker-track {
+  display: flex;
+  width: max-content;
+  animation: ticker-slide 28s linear infinite;
+}
+
+@keyframes ticker-slide {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .ticker-track {
+    animation: none !important;
+  }
+}

@@ -1,12 +1,39 @@
-# React + Vite
+# Akshay Portfolio
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+ Premium SaaS-style portfolio rebuilt with Next.js, TypeScript, Tailwind CSS, and Framer Motion.
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Next.js App Router
+- React 19
+- TypeScript
+- Tailwind CSS
+- Framer Motion
 
-## Expanding the ESLint configuration
+## Scripts
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- `npm run dev` starts the local dev server
+- `npm run build` creates the production build
+- `npm run start` runs the production server
+- `npm run lint` runs ESLint
+
+## Environment
+
+- Copy the shape from `.env.example`
+- Add `OPENAI_API_KEY` in your local `.env.local`
+- Set `NEXT_PUBLIC_SITE_URL` to your production domain for sitemap and robots output
+
+## App Structure
+
+- `app/page.tsx`: main portfolio experience
+- `app/akshaygpt/page.tsx`: dedicated AkshayGPT workspace
+- `app/api/chat/route.ts`: current chat API route
+- `data/portfolio.ts`: typed portfolio content
+- `lib/portfolio-context.ts`: server-built chat grounding context
+
+## Notes
+
+- Phase 2 now uses structured portfolio data as the source of truth for both the site and AkshayGPT.
+- AkshayGPT uses the OpenAI Responses API with `gpt-4o-mini`.
+- Featured projects now include `gitdecode-backend` with the Chrome extension link as its live surface.
+- Set `OPENAI_API_KEY` in `.env.local` to enable the chat route.
