@@ -116,7 +116,7 @@ a {
 .ticker-track {
   display: flex;
   width: max-content;
-  animation: ticker-slide 28s linear infinite;
+  animation: ticker-slide 48s linear infinite;
 }
 
 @keyframes ticker-slide {
