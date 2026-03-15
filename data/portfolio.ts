@@ -352,15 +352,15 @@ export const selectedAnalysisProjects = projects.filter((project) => !project.fe
 
 export const skillGroups: SkillGroup[] = [
   {
-    label: "Analytics engineering",
-    items: ["Power BI", "DAX", "Semantic modeling", "KPI design", "Dashboard UX", "SAP BusinessObjects"],
+    label: "Analytics Engineering",
+    items: ["Power BI", "dbt", "DAX", "Semantic modeling"],
   },
   {
-    label: "Data products",
+    label: "Data Products",
     items: ["Next.js", "React", "TypeScript", "Tailwind CSS", "Streamlit", "Mapbox"],
   },
   {
-    label: "Data stack",
+    label: "Data Stack",
     items: ["SQL", "T-SQL", "Oracle SQL", "dbt", "Databricks", "Microsoft Fabric", "PostgreSQL"],
   },
   {
@@ -388,7 +388,7 @@ export const profileNarratives: Record<string, NarrativeField> = {
   about: {
     title: "About",
     body:
-      "Akshay Jain is an analytics engineer and data product builder based in the United States. His strongest real-world experience comes from Holman, where he has worked across SAP BusinessObjects, Power BI, SQL, Python, dbt, Databricks, and Microsoft Fabric to turn messy operational data into reporting systems that leaders and frontline teams actively use. His portfolio combines enterprise BI execution with independent product builds in finance, immigration intelligence, and AI-assisted experiences.",
+      "Akshay is an Analytics Engineer and data product builder based in the United States. His strongest real-world experience comes from Holman, where he has worked across SAP BusinessObjects, Power BI, SQL, Python, dbt, Databricks, and Microsoft Fabric to turn messy operational data into reporting systems that leaders and frontline teams actively use. His portfolio combines enterprise BI execution with independent product builds in finance, immigration intelligence, and AI-assisted experiences.",
   },
   problemSolving: {
     title: "Problem Solving",
@@ -398,11 +398,11 @@ export const profileNarratives: Record<string, NarrativeField> = {
   careerGoals: {
     title: "Career Goals",
     body:
-      "He is aiming for roles that sit at the intersection of analytics engineering, business intelligence, and data product development. Long term, he wants to build durable analytics platforms, mentor other data professionals, and create systems that make complex information easier for businesses to act on.",
+      "Akshay is aiming for roles that sit at the intersection of analytics engineering, business intelligence, and data product development. Long term, he wants to build durable analytics platforms, mentor other data professionals, and create systems that make complex information easier for businesses to act on.",
   },
   workStyle: {
     title: "Working Style",
     body:
-      "He balances technical rigor with practicality. That means listening carefully to business users, translating their needs into dashboards and models they can trust, and explaining the output in simple language. He values ownership, communication, reusable systems, and reporting that actually gets adopted by the people it was built for.",
+      "Akshay balances technical rigor with practicality. That means listening carefully to business users, translating their needs into dashboards and models they can trust, and explaining the output in simple language. He values ownership, communication, reusable systems, and reporting that actually gets adopted by the people it was built for.",
   },
 };

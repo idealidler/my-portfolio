@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, Calendar, Download, ExternalLink, Github, Mail, MapPin, MoveRight, Sparkles, TrendingUp } from "lucide-react";
 import {
@@ -260,7 +261,7 @@ export function HomePage() {
           {featuredProjects.map((project) => (
             <article key={project.slug} className="surface overflow-hidden rounded-[2rem]">
               <div className="relative h-44 overflow-hidden">
-                <ProjectAccent slug={project.slug} />
+                  <ProjectAccent slug={project.slug} />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/65 via-slate-950/20 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
                   <p className="text-xs uppercase tracking-[0.18em] text-white/70">
@@ -328,7 +329,17 @@ export function HomePage() {
               <article key={project.slug} className="surface overflow-hidden rounded-[2rem]">
                 <div className="grid gap-6 p-6 sm:grid-cols-[140px_1fr] sm:items-start">
                   <div className="relative h-32 overflow-hidden rounded-[1.5rem]">
-                    <ProjectAccent slug={project.slug} />
+                    {project.image ? (
+                      <Image
+                        src={project.image}
+                        alt={project.title}
+                        fill
+                        className="object-cover"
+                        sizes="140px"
+                      />
+                    ) : (
+                      <ProjectAccent slug={project.slug} />
+                    )}
                   </div>
                   <div>
                     <div className="flex flex-wrap items-center gap-2">

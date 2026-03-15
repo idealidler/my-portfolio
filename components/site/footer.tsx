@@ -4,7 +4,7 @@ export function Footer() {
       <div className="mx-auto max-w-7xl rounded-[2rem] border border-slate-200/70 bg-white/70 px-6 py-5 text-sm text-slate-500 backdrop-blur">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <p>Akshay Jain © {new Date().getFullYear()}</p>
-          <p>Built as a premium SaaS-style portfolio with an AI-first experience.</p>
+          <p>Built with curiosity, clarity, and a bias for getting it done.</p>
         </div>
       </div>
     </footer>
