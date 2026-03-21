@@ -30,8 +30,8 @@ body {
   margin: 0;
   min-width: 320px;
   background:
-    radial-gradient(circle at top, rgba(59, 130, 246, 0.14), transparent 30%),
-    radial-gradient(circle at 20% 20%, rgba(249, 115, 22, 0.08), transparent 18%),
+    radial-gradient(circle at top, rgba(99, 102, 241, 0.14), transparent 30%),
+    radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.08), transparent 18%),
     linear-gradient(180deg, #f8fbff 0%, #eef4fb 55%, #f8fafc 100%);
   color: var(--text);
   font-family:
@@ -94,17 +94,17 @@ a {
 .hero-orb-two {
   width: 20rem;
   height: 20rem;
-  background: rgba(249, 115, 22, 0.12);
+  background: rgba(99, 102, 241, 0.12);
 }
 
 .hero-orb-three {
   width: 14rem;
   height: 14rem;
-  background: rgba(14, 165, 233, 0.16);
+  background: rgba(129, 140, 248, 0.16);
 }
 
 .bg-shimmer {
-  background: linear-gradient(90deg, rgba(59, 130, 246, 0.1), rgba(125, 211, 252, 0.18), rgba(249, 115, 22, 0.12), rgba(59, 130, 246, 0.1));
+  background: linear-gradient(90deg, rgba(99, 102, 241, 0.1), rgba(129, 140, 248, 0.18), rgba(99, 102, 241, 0.12), rgba(99, 102, 241, 0.1));
   background-size: 200% 100%;
 }
 
@@ -113,10 +113,31 @@ a {
   position: relative;
 }
 
+.ticker-mask::before,
+.ticker-mask::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 4rem;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.ticker-mask::before {
+  left: 0;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0));
+}
+
+.ticker-mask::after {
+  right: 0;
+  background: linear-gradient(270deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0));
+}
+
 .ticker-track {
   display: flex;
   width: max-content;
-  animation: ticker-slide 48s linear infinite;
+  animation: ticker-slide 60s linear infinite;
 }
 
 @keyframes ticker-slide {

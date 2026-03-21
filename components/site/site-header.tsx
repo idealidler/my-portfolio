@@ -20,34 +20,47 @@ export function SiteHeader() {
   const [isOpen, setIsOpen] = useState(false);
   const links =
     pathname === "/"
-      ? [...homeLinks, { href: "/akshaygpt", label: "AkshayGPT" }]
+      ? homeLinks
       : [
           { href: "/", label: "Home" },
           { href: "/#projects", label: "Projects" },
           { href: "/#contact", label: "Contact" },
         ];
 
+  function isActiveLink(href: string) {
+    if (href === "/") {
+      return pathname === "/";
+    }
+
+    return pathname === "/" && href.startsWith("#");
+  }
+
   return (
     <header className="sticky top-0 z-50 px-4 pt-4 sm:px-6 lg:px-8">
       <div className="surface-strong mx-auto flex max-w-7xl items-center justify-between rounded-full px-4 py-3 sm:px-6">
         <Link href="/" className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-slate-950 text-sm font-semibold text-white shadow-card">
+          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-slate-950 text-sm font-semibold text-white shadow-card ring-8 ring-white/40">
             AJ
           </div>
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
               Akshay Jain
             </p>
-            <p className="text-sm text-slate-700">Analytics Engineer</p>
+            <p className="text-sm text-slate-700">Analytics Engineer and Data Product Builder</p>
           </div>
         </Link>
 
-        <nav className="hidden items-center gap-7 lg:flex">
+        <nav className="hidden items-center gap-2 lg:flex">
           {links.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="text-sm font-medium text-slate-600 transition hover:text-slate-950"
+              className={cn(
+                "rounded-full px-4 py-2 text-sm font-medium transition",
+                isActiveLink(link.href)
+                  ? "border border-sky-100 bg-white text-slate-950 shadow-card"
+                  : "border border-transparent bg-transparent text-slate-600 hover:border-slate-200 hover:bg-white/70 hover:text-slate-950",
+              )}
             >
               {link.label}
             </Link>
@@ -55,7 +68,7 @@ export function SiteHeader() {
         </nav>
 
         <div className="hidden items-center gap-3 lg:flex">
-          <Link href="/akshaygpt" className={cn(buttonVariants({ variant: "secondary" }))}>
+          <Link href="/akshaygpt" className={cn(buttonVariants({ variant: "secondary" }), pathname === "/akshaygpt" ? "border-sky-200 bg-sky-50 text-sky-700" : "")}>
             <Sparkles className="mr-2 h-4 w-4" />
             Open AkshayGPT
           </Link>
@@ -82,7 +95,12 @@ export function SiteHeader() {
                 key={link.href}
                 href={link.href}
                 onClick={() => setIsOpen(false)}
-                className="text-sm font-medium text-slate-700 transition hover:text-slate-950"
+                className={cn(
+                  "rounded-2xl px-4 py-3 text-sm font-medium transition",
+                  isActiveLink(link.href)
+                    ? "border border-sky-100 bg-white text-slate-950"
+                    : "bg-white/70 text-slate-700 hover:bg-white hover:text-slate-950",
+                )}
               >
                 {link.label}
               </Link>

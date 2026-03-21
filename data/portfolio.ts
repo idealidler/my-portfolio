@@ -143,9 +143,10 @@ export const experience: ExperienceItem[] = [
     role: "Analytics Engineer",
     period: "July 2023 - Present",
     summary:
-      "Progressed from SAP BusinessObjects reporting into owning modern BI delivery across Power BI, SQL, Python, dbt, Databricks, semantic modeling, and stakeholder-led Agile execution.",
+      "Progressed from SAP BusinessObjects reporting into owning modern BI delivery across Power BI, SQL, Python, dbt, Databricks, CI/CD, semantic modeling, and stakeholder-led Agile execution.",
     impact: [
       "Designed dbt models, macros, and Databricks SQL transformations to move curated data from silver to gold layers and support star-schema-based semantic models for enterprise Power BI reporting.",
+      "Implemented Git-based BI deployment workflows using Power BI PBIR artifacts and source-controlled workspaces, managing dashboard and semantic model promotion across environments through CI/CD pipelines and version-controlled releases.",
       "Built a KPI benchmarking solution using SQL, Python scoring logic, backend semantic models, and Power BI visual layers; normalized 20 client KPIs and enabled client-to-client, peer-group, and industry benchmarking for stronger client conversations and retention support.",
       "Delivered Holman’s flagship Power BI dashboard, consolidating multiple consulting reports into a single semantic-model-driven reporting experience now used by 1000+ active distinct users across the company.",
       "Consolidated 8 call-center data sources into one Power BI reporting model, eliminated recurring Excel-based workflows, and contributed to 2000+ hours saved through automated operational reporting.",
@@ -153,7 +154,7 @@ export const experience: ExperienceItem[] = [
       "Built executive-facing reports on auto-approval rejection patterns, edge cases, and client-administrator phone behavior using complex SQL shaping and Power BI dashboards, giving VP-level leaders clearer visibility into service and training opportunities.",
       "Partnered daily with business stakeholders in Agile workflows to gather requirements, manage fast-turnaround ad hoc work, and translate technical analysis into clear business language; also presented dashboard work at IBIS 2024 (Phoenix) and internal team seminars.",
     ],
-    tools: ["Power BI", "SQL", "Python", "dbt", "Databricks", "Microsoft Fabric", "DAX", "SAP BusinessObjects"],
+    tools: ["Power BI", "SQL", "Python", "dbt", "Databricks", "Git", "CI/CD", "Microsoft Fabric", "DAX", "SAP BusinessObjects"],
   },
   {
     company: "Collabera",
@@ -223,6 +224,7 @@ export const projects: ProjectItem[] = [
     stack: ["Next.js", "TypeScript", "Tailwind CSS", "Mapbox", "Python", "Pandas"],
     github: "https://github.com/idealidler/h1b-wage-map",
     demo: "https://h1b-wage-map.vercel.app",
+    image: "/assets/wagemap.jpg",
     featured: true,
   },
   {
@@ -247,6 +249,7 @@ export const projects: ProjectItem[] = [
     stack: ["Python", "FastAPI", "GitHub GraphQL", "Feature Engineering", "OpenAI", "Data Pipelines"],
     github: "https://github.com/idealidler/gitdecode-backend",
     demo: "https://chromewebstore.google.com/detail/afgkahemmcbjadcngdlhngipjphpbnal?utm_source=item-share-cb",
+    image: "/assets/gitdecode.jpg",
     featured: true,
   },
   {
@@ -271,6 +274,7 @@ export const projects: ProjectItem[] = [
     stack: ["React", "Tailwind CSS", "Firebase", "Firestore", "Framer Motion", "Recharts"],
     github: "https://github.com/idealidler/net-worth-tracker",
     demo: "https://networthguide.vercel.app/",
+    image: "/assets/networth.jpg",
     featured: true,
   },
   {
@@ -295,6 +299,7 @@ export const projects: ProjectItem[] = [
     stack: ["Python", "PostgreSQL", "Pandas", "Scikit-learn", "Streamlit"],
     github: "https://github.com/idealidler/Stock-Sentiment-Dashboard",
     demo: "https://stock-sentiment-dashboard-project.streamlit.app",
+    image: "/assets/stock.jpg",
     featured: true,
   },
   {
@@ -393,7 +398,7 @@ export const profileNarratives: Record<string, NarrativeField> = {
   problemSolving: {
     title: "Problem Solving",
     body:
-      "Akshay approaches problem-solving by first clarifying the business need with stakeholders, then breaking the problem into smaller analytical and system-design components. At Holman, this has meant turning loosely defined requests from account executives, client administrators, supervisors, and leaders into SQL logic, Power BI dashboards, Python scoring methods, and reusable reporting systems. He is strongest in ambiguous environments where communication, iteration, and practical business impact matter as much as technical correctness.",
+      "Akshay approaches problem-solving by first clarifying the business need with stakeholders, then breaking the problem into smaller analytical and system-design components. At Holman, this has meant turning loosely defined requests from Account Managers, Fleet Managers, IT Supervisors, and leaders into SQL logic, Power BI dashboards, Python scoring methods, and reusable reporting systems. He is strongest in ambiguous environments where communication, iteration, and practical business impact matter as much as technical correctness.",
   },
   careerGoals: {
     title: "Career Goals",

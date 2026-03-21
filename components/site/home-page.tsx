@@ -1,6 +1,18 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, Calendar, Download, ExternalLink, Github, Mail, MapPin, MoveRight, Sparkles, TrendingUp } from "lucide-react";
+import {
+  ArrowRight,
+  ArrowUpRight,
+  Calendar,
+  Download,
+  ExternalLink,
+  Github,
+  Mail,
+  MapPin,
+  MoveRight,
+  Sparkles,
+  TrendingUp,
+} from "lucide-react";
 import {
   audiencePaths,
   contactLinks,
@@ -21,10 +33,10 @@ import { cn } from "@/lib/utils";
 
 function ProjectAccent({ slug }: { slug: string }) {
   const accents: Record<string, string> = {
-    "h1b-wage-map": "from-sky-500 via-cyan-500 to-emerald-400",
-    "gitdecode-backend": "from-slate-950 via-sky-700 to-cyan-400",
-    "net-worth-tracker": "from-emerald-500 via-teal-500 to-cyan-400",
-    "stock-sentiment-dashboard": "from-orange-500 via-amber-500 to-yellow-300",
+    "h1b-wage-map": "from-sky-200 via-cyan-200 to-teal-200",
+    "gitdecode-backend": "from-slate-300 via-sky-200 to-cyan-100",
+    "net-worth-tracker": "from-emerald-200 via-teal-100 to-cyan-100",
+    "stock-sentiment-dashboard": "from-indigo-200 via-sky-100 to-violet-100",
     "starbucks-drink-recommendation": "from-rose-500 via-orange-400 to-yellow-300",
     "ecommerce-customer-purchase-analysis": "from-violet-500 via-fuchsia-500 to-pink-300",
   };
@@ -45,7 +57,7 @@ export function HomePage() {
             {tickerSignals.map((signal, index) => (
               <div
                 key={`${signal}-${index}`}
-                className="flex shrink-0 items-center gap-3 rounded-full border border-sky-100 bg-white/75 px-4 py-2 text-sm font-medium text-slate-700"
+                className="flex shrink-0 items-center gap-3 rounded-full border border-sky-100 bg-white/85 px-4 py-2 text-sm font-medium text-slate-700"
               >
                 <span className="h-2 w-2 rounded-full bg-sky-500" />
                 <span>{signal}</span>
@@ -57,6 +69,8 @@ export function HomePage() {
 
       <section className="mx-auto grid max-w-7xl gap-8 pb-18 pt-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-end lg:pb-24 lg:pt-16">
         <div className="surface relative overflow-hidden rounded-[2rem] px-6 py-8 sm:px-8 sm:py-10 lg:px-10 lg:py-12">
+          <div className="hero-orb hero-orb-one -left-10 -top-10" />
+          <div className="hero-orb hero-orb-three right-1/3 top-12" />
           <div className="bg-shimmer absolute inset-x-0 top-0 h-px animate-shimmer" />
           <Badge className="border-sky-100 bg-sky-50 text-sky-700">
             Analytics engineering, BI systems, and data products in one portfolio surface
@@ -69,6 +83,20 @@ export function HomePage() {
             and user-facing data applications. This portfolio brings together measurable business
             impact, newer GitHub builds, and an AI guide that speaks from the same structured source of truth.
           </p>
+
+          <div className="mt-8 rounded-[1.75rem] border border-white/70 bg-white/80 p-5 shadow-card">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+              Why teams hire me
+            </p>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              {highlights.slice(0, 2).map((item) => (
+                <div key={item.title} className="rounded-[1.25rem] border border-slate-200/70 bg-white/85 p-4">
+                  <p className="text-sm font-semibold text-slate-950">{item.title}</p>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">{item.detail}</p>
+                </div>
+              ))}
+            </div>
+          </div>
 
           <div className="mt-8 flex flex-wrap gap-3">
             <Link href="#projects" className={cn(buttonVariants({ variant: "primary", size: "lg" }))}>
@@ -113,20 +141,32 @@ export function HomePage() {
             <p className="text-base text-slate-600">Analytics Engineer and Data Product Builder</p>
           </div>
 
-          <div className="mt-8 space-y-4">
-            {highlights.map((item) => (
-              <div key={item.title} className="rounded-[1.5rem] border border-slate-200/70 bg-white/80 p-5">
-                <p className="font-medium text-slate-950">{item.title}</p>
-                <p className="mt-2 text-sm leading-6 text-slate-600">{item.detail}</p>
-              </div>
-            ))}
+          <div className="mt-8 rounded-[1.5rem] border border-sky-100 bg-gradient-to-br from-sky-50 via-white to-sky-50 p-5">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+              Best fit
+            </p>
+            <div className="mt-4 space-y-3">
+              {[
+                "Analytics engineering roles with strong stakeholder ownership",
+                "BI teams modernizing from reporting into reusable semantic models",
+                "Product-minded data roles that need both execution and business communication",
+              ].map((item) => (
+                <p key={item} className="text-sm leading-6 text-slate-700">
+                  {item}
+                </p>
+              ))}
+            </div>
           </div>
 
-          <div className="mt-8 rounded-[1.5rem] border border-slate-200/70 bg-slate-950 p-5 text-white">
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-sky-300">
-              Positioning
-            </p>
-            <p className="mt-3 text-sm leading-6 text-slate-300">{profileNarratives.about.body}</p>
+          <div className="mt-6 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-[1.5rem] border border-slate-200/70 bg-white/80 p-5">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Working style</p>
+              <p className="mt-3 text-sm leading-6 text-slate-600">{profileNarratives.workStyle.body}</p>
+            </div>
+            <div className="rounded-[1.5rem] border border-slate-200/70 bg-white/80 p-5">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Career direction</p>
+              <p className="mt-3 text-sm leading-6 text-slate-600">{profileNarratives.careerGoals.body}</p>
+            </div>
           </div>
 
           <div className="mt-8 grid gap-3 sm:grid-cols-2">
@@ -142,6 +182,13 @@ export function HomePage() {
             >
               LinkedIn
             </a>
+          </div>
+
+          <div className="mt-8 rounded-[1.5rem] border border-slate-900/90 bg-slate-950 p-5 text-white">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sky-300">
+              Current positioning
+            </p>
+            <p className="mt-3 text-sm leading-6 text-slate-300">{profileNarratives.problemSolving.body}</p>
           </div>
         </aside>
       </section>
@@ -176,8 +223,8 @@ export function HomePage() {
       <section id="experience" className="mx-auto max-w-7xl py-10 sm:py-12">
         <SectionHeading
           eyebrow="Career history"
-          title="A blend of enterprise analytics delivery and independent product building"
-          description="I work across BI systems, modeling, stakeholder communication, and newer application-layer data products."
+          title="Enterprise delivery depth first, with independent product building alongside it"
+          description="The strongest signal in this portfolio is Holman: owning modern BI systems, operational analytics, stakeholder alignment, and adoption at enterprise scale."
         />
         <div className="mt-10 grid gap-6 lg:grid-cols-[1.35fr_0.65fr]">
           <div className="space-y-6">
@@ -214,9 +261,7 @@ export function HomePage() {
 
           <div className="space-y-6">
             <div className="surface rounded-[2rem] p-6">
-              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
-                Snapshot
-              </p>
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Snapshot</p>
               <ul className="mt-5 space-y-4 text-sm leading-6 text-slate-600">
                 <li>Authorized to work in the U.S. with STEM OPT through May 2026.</li>
                 <li>Open to relocation and conversations around analytics engineering, BI, and data product roles.</li>
@@ -225,9 +270,22 @@ export function HomePage() {
             </div>
 
             <div className="surface rounded-[2rem] p-6">
-              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
-                Education
-              </p>
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">What stands out</p>
+              <div className="mt-5 space-y-4">
+                {[
+                  "Owns both backend data shaping and frontend reporting experiences.",
+                  "Works comfortably with stakeholders, executives, and operational teams.",
+                  "Builds systems that get adopted, not just dashboards that get demoed.",
+                ].map((item) => (
+                  <div key={item} className="rounded-[1.5rem] border border-slate-200/70 bg-white/80 p-4">
+                    <p className="text-sm leading-6 text-slate-700">{item}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="surface rounded-[2rem] p-6">
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Education</p>
               <div className="mt-5 space-y-4">
                 {education.map((item) => (
                   <div key={item.school} className="rounded-[1.5rem] border border-slate-200/70 bg-white/80 p-4">
@@ -259,60 +317,99 @@ export function HomePage() {
         />
         <div className="mt-10 grid gap-6 lg:grid-cols-2">
           {featuredProjects.map((project) => (
-            <article key={project.slug} className="surface overflow-hidden rounded-[2rem]">
-              <div className="relative h-44 overflow-hidden">
-                  <ProjectAccent slug={project.slug} />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/65 via-slate-950/20 to-transparent" />
-                <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
-                  <p className="text-xs uppercase tracking-[0.18em] text-white/70">
-                    {project.client} • {project.industry}
-                  </p>
-                  <h3 className="mt-2 text-2xl font-semibold">{project.title}</h3>
-                  <p className="mt-2 text-xs uppercase tracking-[0.16em] text-white/70">
-                    {project.status} • {project.year}
-                  </p>
-                </div>
+            <article
+              key={project.slug}
+              className="surface group relative overflow-hidden rounded-[2rem] p-6 transition duration-300 hover:-translate-y-1"
+            >
+              <div className="absolute inset-x-6 top-0 h-px bg-white/60" />
+              <div className="absolute inset-x-6 top-6 h-44 overflow-hidden rounded-[1.75rem] opacity-95 shadow-[inset_0_1px_0_rgba(255,255,255,0.32)] sm:h-48">
+                <ProjectAccent slug={project.slug} />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.34),transparent_42%)]" />
+                <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.18),rgba(255,255,255,0.02)_38%,rgba(148,163,184,0.08)_100%)]" />
               </div>
-              <div className="p-6">
-                <p className="text-sm font-medium text-slate-950">{project.summary}</p>
-                <p className="mt-4 text-sm leading-6 text-slate-600">{project.whyItMatters}</p>
-                <p className="mt-4 text-sm font-medium text-slate-950">Problem</p>
-                <p className="mt-2 text-sm leading-6 text-slate-600">{project.problem}</p>
-                <ul className="mt-5 space-y-3 text-sm leading-6 text-slate-600">
-                  {project.highlights.map((highlight) => (
-                    <li key={highlight} className="flex gap-3">
-                      <span className="mt-2 h-2 w-2 rounded-full bg-orange-500" />
-                      <span>{highlight}</span>
-                    </li>
-                  ))}
-                </ul>
-                <div className="mt-5 flex flex-wrap gap-2">
-                  {project.stack.map((tool) => (
-                    <Badge key={tool}>{tool}</Badge>
-                  ))}
+
+              <div className="relative">
+                <div className="relative min-h-44 rounded-[1.75rem] px-5 py-5 sm:min-h-48 sm:px-6 sm:py-6">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="pt-1">
+                      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-700">
+                        {project.client}
+                      </p>
+                      <h3 className="mt-5 max-w-md text-3xl font-semibold tracking-tight text-slate-950 sm:text-[2.2rem]">
+                        {project.title}
+                      </h3>
+                    </div>
+                    <div className="rounded-full border border-white/70 bg-white/52 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-slate-700 shadow-[0_10px_30px_rgba(255,255,255,0.12)] backdrop-blur-md">
+                      {project.year}
+                    </div>
+                  </div>
+                  <div className="mt-10 flex flex-wrap items-center gap-2">
+                    <span className="rounded-full border border-white/70 bg-white/48 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-700 shadow-[0_6px_20px_rgba(255,255,255,0.12)] backdrop-blur-sm">
+                      {project.industry}
+                    </span>
+                    <span className="rounded-full border border-white/70 bg-white/48 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-700 shadow-[0_6px_20px_rgba(255,255,255,0.12)] backdrop-blur-sm">
+                      {project.status}
+                    </span>
+                  </div>
                 </div>
-                <div className="mt-6 flex flex-wrap gap-3">
+
+                <div className="mt-8 grid gap-4 sm:grid-cols-[1fr_auto] sm:items-start">
+                  <p className="text-base leading-7 text-slate-700">{project.summary}</p>
+                  <div className="flex flex-wrap gap-2 sm:max-w-[240px] sm:justify-end">
+                    <Badge>{project.role}</Badge>
+                  </div>
+                </div>
+
+                <div className="mt-6 grid gap-4 xl:grid-cols-[1.05fr_0.95fr]">
+                  <div className="rounded-[1.5rem] border border-white/70 bg-white/80 p-5">
+                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+                      Why this matters
+                    </p>
+                    <p className="mt-3 text-sm leading-6 text-slate-600">{project.whyItMatters}</p>
+                  </div>
+                  <div className="rounded-[1.5rem] border border-slate-200/70 bg-slate-50/90 p-5">
+                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+                      Design brief
+                    </p>
+                    <p className="mt-3 text-sm leading-6 text-slate-600">{project.problem}</p>
+                  </div>
+                </div>
+
+              <ul className="mt-5 space-y-3 text-sm leading-6 text-slate-600">
+                {project.highlights.map((highlight) => (
+                  <li key={highlight} className="flex gap-3">
+                    <span className="mt-2 h-2 w-2 rounded-full bg-sky-600" />
+                    <span>{highlight}</span>
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-5 flex flex-wrap gap-2">
+                {project.stack.map((tool) => (
+                  <Badge key={tool}>{tool}</Badge>
+                ))}
+              </div>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <a
+                  href={project.github}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={cn(buttonVariants({ variant: "secondary" }), "justify-center")}
+                >
+                  <Github className="mr-2 h-4 w-4" />
+                  GitHub
+                </a>
+                {project.demo ? (
                   <a
-                    href={project.github}
+                    href={project.demo}
                     target="_blank"
                     rel="noreferrer"
-                    className={cn(buttonVariants({ variant: "secondary" }), "justify-center")}
+                    className={cn(buttonVariants({ variant: "primary" }), "justify-center")}
                   >
-                    <Github className="mr-2 h-4 w-4" />
-                    GitHub
+                    <ExternalLink className="mr-2 h-4 w-4" />
+                    {project.slug === "gitdecode-backend" ? "Chrome extension" : "Live demo"}
                   </a>
-                  {project.demo ? (
-                    <a
-                      href={project.demo}
-                      target="_blank"
-                      rel="noreferrer"
-                      className={cn(buttonVariants({ variant: "primary" }), "justify-center")}
-                    >
-                      <ExternalLink className="mr-2 h-4 w-4" />
-                      {project.slug === "gitdecode-backend" ? "Chrome extension" : "Live demo"}
-                    </a>
-                  ) : null}
-                </div>
+                ) : null}
+              </div>
               </div>
             </article>
           ))}
@@ -377,7 +474,7 @@ export function HomePage() {
         />
         <div className="mt-10 grid gap-6 lg:grid-cols-4">
           {skillGroups.map((group) => (
-            <div key={group.label} className="surface rounded-[2rem] p-6">
+            <div key={group.label} className="surface rounded-[2rem] p-6 transition duration-200 hover:-translate-y-1">
               <p className="text-lg font-semibold text-slate-950">{group.label}</p>
               <div className="mt-5 flex flex-wrap gap-2">
                 {group.items.map((item) => (

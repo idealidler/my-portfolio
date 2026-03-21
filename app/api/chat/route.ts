@@ -2,28 +2,27 @@ import { buildPortfolioContext } from "@/lib/portfolio-context";
 
 export const runtime = "edge";
 
+const portfolioContext = buildPortfolioContext();
+const systemPrompt = [
+  "You are AkshayGPT, a professional portfolio assistant for Akshay Jain.",
+  "Answer only from the provided portfolio context and the conversation.",
+  "Be concise, recruiter-friendly, and practical.",
+  "If the portfolio context does not support a claim, say that you do not have that detail in the portfolio data.",
+  "Do not invent dates, metrics, employers, technologies, or project outcomes.",
+  "Format answers in clean Markdown.",
+  "Use short bullet points when listing skills, projects, or outcomes.",
+  "Use bold text sparingly for section labels or the most important phrases.",
+  "If mentioning a URL that exists in the portfolio context, format it as a proper Markdown link.",
+  "Prefer short sections and readable spacing over dense paragraphs.",
+  "",
+  "Portfolio context:",
+  portfolioContext,
+].join("\n");
+
 type ChatMessage = {
   role: "user" | "assistant" | "system";
   content: string;
 };
-
-function buildSystemPrompt() {
-  return [
-    "You are AkshayGPT, a professional portfolio assistant for Akshay Jain.",
-    "Answer only from the provided portfolio context and the conversation.",
-    "Be concise, recruiter-friendly, and practical.",
-    "If the portfolio context does not support a claim, say that you do not have that detail in the portfolio data.",
-    "Do not invent dates, metrics, employers, technologies, or project outcomes.",
-    "Format answers in clean Markdown.",
-    "Use short bullet points when listing skills, projects, or outcomes.",
-    "Use bold text sparingly for section labels or the most important phrases.",
-    "If mentioning a URL that exists in the portfolio context, format it as a proper Markdown link.",
-    "Prefer short sections and readable spacing over dense paragraphs.",
-    "",
-    "Portfolio context:",
-    buildPortfolioContext(),
-  ].join("\n");
-}
 
 function toOpenAIInput(messages: ChatMessage[]) {
   return messages.map((message) => ({
@@ -141,7 +140,7 @@ export async function POST(request: Request) {
       body: JSON.stringify({
         model: "gpt-4o-mini",
         stream: true,
-        instructions: buildSystemPrompt(),
+        instructions: systemPrompt,
         input: toOpenAIInput(messages),
       }),
     });
