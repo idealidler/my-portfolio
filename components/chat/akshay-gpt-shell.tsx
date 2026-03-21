@@ -231,9 +231,6 @@ export function AkshayGptShell() {
               <h1 className="mt-4 min-h-[3.5rem] text-3xl font-semibold tracking-tight text-slate-950 transition sm:min-h-[4.5rem] sm:text-5xl">
                 {heroPhrases[phraseIndex]}
               </h1>
-              <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-500">
-                Ask one question and keep the conversation going naturally from there.
-              </p>
               <div className="mt-8 w-full max-w-3xl">
                 <div className="rounded-[1.75rem] border border-slate-200/80 bg-white/88 p-3 shadow-sm">
                   <form onSubmit={handleSubmit} className="flex items-end gap-3">
@@ -243,7 +240,7 @@ export function AkshayGptShell() {
                       onChange={(event) => setQuestion(event.target.value)}
                       onKeyDown={handleComposerKeyDown}
                       rows={1}
-                      placeholder="sk about my work at Holman, projects, strengths, impact..."
+                      placeholder="Ask about my work at Holman, projects, strengths, impact..."
                       className="max-h-40 min-h-12 flex-1 resize-none bg-transparent px-3 py-2 text-sm leading-6 text-slate-900 outline-none placeholder:text-slate-400"
                       disabled={isAnswering}
                     />
@@ -257,17 +254,19 @@ export function AkshayGptShell() {
                   </form>
                 </div>
 
-                <div className="mt-3 flex flex-col gap-2">
+                <div className="mt-3">
+                  <div className="flex flex-col gap-2">
                   {chatPrompts.map((prompt) => (
                     <button
                       key={prompt}
                       type="button"
                       onClick={() => void askQuestion(prompt)}
-                      className="rounded-[1.25rem] border border-slate-200/80 bg-white/82 px-4 py-3 text-left text-sm font-medium text-slate-600 transition hover:border-sky-200 hover:bg-white hover:text-slate-950"
+                      className="rounded-[1rem] border border-slate-200/80 bg-white/82 px-3.5 py-2.5 text-left text-sm font-medium text-slate-600 transition hover:border-sky-200 hover:bg-white hover:text-slate-950"
                     >
                       {prompt}
                     </button>
                   ))}
+                  </div>
                 </div>
               </div>
             </div>

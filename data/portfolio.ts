@@ -112,11 +112,11 @@ export const highlights: Highlight[] = [
 export const audiencePaths: AudiencePath[] = [
   {
     eyebrow: "Recruiter path",
-    title: "Clear signal on fit, impact, and availability",
+    title: "Analyze role fit against a real job description",
     description:
-      "A streamlined view of role fit, work authorization, measurable outcomes, and current strengths.",
-    href: "#experience",
-    cta: "Review experience",
+      "Paste a JD and get a recruiter-friendly fit summary, top priorities, honest strengths, and realistic gaps.",
+    href: "/recruiter-fit",
+    cta: "Open Recruiter Fit",
   },
   {
     eyebrow: "Hiring manager path",
@@ -409,5 +409,10 @@ export const profileNarratives: Record<string, NarrativeField> = {
     title: "Working Style",
     body:
       "Akshay balances technical rigor with practicality. That means listening carefully to business users, translating their needs into dashboards and models they can trust, and explaining the output in simple language. He values ownership, communication, reusable systems, and reporting that actually gets adopted by the people it was built for.",
+  },
+  backendNotes: {
+    title: "Backend Notes",
+    body:
+      "Akshay has been working with Python since 2019, primarily through personal projects, and has also used it in professional settings including his LabWare internship and his work at Holman for analytics, scoring logic, ETL, and data problem-solving.",
   },
 };

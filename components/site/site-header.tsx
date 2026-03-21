@@ -3,12 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { Menu, Sparkles, X } from "lucide-react";
+import { BriefcaseBusiness, Menu, Sparkles, X } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const homeLinks = [
-  { href: "#proof", label: "Proof" },
   { href: "#experience", label: "Experience" },
   { href: "#projects", label: "Projects" },
   { href: "#skills", label: "Skills" },
@@ -28,11 +27,19 @@ export function SiteHeader() {
         ];
 
   function isActiveLink(href: string) {
+    if (href === "/recruiter-fit") {
+      return pathname === "/recruiter-fit";
+    }
+
+    if (href === "/akshaygpt") {
+      return pathname === "/akshaygpt";
+    }
+
     if (href === "/") {
       return pathname === "/";
     }
 
-    return pathname === "/" && href.startsWith("#");
+    return false;
   }
 
   return (
@@ -56,10 +63,10 @@ export function SiteHeader() {
               key={link.href}
               href={link.href}
               className={cn(
-                "rounded-full px-4 py-2 text-sm font-medium transition",
+                "rounded-full border border-transparent px-4 py-2 text-sm font-medium transition",
                 isActiveLink(link.href)
-                  ? "border border-sky-100 bg-white text-slate-950 shadow-card"
-                  : "border border-transparent bg-transparent text-slate-600 hover:border-slate-200 hover:bg-white/70 hover:text-slate-950",
+                  ? "bg-white text-slate-950 shadow-card"
+                  : "bg-transparent text-slate-600 hover:border-slate-200/80 hover:bg-white/70 hover:text-slate-950",
               )}
             >
               {link.label}
@@ -68,12 +75,27 @@ export function SiteHeader() {
         </nav>
 
         <div className="hidden items-center gap-3 lg:flex">
-          <Link href="/akshaygpt" className={cn(buttonVariants({ variant: "secondary" }), pathname === "/akshaygpt" ? "border-sky-200 bg-sky-50 text-sky-700" : "")}>
-            <Sparkles className="mr-2 h-4 w-4" />
-            Open AkshayGPT
+          <Link
+            href="/recruiter-fit"
+            className={cn(
+              buttonVariants({ variant: "ghost" }),
+              "rounded-full border border-slate-200 bg-white/75",
+              pathname === "/recruiter-fit" ? "text-slate-950 shadow-card" : "hover:bg-white",
+            )}
+          >
+            <BriefcaseBusiness className="mr-2 h-4 w-4" />
+            Recruiter Fit
           </Link>
-          <Link href="/#contact" className={cn(buttonVariants({ variant: "primary" }))}>
-            Let&apos;s connect
+          <Link
+            href="/akshaygpt"
+            className={cn(
+              buttonVariants({ variant: "ghost" }),
+              "rounded-full border border-slate-200 bg-white/75",
+              pathname === "/akshaygpt" ? "border-sky-200 bg-sky-50 text-sky-700 shadow-card" : "hover:bg-white",
+            )}
+          >
+            <Sparkles className="mr-2 h-4 w-4" />
+            AkshayGPT
           </Link>
         </div>
 
@@ -96,21 +118,38 @@ export function SiteHeader() {
                 href={link.href}
                 onClick={() => setIsOpen(false)}
                 className={cn(
-                  "rounded-2xl px-4 py-3 text-sm font-medium transition",
+                  "rounded-2xl border border-transparent px-4 py-3 text-sm font-medium transition",
                   isActiveLink(link.href)
-                    ? "border border-sky-100 bg-white text-slate-950"
-                    : "bg-white/70 text-slate-700 hover:bg-white hover:text-slate-950",
+                    ? "bg-white text-slate-950"
+                    : "bg-white/70 text-slate-700 hover:border-slate-200/80 hover:bg-white hover:text-slate-950",
                 )}
               >
                 {link.label}
               </Link>
             ))}
             <Link
-              href="/#contact"
+              href="/recruiter-fit"
               onClick={() => setIsOpen(false)}
-              className={cn(buttonVariants({ variant: "primary" }), "mt-2")}
+              className={cn(
+                "rounded-2xl px-4 py-3 text-sm font-medium transition",
+                isActiveLink("/recruiter-fit")
+                  ? "border border-sky-100 bg-white text-slate-950"
+                  : "border border-slate-200 bg-white/70 text-slate-700 hover:bg-white hover:text-slate-950",
+              )}
             >
-              Let&apos;s connect
+              Recruiter Fit
+            </Link>
+            <Link
+              href="/akshaygpt"
+              onClick={() => setIsOpen(false)}
+              className={cn(
+                "rounded-2xl px-4 py-3 text-sm font-medium transition",
+                isActiveLink("/akshaygpt")
+                  ? "border border-sky-100 bg-white text-slate-950"
+                  : "border border-slate-200 bg-white/70 text-slate-700 hover:bg-white hover:text-slate-950",
+              )}
+            >
+              AkshayGPT
             </Link>
           </nav>
         </div>
