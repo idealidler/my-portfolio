@@ -7,26 +7,32 @@ import { buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
-function fitToneClasses(fitLabel: JobFitResult["fitLabel"]) {
-  switch (fitLabel) {
-    case "Strong fit":
+function verdictToneClasses(verdict: JobFitResult["verdict"]) {
+  switch (verdict) {
+    case "Strong":
+      return "border-emerald-300 bg-white text-emerald-700";
+    case "Plausible":
+      return "border-sky-300 bg-white text-sky-700";
+    case "Stretch":
+      return "border-amber-300 bg-white text-amber-700";
+    default:
+      return "border-rose-300 bg-white text-rose-700";
+  }
+}
+
+function evidenceToneClasses(evidenceStrength: JobFitResult["requirementMap"][number]["evidenceStrength"]) {
+  switch (evidenceStrength) {
+    case "Direct evidence":
       return "border-emerald-200 bg-emerald-50 text-emerald-700";
-    case "Relevant fit":
+    case "Adjacent evidence":
       return "border-sky-200 bg-sky-50 text-sky-700";
     default:
       return "border-amber-200 bg-amber-50 text-amber-700";
   }
 }
 
-function confidenceToneClasses(confidence: JobFitResult["priorities"][number]["confidence"]) {
-  switch (confidence) {
-    case "Direct evidence":
-      return "border-emerald-200 bg-emerald-50 text-emerald-700";
-    case "Related evidence":
-      return "border-sky-200 bg-sky-50 text-sky-700";
-    default:
-      return "border-amber-200 bg-amber-50 text-amber-700";
-  }
+function compactList(items: string[]) {
+  return items.length ? items.join(", ") : "None identified";
 }
 
 export function JobFitAnalyzer() {
@@ -35,6 +41,7 @@ export function JobFitAnalyzer() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
   async function analyzeFit() {
     const trimmed = jobDescription.trim();
@@ -54,12 +61,13 @@ export function JobFitAnalyzer() {
         body: JSON.stringify({ jobDescription: trimmed }),
       });
 
-      const payload = (await response.json()) as JobFitResult & { error?: string };
+      const payload = (await response.json()) as JobFitResult & { error?: string; details?: string };
       if (!response.ok) {
         throw new Error(payload.error || "The job fit analysis failed.");
       }
 
       setResult(payload);
+      setIsDetailsOpen(false);
     } catch (analysisError) {
       const message =
         analysisError instanceof Error
@@ -78,22 +86,26 @@ export function JobFitAnalyzer() {
     }
 
     const text = [
-      `Fit label: ${result.fitLabel}`,
+      `Verdict: ${result.verdict}`,
       `Summary: ${result.summary}`,
       "",
-      "Top recruiter priorities:",
-      ...result.priorities.map(
-        (priority, index) =>
-          `${index + 1}. ${priority.requirement}\nEvidence: ${priority.evidence}\nConfidence: ${priority.confidence}`,
+      "Strongest alignment:",
+      ...result.topMatches.map((item, index) => `${index + 1}. ${item}`),
+      "",
+      "Key gaps:",
+      ...result.topGaps.map((item, index) => `${index + 1}. ${item}`),
+      "",
+      `Recommendation: ${result.screeningRecommendation}`,
+      "",
+      "Requirement map:",
+      ...result.requirementMap.map(
+        (item, index) =>
+          `${index + 1}. ${item.requirement} [${item.importance}; ${item.evidenceStrength}]\nEvidence: ${item.matchedEvidence}\nNote: ${item.recruiterNote}`,
       ),
       "",
-      "Why Akshay could be a good fit:",
-      ...result.whyGoodFit.map((item) => `- ${item}`),
-      "",
-      "Why Akshay could not be a good fit:",
-      ...result.whyNotFit.map((item) => `- ${item}`),
-      "",
-      `Recruiter takeaway: ${result.recruiterTakeaway}`,
+      "JD brief:",
+      result.normalizedJobBrief.roleSummary,
+      result.normalizedJobBrief.cleanedJobDescription,
     ].join("\n");
 
     await navigator.clipboard.writeText(text);
@@ -102,7 +114,7 @@ export function JobFitAnalyzer() {
   }
 
   return (
-    <section className="px-4 pt-8 sm:px-6 sm:pt-10 lg:px-8">
+    <section className="job-fit-print-shell px-4 pt-8 sm:px-6 sm:pt-10 lg:px-8">
       <div className="mx-auto max-w-5xl">
         <div className="surface rounded-[2rem] p-6 sm:p-8">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
@@ -114,30 +126,41 @@ export function JobFitAnalyzer() {
                 Job Fit Analyzer
               </h2>
               <p className="mt-3 text-sm leading-7 text-slate-600 sm:text-base">
-                Paste a job description and get a recruiter-friendly fit summary based only on Akshay&apos;s actual portfolio evidence.
+                Paste a JD and get a concise recruiter summary grounded only in Akshay&apos;s
+                portfolio evidence.
               </p>
             </div>
             <button
               type="button"
               onClick={() => setJobDescription(jobFitSampleDescription)}
-              className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "rounded-full border border-slate-200 bg-white/75")}
+              className={cn(
+                buttonVariants({ variant: "ghost", size: "sm" }),
+                "job-fit-print-hidden rounded-full border border-slate-200 bg-white/75",
+              )}
             >
               Use sample JD
             </button>
           </div>
 
-          <div className="mt-6 grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-            <div className="rounded-[1.75rem] border border-slate-200/80 bg-white/82 p-4 sm:p-5">
-              <label htmlFor="job-description" className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">
+          <div className="mt-6 space-y-6">
+            <div className="job-fit-print-hidden rounded-[1.75rem] border border-slate-200/80 bg-white/82 p-4 sm:p-5">
+              <label
+                htmlFor="job-description"
+                className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400"
+              >
                 Paste job description
               </label>
               <textarea
                 id="job-description"
                 value={jobDescription}
                 onChange={(event) => setJobDescription(event.target.value)}
-                placeholder="Paste the recruiter or hiring manager's job description here..."
+                placeholder="Paste the job responsibilities and requirements here..."
                 className="mt-4 min-h-[16rem] w-full resize-y rounded-[1.25rem] border border-slate-200 bg-slate-50/70 px-4 py-4 text-sm leading-7 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-sky-300 focus:bg-white focus:ring-4 focus:ring-sky-100"
               />
+              <p className="mt-3 text-sm leading-6 text-slate-500">
+                Best results come from responsibilities and requirements. Benefits, company
+                overview, and boilerplate are optional.
+              </p>
               <div className="mt-4 flex flex-wrap gap-3">
                 <button
                   type="button"
@@ -145,19 +168,13 @@ export function JobFitAnalyzer() {
                   disabled={isLoading || !jobDescription.trim()}
                   className={cn(buttonVariants({ variant: "primary", size: "lg" }))}
                 >
-                  {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                  Analyze fit
+                  {isLoading ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <Sparkles className="mr-2 h-4 w-4" />
+                  )}
+                  {isLoading ? "Analyzing..." : "Analyze fit"}
                 </button>
-                {result ? (
-                  <button
-                    type="button"
-                    onClick={() => void copyTakeaway()}
-                    className={cn(buttonVariants({ variant: "secondary", size: "lg" }))}
-                  >
-                    <Copy className="mr-2 h-4 w-4" />
-                    {copied ? "Copied" : "Copy summary"}
-                  </button>
-                ) : null}
               </div>
               {error ? <p className="mt-3 text-sm text-red-600">{error}</p> : null}
             </div>
@@ -165,33 +182,44 @@ export function JobFitAnalyzer() {
             <div className="rounded-[1.75rem] border border-slate-200/80 bg-white/82 p-4 sm:p-5">
               {result ? (
                 <div>
-                  <div className="flex flex-wrap items-center gap-3">
-                    <Badge className={fitToneClasses(result.fitLabel)}>{result.fitLabel}</Badge>
-                    <p className="text-sm text-slate-500">Portfolio-grounded recruiter summary</p>
-                  </div>
-                  <p className="mt-4 text-sm leading-7 text-slate-700 sm:text-base">{result.summary}</p>
-
-                  <div className="mt-6 space-y-4">
-                    {result.priorities.map((priority, index) => (
-                      <div key={`${priority.requirement}-${index}`} className="rounded-[1.5rem] border border-slate-200/70 bg-slate-50/80 p-4">
-                        <div className="flex flex-wrap items-start justify-between gap-3">
-                          <p className="text-sm font-semibold text-slate-950">
-                            {index + 1}. {priority.requirement}
-                          </p>
-                          <Badge className={confidenceToneClasses(priority.confidence)}>{priority.confidence}</Badge>
+                  <div className="rounded-[1.75rem] border border-emerald-200/80 bg-[linear-gradient(135deg,rgba(236,253,245,0.95),rgba(240,253,244,0.92),rgba(255,255,255,0.9))] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] sm:p-6">
+                    <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                      <div className="max-w-3xl">
+                        <div className="flex flex-wrap items-center gap-3">
+                          <Badge className={verdictToneClasses(result.verdict)}>{result.verdict}</Badge>
+                          <p className="text-sm text-emerald-800/80">Recruiter summary</p>
                         </div>
-                        <p className="mt-3 text-sm leading-6 text-slate-600">{priority.evidence}</p>
+                        <p className="mt-4 text-base leading-7 text-slate-800">{result.summary}</p>
+                        <div className="mt-4 rounded-[1.25rem] border border-emerald-200/80 bg-white/80 p-4">
+                          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">
+                            Recommendation
+                          </p>
+                          <p className="mt-2 text-sm leading-6 text-slate-700">
+                            {result.screeningRecommendation}
+                          </p>
+                        </div>
                       </div>
-                    ))}
+
+                      <div className="job-fit-print-hidden flex justify-end lg:min-w-[150px]">
+                        <button
+                          type="button"
+                          onClick={() => void copyTakeaway()}
+                          className={cn(buttonVariants({ variant: "secondary", size: "sm" }))}
+                        >
+                          <Copy className="mr-2 h-4 w-4" />
+                          {copied ? "Copied" : "Copy"}
+                        </button>
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="mt-6 grid gap-4">
+                  <div className="mt-5 grid gap-4 lg:grid-cols-2">
                     <div className="rounded-[1.5rem] border border-emerald-200/70 bg-emerald-50/65 p-4">
                       <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
-                        Why Akshay could be a good fit
+                        Strongest alignment
                       </p>
                       <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-600">
-                        {result.whyGoodFit.map((item) => (
+                        {result.topMatches.map((item) => (
                           <li key={item} className="flex gap-3">
                             <span className="mt-2 h-2 w-2 rounded-full bg-emerald-400" />
                             <span>{item}</span>
@@ -199,12 +227,13 @@ export function JobFitAnalyzer() {
                         ))}
                       </ul>
                     </div>
+
                     <div className="rounded-[1.5rem] border border-amber-200/70 bg-amber-50/65 p-4">
                       <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
-                        Why Akshay could not be a good fit
+                        Key gaps
                       </p>
                       <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-600">
-                        {result.whyNotFit.map((item) => (
+                        {result.topGaps.map((item) => (
                           <li key={item} className="flex gap-3">
                             <span className="mt-2 h-2 w-2 rounded-full bg-amber-400" />
                             <span>{item}</span>
@@ -212,24 +241,241 @@ export function JobFitAnalyzer() {
                         ))}
                       </ul>
                     </div>
-                    <div className="rounded-[1.5rem] border border-slate-900/90 bg-slate-950 p-4 text-white">
-                      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-300">
-                        Recruiter takeaway
+                  </div>
+
+                  <div className="mt-5">
+                    <details
+                      open={isDetailsOpen}
+                      onToggle={(event) => setIsDetailsOpen(event.currentTarget.open)}
+                      className="rounded-[1.5rem] border border-slate-200/70 bg-slate-50/80 p-4 sm:p-5"
+                    >
+                      <summary className="cursor-pointer list-none">
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                          <div>
+                            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+                              Detailed breakdown
+                            </p>
+                            <p className="mt-2 text-sm text-slate-600">
+                              Expand to review the normalized JD brief and the full requirement map together.
+                            </p>
+                          </div>
+                          <div className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700">
+                            {isDetailsOpen ? "Collapse details" : "Expand details"}
+                          </div>
+                        </div>
+                      </summary>
+
+                      <div className="mt-5 grid gap-4 xl:grid-cols-2">
+                        <section className="rounded-[1.5rem] border border-slate-200/70 bg-white/85 p-4 sm:p-5">
+                          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+                            JD brief
+                          </p>
+                          <div className="mt-4 space-y-4 text-sm leading-6 text-slate-600">
+                            <div>
+                              <p className="font-semibold text-slate-900">Role summary</p>
+                              <p className="mt-1">{result.normalizedJobBrief.roleSummary}</p>
+                            </div>
+                            <div>
+                              <p className="font-semibold text-slate-900">Normalized JD brief</p>
+                              <p className="mt-1 whitespace-pre-line">
+                                {result.normalizedJobBrief.cleanedJobDescription}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="font-semibold text-slate-900">Core requirements</p>
+                              <ul className="mt-2 space-y-2">
+                                {result.normalizedJobBrief.coreRequirements.map((item) => (
+                                  <li key={`${item.canonicalLabel}-${item.sourceText}`}>
+                                    <span className="font-medium text-slate-800">
+                                      {item.canonicalLabel}
+                                    </span>
+                                    {item.notes ? ` - ${item.notes}` : ""}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                            {result.normalizedJobBrief.secondaryRequirements.length ? (
+                              <div>
+                                <p className="font-semibold text-slate-900">Secondary requirements</p>
+                                <ul className="mt-2 space-y-2">
+                                  {result.normalizedJobBrief.secondaryRequirements.map((item) => (
+                                    <li key={`${item.canonicalLabel}-${item.sourceText}`}>
+                                      <span className="font-medium text-slate-800">
+                                        {item.canonicalLabel}
+                                      </span>
+                                      {item.notes ? ` - ${item.notes}` : ""}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            ) : null}
+                            <div className="rounded-[1.25rem] border border-slate-200/70 bg-slate-50/90 p-4">
+                              <p className="font-semibold text-slate-900">Key metadata</p>
+                              <ul className="mt-2 space-y-2">
+                                <li>
+                                  <span className="font-medium text-slate-800">Tools:</span>{" "}
+                                  {compactList(result.normalizedJobBrief.tools)}
+                                </li>
+                                <li>
+                                  <span className="font-medium text-slate-800">Stakeholder:</span>{" "}
+                                  {compactList(result.normalizedJobBrief.stakeholderSignals)}
+                                </li>
+                                <li>
+                                  <span className="font-medium text-slate-800">Seniority:</span>{" "}
+                                  {compactList(result.normalizedJobBrief.senioritySignals)}
+                                </li>
+                                <li>
+                                  <span className="font-medium text-slate-800">Constraints:</span>{" "}
+                                  {compactList(result.normalizedJobBrief.constraints)}
+                                </li>
+                              </ul>
+                            </div>
+                            {result.normalizedJobBrief.unclearItems.length ? (
+                              <div className="rounded-[1.25rem] border border-slate-200/70 bg-slate-50/90 p-4">
+                                <p className="font-semibold text-slate-900">Filtered / unclear</p>
+                                <ul className="mt-2 space-y-2">
+                                  {result.normalizedJobBrief.unclearItems.map((item) => (
+                                    <li key={item}>{item}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                            ) : null}
+                          </div>
+                        </section>
+
+                        <section className="rounded-[1.5rem] border border-slate-200/70 bg-white/85 p-4 sm:p-5">
+                          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+                            Requirement map
+                          </p>
+                          <div className="mt-4 space-y-3">
+                            {result.requirementMap.map((item, index) => (
+                              <div
+                                key={`${item.requirement}-${index}`}
+                                className="rounded-[1.25rem] border border-slate-200/70 bg-slate-50/90 p-4"
+                              >
+                                <div className="flex flex-wrap items-start justify-between gap-3">
+                                  <div>
+                                    <p className="text-sm font-semibold text-slate-950">
+                                      {item.requirement}
+                                    </p>
+                                    <p className="mt-1 text-xs uppercase tracking-[0.16em] text-slate-400">
+                                      {item.importance} • {item.category}
+                                    </p>
+                                  </div>
+                                  <Badge className={evidenceToneClasses(item.evidenceStrength)}>
+                                    {item.evidenceStrength}
+                                  </Badge>
+                                </div>
+                                <p className="mt-3 text-sm leading-6 text-slate-600">
+                                  {item.matchedEvidence}
+                                </p>
+                                <p className="mt-2 text-sm leading-6 text-slate-500">
+                                  {item.recruiterNote}
+                                </p>
+                              </div>
+                            ))}
+                          </div>
+                        </section>
+                      </div>
+                    </details>
+                  </div>
+
+                  <div className="job-fit-print-only mt-8 hidden">
+                    <div className="rounded-[1.5rem] border border-slate-200 bg-white p-6">
+                      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-sky-700">
+                        Akshay Jain Recruiter Tool Summary
                       </p>
-                      <p className="mt-3 text-sm leading-6 text-slate-300">{result.recruiterTakeaway}</p>
+                      <h3 className="mt-3 text-2xl font-semibold text-slate-950">
+                        {result.verdict}
+                      </h3>
+                      <p className="mt-3 text-sm leading-7 text-slate-700">{result.summary}</p>
+                      <div className="mt-6">
+                        <p className="text-sm font-semibold text-slate-900">Recommendation</p>
+                        <p className="mt-2 text-sm leading-6 text-slate-700">
+                          {result.screeningRecommendation}
+                        </p>
+                      </div>
+                      <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                        <div>
+                          <p className="text-sm font-semibold text-slate-900">Strongest alignment</p>
+                          <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-600">
+                            {result.topMatches.map((item) => (
+                              <li key={item}>{item}</li>
+                            ))}
+                          </ul>
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-slate-900">Key gaps</p>
+                          <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-600">
+                            {result.topGaps.map((item) => (
+                              <li key={item}>{item}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                      <div className="mt-6 grid gap-6 lg:grid-cols-2">
+                        <div>
+                          <p className="text-sm font-semibold text-slate-900">JD brief</p>
+                          <p className="mt-3 text-sm leading-6 text-slate-700">
+                            {result.normalizedJobBrief.roleSummary}
+                          </p>
+                          <p className="mt-3 whitespace-pre-line text-sm leading-6 text-slate-600">
+                            {result.normalizedJobBrief.cleanedJobDescription}
+                          </p>
+                          <div className="mt-4 text-sm leading-6 text-slate-600">
+                            <p>
+                              <span className="font-medium text-slate-900">Tools:</span>{" "}
+                              {compactList(result.normalizedJobBrief.tools)}
+                            </p>
+                            <p>
+                              <span className="font-medium text-slate-900">Stakeholder:</span>{" "}
+                              {compactList(result.normalizedJobBrief.stakeholderSignals)}
+                            </p>
+                            <p>
+                              <span className="font-medium text-slate-900">Seniority:</span>{" "}
+                              {compactList(result.normalizedJobBrief.senioritySignals)}
+                            </p>
+                            <p>
+                              <span className="font-medium text-slate-900">Constraints:</span>{" "}
+                              {compactList(result.normalizedJobBrief.constraints)}
+                            </p>
+                          </div>
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-slate-900">Requirement map</p>
+                          <div className="mt-3 space-y-3">
+                            {result.requirementMap.map((item, index) => (
+                              <div key={`${item.requirement}-${index}`} className="rounded-xl border border-slate-200 p-3">
+                                <p className="text-sm font-semibold text-slate-900">
+                                  {item.requirement}
+                                </p>
+                                <p className="mt-1 text-xs uppercase tracking-[0.14em] text-slate-400">
+                                  {item.importance} • {item.category} • {item.evidenceStrength}
+                                </p>
+                                <p className="mt-2 text-sm leading-6 text-slate-700">
+                                  {item.matchedEvidence}
+                                </p>
+                                <p className="mt-2 text-sm leading-6 text-slate-500">
+                                  {item.recruiterNote}
+                                </p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               ) : (
-                <div className="flex h-full min-h-[16rem] flex-col justify-center rounded-[1.5rem] border border-dashed border-slate-200 bg-slate-50/70 px-5 text-left">
+                <div className="flex min-h-[16rem] flex-col justify-center rounded-[1.5rem] border border-dashed border-slate-200 bg-slate-50/70 px-5 py-6 text-left">
                   <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">
-                    What this gives recruiters
+                    What recruiters get
                   </p>
                   <ul className="mt-4 space-y-3 text-sm leading-6 text-slate-600">
-                    <li>The five most important recruiter-priority signals extracted from the JD.</li>
-                    <li>Evidence mapping grounded in Akshay&apos;s actual portfolio.</li>
-                    <li>Brutally honest reasons he could be a fit and why he might not be.</li>
-                    <li>A fast recruiter takeaway on whether he looks worth a call.</li>
+                    <li>A concise verdict and one clear recommendation.</li>
+                    <li>Three strongest alignment signals recruiters can scan quickly.</li>
+                    <li>Two key gaps to validate before the screening call.</li>
+                    <li>Detailed JD brief and requirement mapping only when deeper review is needed.</li>
                   </ul>
                 </div>
               )}

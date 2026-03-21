@@ -167,3 +167,51 @@ a {
     animation: none !important;
   }
 }
+
+@media print {
+  body {
+    background: #fff !important;
+    color: #0f172a !important;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  .job-fit-print-shell,
+  .job-fit-print-shell * {
+    visibility: visible;
+  }
+
+  .job-fit-print-shell {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    max-width: none !important;
+    padding: 0 !important;
+  }
+
+  .job-fit-print-hidden {
+    display: none !important;
+  }
+
+  .job-fit-print-only {
+    display: block !important;
+  }
+
+  .surface,
+  .surface-strong {
+    background: #fff !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+  }
+
+  details {
+    display: block !important;
+  }
+
+  details > * {
+    display: block !important;
+  }
+}

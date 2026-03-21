@@ -116,7 +116,7 @@ export const audiencePaths: AudiencePath[] = [
     description:
       "Paste a JD and get a recruiter-friendly fit summary, top priorities, honest strengths, and realistic gaps.",
     href: "/recruiter-fit",
-    cta: "Open Recruiter Fit",
+    cta: "Open Recruiter Tool",
   },
   {
     eyebrow: "Hiring manager path",
@@ -413,6 +413,6 @@ export const profileNarratives: Record<string, NarrativeField> = {
   backendNotes: {
     title: "Backend Notes",
     body:
-      "Akshay has been working with Python since 2019, primarily through personal projects, and has also used it in professional settings including his LabWare internship and his work at Holman for analytics, scoring logic, ETL, and data problem-solving.",
+      "Akshay has been working with Python since 2019, primarily through personal projects, and has also used it in professional settings including his LabWare internship and his work at Holman for analytics, scoring logic, ETL, and data problem-solving. He is also familiar with medallion-style data architecture and has worked with dbt and Databricks SQL transformations to move curated data from silver to gold layers, then support Power BI semantic models built on top of gold-layer data for enterprise reporting consumption. Beyond implementation, he regularly works in a consulting-style capacity with business stakeholders to translate ambiguous requirements into scalable analytical solutions. That includes helping teams understand what options are available, what questions the data can realistically answer, and how to shape reporting so decision-makers can get to the right information quickly through clear, low-effort, visually intuitive experiences.",
   },
 };

@@ -193,7 +193,7 @@ export function HomePage() {
         </aside>
       </section>
 
-      <section id="proof" className="mx-auto max-w-7xl py-10 sm:py-12">
+      <section id="proof" className="mx-auto max-w-7xl scroll-mt-28 py-10 sm:py-12">
         <SectionHeading
           eyebrow="Why this format works"
           title="Recruiter clarity, hiring-manager depth, and AI-assisted exploration in one product"
@@ -220,7 +220,7 @@ export function HomePage() {
         </div>
       </section>
 
-      <section id="experience" className="mx-auto max-w-7xl py-10 sm:py-12">
+      <section id="experience" className="mx-auto max-w-7xl scroll-mt-28 py-10 sm:py-12">
         <SectionHeading
           eyebrow="Career history"
           title="Enterprise delivery depth first, with independent product building alongside it"
@@ -309,7 +309,7 @@ export function HomePage() {
         </div>
       </section>
 
-      <section id="projects" className="mx-auto max-w-7xl py-10 sm:py-12">
+      <section id="projects" className="mx-auto max-w-7xl scroll-mt-28 py-10 sm:py-12">
         <SectionHeading
           eyebrow="Featured work"
           title="Recent GitHub projects that show a broader analytics + data product range"
@@ -466,7 +466,7 @@ export function HomePage() {
         </div>
       </section>
 
-      <section id="skills" className="mx-auto max-w-7xl py-10 sm:py-12">
+      <section id="skills" className="mx-auto max-w-7xl scroll-mt-28 py-10 sm:py-12">
         <SectionHeading
           eyebrow="Skills & toolbox"
           title="Built around BI rigor, application-layer execution, and shipping useful systems"
@@ -486,7 +486,7 @@ export function HomePage() {
         </div>
       </section>
 
-      <section id="contact" className="mx-auto max-w-7xl py-10 sm:py-12">
+      <section id="contact" className="mx-auto max-w-7xl scroll-mt-28 py-10 sm:py-12">
         <div className="surface relative overflow-hidden rounded-[2.25rem] p-8 sm:p-10 lg:p-12">
           <div className="absolute inset-0 bg-hero-mesh opacity-70" />
           <div className="relative grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">

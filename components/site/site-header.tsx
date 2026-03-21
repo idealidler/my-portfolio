@@ -84,7 +84,7 @@ export function SiteHeader() {
             )}
           >
             <BriefcaseBusiness className="mr-2 h-4 w-4" />
-            Recruiter Fit
+            Recruiter Tool
           </Link>
           <Link
             href="/akshaygpt"
@@ -137,7 +137,7 @@ export function SiteHeader() {
                   : "border border-slate-200 bg-white/70 text-slate-700 hover:bg-white hover:text-slate-950",
               )}
             >
-              Recruiter Fit
+              Recruiter Tool
             </Link>
             <Link
               href="/akshaygpt"
