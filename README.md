@@ -1,4 +1,4 @@
-# Akshay Jain Portfolio
+# Akshay's Portfolio
 
 A modern portfolio site built with Next.js, TypeScript, and Tailwind CSS to showcase analytics engineering experience, featured projects, and AI-assisted recruiter workflows.
 
