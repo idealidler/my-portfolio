@@ -61,4 +61,4 @@ export type PortfolioEvidenceUnit = {
   evidenceStrength: "strong" | "supporting";
 };
 
-export const jobFitSampleDescription = `We are hiring an Analytics Engineer to partner with business stakeholders, build semantic models, develop Power BI dashboards, and improve reporting automation. The ideal candidate has experience with SQL, Python, dbt, Databricks, stakeholder communication, and translating ambiguous business needs into scalable analytics solutions.`;
+export const jobFitSampleDescription = `We are hiring an Analytics Engineer to partner with business stakeholders, build semantic models, develop Power BI dashboards, and improve reporting automation. The ideal candidate has experience with SQL, Python, dbt, Azure Databricks, stakeholder communication, and translating ambiguous business needs into scalable analytics solutions.`;

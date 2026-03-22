@@ -15,7 +15,6 @@ type Message = {
 };
 
 const heroPhrases = [
-  "Ask about Akshay",
   "Ask about my work at Holman",
   "Ask about my projects",
   "Ask about my impact",

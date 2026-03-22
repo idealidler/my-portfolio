@@ -85,9 +85,9 @@ export const heroStats: HeroStat[] = [
     detail: "Reduced manual reporting at scale by replacing recurring Excel-heavy workflows with automated BI reporting.",
   },
   {
-    label: "ASA improvement delivered",
-    value: "15 sec",
-    detail: "Reduced average speed of answer in call center operations through schedule and call-behavior analytics.",
+    label: "Client engagement lift",
+    value: "30%",
+    detail: "Architected executive-level KPIs, driving accountability and reducing missed communications by 80%",
   },
 ];
 
@@ -143,18 +143,19 @@ export const experience: ExperienceItem[] = [
     role: "Analytics Engineer",
     period: "July 2023 - Present",
     summary:
-      "Progressed from SAP BusinessObjects reporting into owning modern BI delivery across Power BI, SQL, Python, dbt, Databricks, CI/CD, semantic modeling, and stakeholder-led Agile execution.",
+      "Progressed from SAP BusinessObjects reporting into owning modern BI delivery across Power BI, SQL, Python, dbt, Azure Databricks, CI/CD, semantic modeling, and stakeholder-led Agile execution.",
     impact: [
-      "Designed dbt models, macros, and Databricks SQL transformations to move curated data from silver to gold layers and support star-schema-based semantic models for enterprise Power BI reporting.",
+      "Designed dbt models, macros, and Azure Databricks SQL transformations to move curated data from silver to gold layers and support star-schema-based semantic models for enterprise Power BI reporting.",
       "Implemented Git-based BI deployment workflows using Power BI PBIR artifacts and source-controlled workspaces, managing dashboard and semantic model promotion across environments through CI/CD pipelines and version-controlled releases.",
       "Built a KPI benchmarking solution using SQL, Python scoring logic, backend semantic models, and Power BI visual layers; normalized 20 client KPIs and enabled client-to-client, peer-group, and industry benchmarking for stronger client conversations and retention support.",
       "Delivered Holman’s flagship Power BI dashboard, consolidating multiple consulting reports into a single semantic-model-driven reporting experience now used by 1000+ active distinct users across the company.",
       "Consolidated 8 call-center data sources into one Power BI reporting model, eliminated recurring Excel-based workflows, and contributed to 2000+ hours saved through automated operational reporting.",
       "Developed call-center analytics using SQL, Power BI, and Python-based PO complexity scoring to distinguish simple versus complex purchase-order calls, explain agent handling patterns, and reduce average speed of answer by 15 seconds.",
+      "Transformed account management accountability by architecting a Microsoft Fabric Metrics KPI for senior leadership, resulting in a 30% lift in active client engagement and an 80% decrease in missed client communications.",
       "Built executive-facing reports on auto-approval rejection patterns, edge cases, and client-administrator phone behavior using complex SQL shaping and Power BI dashboards, giving VP-level leaders clearer visibility into service and training opportunities.",
       "Partnered daily with business stakeholders in Agile workflows to gather requirements, manage fast-turnaround ad hoc work, and translate technical analysis into clear business language; also presented dashboard work at IBIS 2024 (Phoenix) and internal team seminars.",
     ],
-    tools: ["Power BI", "SQL", "Python", "dbt", "Databricks", "Git", "CI/CD", "Microsoft Fabric", "DAX", "SAP BusinessObjects"],
+    tools: ["Power BI", "SQL", "Python", "dbt", "Azure Databricks", "Git", "CI/CD", "Microsoft Fabric", "DAX", "SAP BusinessObjects"],
   },
   {
     company: "Collabera",
@@ -366,7 +367,7 @@ export const skillGroups: SkillGroup[] = [
   },
   {
     label: "Data Stack",
-    items: ["SQL", "T-SQL", "Oracle SQL", "dbt", "Databricks", "Microsoft Fabric", "PostgreSQL"],
+    items: ["SQL", "T-SQL", "Oracle SQL", "dbt", "Azure Databricks", "Microsoft Fabric", "PostgreSQL"],
   },
   {
     label: "Programming & ML",
@@ -393,7 +394,7 @@ export const profileNarratives: Record<string, NarrativeField> = {
   about: {
     title: "About",
     body:
-      "Akshay is an Analytics Engineer and data product builder based in the United States. His strongest real-world experience comes from Holman, where he has worked across SAP BusinessObjects, Power BI, SQL, Python, dbt, Databricks, and Microsoft Fabric to turn messy operational data into reporting systems that leaders and frontline teams actively use. His portfolio combines enterprise BI execution with independent product builds in finance, immigration intelligence, and AI-assisted experiences.",
+      "Akshay is an Analytics Engineer and data product builder based in the United States. His strongest real-world experience comes from Holman, where he has worked across SAP BusinessObjects, Power BI, SQL, Python, dbt, Azure Databricks, and Microsoft Fabric to turn messy operational data into reporting systems that leaders and frontline teams actively use. His portfolio combines enterprise BI execution with independent product builds in finance, immigration intelligence, and AI-assisted experiences.",
   },
   problemSolving: {
     title: "Problem Solving",
@@ -413,6 +414,6 @@ export const profileNarratives: Record<string, NarrativeField> = {
   backendNotes: {
     title: "Backend Notes",
     body:
-      "Akshay has been working with Python since 2019, primarily through personal projects, and has also used it in professional settings including his LabWare internship and his work at Holman for analytics, scoring logic, ETL, and data problem-solving. He is also familiar with medallion-style data architecture and has worked with dbt and Databricks SQL transformations to move curated data from silver to gold layers, then support Power BI semantic models built on top of gold-layer data for enterprise reporting consumption. Beyond implementation, he regularly works in a consulting-style capacity with business stakeholders to translate ambiguous requirements into scalable analytical solutions. That includes helping teams understand what options are available, what questions the data can realistically answer, and how to shape reporting so decision-makers can get to the right information quickly through clear, low-effort, visually intuitive experiences.",
+      "Akshay has been working with Python since 2019, primarily through personal projects, and has also used it in professional settings including his LabWare internship and his work at Holman for analytics, scoring logic, ETL, and data problem-solving. He is also familiar with medallion-style data architecture and has worked with dbt and Azure Databricks SQL transformations to move curated data from silver to gold layers, then support Power BI semantic models built on top of gold-layer data for enterprise reporting consumption. Beyond implementation, he regularly works in a consulting-style capacity with business stakeholders to translate ambiguous requirements into scalable analytical solutions. That includes helping teams understand what options are available, what questions the data can realistically answer, and how to shape reporting so decision-makers can get to the right information quickly through clear, low-effort, visually intuitive experiences.",
   },
 };
