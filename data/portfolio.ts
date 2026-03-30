@@ -229,7 +229,7 @@ export const projects: ProjectItem[] = [
     featured: true,
   },
   {
-    title: "GitDecode Backend",
+    title: "GitDecode",
     slug: "gitdecode-backend",
     client: "Real-world application backend",
     industry: "Developer intelligence",
@@ -279,28 +279,27 @@ export const projects: ProjectItem[] = [
     featured: true,
   },
   {
-    title: "Stock Sentiment Dashboard",
-    slug: "stock-sentiment-dashboard",
-    client: "Independent product build",
-    industry: "Market analytics",
-    year: "2025",
-    role: "Full-stack data science builder",
-    status: "Live",
+    title: "Contextly",
+    slug: "contextly",
+    client: "Independent VS Code product build",
+    industry: "Developer tooling",
+    year: "2026",
+    role: "Product engineer and extension builder",
+    status: "Live on Marketplace",
     summary:
-      "Built a stock analysis dashboard that combines ETL, warehousing, predictive modeling, and AI-generated market commentary.",
+      "Built a local-first VS Code extension that saves reusable AI context inside each workspace so developers can reopen structured prompts without retyping setup every time.",
     whyItMatters:
-      "Demonstrates how I connect data ingestion, modeling, and narrative explanation into a single analyst workflow.",
+      "Shows product-minded engineering across extension UX, local storage design, prompt structure, and real developer workflow integration.",
     problem:
-      "Stock price movement analysis is often split across disconnected tools for data collection, modeling, and interpretation.",
+      "Developers repeatedly rewrite repo-specific schema notes, business rules, and prompt constraints across AI chats, which creates friction and inconsistent outputs.",
     highlights: [
-      "Fetched market prices and news headlines into a structured pipeline.",
-      "Built a PostgreSQL star schema and Random Forest price direction model.",
-      "Added AI-generated narrative explanations alongside model outputs for easier interpretation.",
+      "Stores prompt context locally in a hidden `.contextly.json` file so context stays workspace-specific and shareable through Git when teams want it.",
+      "Supports structured prompt fields including intent, task, context, constraints, and output format instead of one long unstructured note.",
+      "Includes a status-bar picker, management dashboard, search, clipboard copy, and VS Code chat prefill for fast day-to-day use.",
     ],
-    stack: ["Python", "PostgreSQL", "Pandas", "Scikit-learn", "Streamlit"],
-    github: "https://github.com/idealidler/Stock-Sentiment-Dashboard",
-    demo: "https://stock-sentiment-dashboard-project.streamlit.app",
-    image: "/assets/stock.jpg",
+    stack: ["TypeScript", "VS Code Extension API", "ESBuild", "Local JSON Storage", "Product UX"],
+    github: "https://github.com/idealidler/contextly",
+    demo: "https://marketplace.visualstudio.com/items?itemName=idealidler.contextly",
     featured: true,
   },
   {
@@ -404,12 +403,12 @@ export const profileNarratives: Record<string, NarrativeField> = {
   careerGoals: {
     title: "Career Goals",
     body:
-      "Akshay is aiming for roles that sit at the intersection of analytics engineering, business intelligence, and data product development. Long term, he wants to build durable analytics platforms, mentor other data professionals, and create systems that make complex information easier for businesses to act on.",
+      "Akshay is targeting roles at the intersection of analytics engineering, BI, and data products, with a long-term focus on building durable systems that make complex information easier to act on.",
   },
   workStyle: {
     title: "Working Style",
     body:
-      "Akshay balances technical rigor with practicality. That means listening carefully to business users, translating their needs into dashboards and models they can trust, and explaining the output in simple language. He values ownership, communication, reusable systems, and reporting that actually gets adopted by the people it was built for.",
+      "Akshay balances technical rigor with practicality, translating stakeholder needs into trusted dashboards, reusable systems, and clear outputs that teams actually use.",
   },
   backendNotes: {
     title: "Backend Notes",

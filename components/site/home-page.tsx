@@ -36,7 +36,7 @@ function ProjectAccent({ slug }: { slug: string }) {
     "h1b-wage-map": "from-sky-200 via-cyan-200 to-teal-200",
     "gitdecode-backend": "from-slate-300 via-sky-200 to-cyan-100",
     "net-worth-tracker": "from-emerald-200 via-teal-100 to-cyan-100",
-    "stock-sentiment-dashboard": "from-indigo-200 via-sky-100 to-violet-100",
+    contextly: "from-amber-100 via-orange-100 to-rose-100",
     "starbucks-drink-recommendation": "from-rose-500 via-orange-400 to-yellow-300",
     "ecommerce-customer-purchase-analysis": "from-violet-500 via-fuchsia-500 to-pink-300",
   };
@@ -67,15 +67,12 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-7xl gap-8 pb-18 pt-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-end lg:pb-24 lg:pt-16">
+      <section className="mx-auto grid max-w-7xl gap-8 pb-18 pt-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-stretch lg:pb-24 lg:pt-16">
         <div className="surface relative overflow-hidden rounded-[2rem] px-6 py-8 sm:px-8 sm:py-10 lg:px-10 lg:py-12">
           <div className="hero-orb hero-orb-one -left-10 -top-10" />
           <div className="hero-orb hero-orb-three right-1/3 top-12" />
           <div className="bg-shimmer absolute inset-x-0 top-0 h-px animate-shimmer" />
-          <Badge className="border-sky-100 bg-sky-50 text-sky-700">
-            Analytics engineering, BI systems, and data products in one portfolio surface
-          </Badge>
-          <h1 className="mt-6 max-w-4xl text-balance text-4xl font-semibold leading-tight tracking-tight text-slate-950 sm:text-5xl lg:text-6xl">
+          <h1 className="max-w-4xl text-balance text-4xl font-semibold leading-tight tracking-tight text-slate-950 sm:text-5xl lg:text-6xl">
             I build reporting systems and data products that make complex decisions easier to act on.
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600">
@@ -132,7 +129,7 @@ export function HomePage() {
           </div>
         </div>
 
-        <aside className="surface rounded-[2rem] p-6 sm:p-8">
+        <aside className="surface h-full rounded-[2rem] p-6 sm:p-8">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
               Based in Philadelphia
@@ -230,17 +227,21 @@ export function HomePage() {
           <div className="space-y-6">
             {experience.map((item) => (
               <article key={`${item.company}-${item.role}`} className="surface rounded-[2rem] p-6 sm:p-7">
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                  <div>
+                <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                  <div className="min-w-0">
                     <p className="text-sm font-semibold uppercase tracking-[0.16em] text-sky-700">
                       {item.company}
                     </p>
                     <h3 className="mt-2 text-2xl font-semibold text-slate-950">{item.role}</h3>
-                    <p className="mt-2 text-sm text-slate-500">
-                      {item.location} • {item.period}
+                    <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-slate-500">
+                      <span>{item.location}</span>
+                      <span className="text-slate-300">•</span>
+                      <span>{item.period}</span>
                     </p>
                   </div>
-                  <Badge>{item.summary}</Badge>
+                  <Badge className="w-full justify-start rounded-[1.25rem] px-4 py-2 text-left leading-5 whitespace-normal md:max-w-sm md:shrink-0">
+                    {item.summary}
+                  </Badge>
                 </div>
                 <ul className="mt-6 space-y-3 text-sm leading-6 text-slate-600">
                   {item.impact.map((point) => (
@@ -298,13 +299,6 @@ export function HomePage() {
                 ))}
               </div>
             </div>
-
-            <div className="surface rounded-[2rem] p-6">
-              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
-                Working style
-              </p>
-              <p className="mt-4 text-sm leading-6 text-slate-600">{profileNarratives.workStyle.body}</p>
-            </div>
           </div>
         </div>
       </section>
@@ -313,7 +307,7 @@ export function HomePage() {
         <SectionHeading
           eyebrow="Featured work"
           title="Recent GitHub projects that show a broader analytics + data product range"
-          description="The portfolio now leads with newer public repos that demonstrate geospatial tooling, production backend thinking, product UX, and model-backed analytics."
+          description="The portfolio now leads with newer public repos that demonstrate geospatial tooling, production backend thinking, product UX, and developer tooling."
         />
         <div className="mt-10 grid gap-6 lg:grid-cols-2">
           {featuredProjects.map((project) => (
@@ -406,7 +400,11 @@ export function HomePage() {
                     className={cn(buttonVariants({ variant: "primary" }), "justify-center")}
                   >
                     <ExternalLink className="mr-2 h-4 w-4" />
-                    {project.slug === "gitdecode-backend" ? "Chrome extension" : "Live demo"}
+                    {project.slug === "gitdecode-backend"
+                      ? "Chrome extension"
+                      : project.slug === "contextly"
+                        ? "VS Code Marketplace"
+                        : "Live demo"}
                   </a>
                 ) : null}
               </div>
