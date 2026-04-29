@@ -32,11 +32,19 @@ function normalizeTags(values: string[]) {
   return [...new Set(values.map((value) => value.trim()).filter(Boolean))];
 }
 
+function slugify(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
 export function buildPortfolioEvidenceUnits() {
   const units: PortfolioEvidenceUnit[] = [];
 
   for (const item of experience) {
     units.push({
+      id: `exp-${slugify(item.company)}-summary`,
       claim: item.summary,
       sourceArea: `${item.role} at ${item.company}`,
       capabilities: normalizeTags(capabilityMap[item.company] ?? ["analytics", "stakeholder communication"]),
@@ -44,8 +52,9 @@ export function buildPortfolioEvidenceUnits() {
       evidenceStrength: "strong",
     });
 
-    for (const impact of item.impact) {
+    for (const [index, impact] of item.impact.entries()) {
       units.push({
+        id: `exp-${slugify(item.company)}-impact-${index + 1}`,
         claim: impact,
         sourceArea: `${item.role} at ${item.company}`,
         capabilities: normalizeTags([...(capabilityMap[item.company] ?? []), item.role, item.company]),
@@ -58,6 +67,7 @@ export function buildPortfolioEvidenceUnits() {
 
   for (const project of [...featuredProjects, ...selectedAnalysisProjects]) {
     units.push({
+      id: `project-${project.slug}-summary`,
       claim: project.summary,
       sourceArea: `${project.title} project`,
       capabilities: normalizeTags([project.role, project.industry, "product thinking", ...project.stack]),
@@ -65,8 +75,9 @@ export function buildPortfolioEvidenceUnits() {
       evidenceStrength: project.featured ? "strong" : "supporting",
     });
 
-    for (const highlight of project.highlights) {
+    for (const [index, highlight] of project.highlights.entries()) {
       units.push({
+        id: `project-${project.slug}-highlight-${index + 1}`,
         claim: highlight,
         sourceArea: `${project.title} project`,
         capabilities: normalizeTags([project.role, project.industry, "project execution", ...project.stack]),
@@ -79,6 +90,7 @@ export function buildPortfolioEvidenceUnits() {
 
   for (const narrative of Object.values(profileNarratives)) {
     units.push({
+      id: `narrative-${slugify(narrative.title)}`,
       claim: narrative.body,
       sourceArea: narrative.title,
       capabilities: normalizeTags([narrative.title.toLowerCase(), "communication", "working style"]),
@@ -89,6 +101,7 @@ export function buildPortfolioEvidenceUnits() {
 
   for (const item of education) {
     units.push({
+      id: `education-${slugify(item.school)}`,
       claim: `${item.degree} from ${item.school}`,
       sourceArea: "Education",
       capabilities: ["education"],
@@ -107,6 +120,7 @@ export function buildPortfolioEvidenceContext() {
 
       return [
         `Evidence ${index + 1}`,
+        `ID: ${unit.id}`,
         `Source: ${unit.sourceArea}`,
         `Claim: ${unit.claim}`,
         `Capabilities: ${unit.capabilities.join(", ")}`,

@@ -93,7 +93,15 @@ export function JobFitAnalyzer() {
         body: JSON.stringify({ jobDescription: trimmed }),
       });
 
-      const payload = (await response.json()) as JobFitResult & { error?: string; details?: string };
+      const rawPayload = await response.text();
+      let payload: JobFitResult & { error?: string; details?: string };
+
+      try {
+        payload = JSON.parse(rawPayload) as JobFitResult & { error?: string; details?: string };
+      } catch {
+        throw new Error(rawPayload || "The job fit analysis returned an unreadable response.");
+      }
+
       if (!response.ok) {
         throw new Error(payload.error || "The job fit analysis failed.");
       }
@@ -129,10 +137,14 @@ export function JobFitAnalyzer() {
       `Seniority fit: ${Math.round(result.scoreBreakdown.seniorityFit)}%`,
       "",
       "Strongest alignment:",
-      ...result.topMatches.map((item, index) => `${index + 1}. ${item}`),
+      ...result.topMatches.map(
+        (item, index) => `${index + 1}. ${item.text}\nEvidence IDs: ${item.evidenceIds.join(", ")}`,
+      ),
       "",
       "Gaps and risks:",
-      ...result.topGaps.map((item, index) => `${index + 1}. ${item}`),
+      ...result.topGaps.map(
+        (item, index) => `${index + 1}. ${item.text}\nRequirement ID: ${item.requirementId}`,
+      ),
       "",
       "Recruiter insight:",
       `Differentiator: ${result.recruiterInsight.differentiator}`,
@@ -149,7 +161,7 @@ export function JobFitAnalyzer() {
       "Requirement map:",
       ...result.requirementMap.map(
         (item, index) =>
-          `${index + 1}. ${item.requirement} [${item.importance}; ${item.evidenceStrength}]\nEvidence: ${item.matchedEvidence}\nNote: ${item.recruiterNote}`,
+          `${index + 1}. ${item.requirement} [${item.requirementId}; ${item.importance}; ${item.evidenceStrength}]\nEvidence IDs: ${item.matchedEvidenceIds.join(", ") || "None"}\nEvidence: ${item.matchedEvidence}\nNote: ${item.recruiterNote}`,
       ),
       "",
       "JD brief:",
@@ -296,9 +308,9 @@ export function JobFitAnalyzer() {
                       </p>
                       <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-600">
                         {result.topMatches.map((item) => (
-                          <li key={item} className="flex gap-3">
+                          <li key={item.text} className="flex gap-3">
                             <span className="mt-2 h-2 w-2 rounded-full bg-emerald-400" />
-                            <span>{item}</span>
+                            <span>{item.text}</span>
                           </li>
                         ))}
                       </ul>
@@ -310,9 +322,9 @@ export function JobFitAnalyzer() {
                       </p>
                       <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-600">
                         {result.topGaps.map((item) => (
-                          <li key={item} className="flex gap-3">
+                          <li key={item.text} className="flex gap-3">
                             <span className="mt-2 h-2 w-2 rounded-full bg-amber-400" />
-                            <span>{item}</span>
+                            <span>{item.text}</span>
                           </li>
                         ))}
                       </ul>
@@ -490,6 +502,11 @@ export function JobFitAnalyzer() {
                                 <p className="mt-3 text-sm leading-6 text-slate-600">
                                   {item.matchedEvidence}
                                 </p>
+                                {item.matchedEvidenceIds.length ? (
+                                  <p className="mt-2 text-xs font-medium uppercase tracking-[0.14em] text-slate-400">
+                                    Evidence IDs: {item.matchedEvidenceIds.join(", ")}
+                                  </p>
+                                ) : null}
                                 <p className="mt-2 text-sm leading-6 text-slate-500">
                                   {item.recruiterNote}
                                 </p>
@@ -521,7 +538,7 @@ export function JobFitAnalyzer() {
                           <p className="text-sm font-semibold text-slate-900">Strongest alignment</p>
                           <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-600">
                             {result.topMatches.map((item) => (
-                              <li key={item}>{item}</li>
+                              <li key={item.text}>{item.text}</li>
                             ))}
                           </ul>
                         </div>
@@ -529,7 +546,7 @@ export function JobFitAnalyzer() {
                           <p className="text-sm font-semibold text-slate-900">Gaps and risks</p>
                           <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-600">
                             {result.topGaps.map((item) => (
-                              <li key={item}>{item}</li>
+                              <li key={item.text}>{item.text}</li>
                             ))}
                           </ul>
                         </div>
@@ -576,6 +593,11 @@ export function JobFitAnalyzer() {
                                 <p className="mt-2 text-sm leading-6 text-slate-700">
                                   {item.matchedEvidence}
                                 </p>
+                                {item.matchedEvidenceIds.length ? (
+                                  <p className="mt-2 text-xs uppercase tracking-[0.14em] text-slate-400">
+                                    Evidence IDs: {item.matchedEvidenceIds.join(", ")}
+                                  </p>
+                                ) : null}
                                 <p className="mt-2 text-sm leading-6 text-slate-500">
                                   {item.recruiterNote}
                                 </p>

@@ -1,13 +1,24 @@
 import {
+  type GroundedGapItem,
+  type GroundedMatchItem,
   type JobFitResult,
   type NormalizedJobBrief,
   type RequirementMapItem,
+  type ScreeningQuestion,
 } from "@/lib/job-fit";
-import { buildPortfolioEvidenceContext } from "@/lib/portfolio-evidence";
+import {
+  computeScore,
+  mapRequirementsToEvidence,
+  retrieveRelevantEvidence,
+  verdictFromScore,
+} from "@/lib/job-fit-engine";
+import { buildPortfolioEvidenceUnits } from "@/lib/portfolio-evidence";
 
 export const runtime = "edge";
 
-const portfolioEvidenceContext = buildPortfolioEvidenceContext();
+const allPortfolioEvidenceUnits = buildPortfolioEvidenceUnits();
+const responseCache = new Map<string, JobFitResult>();
+const maxJobDescriptionLength = 20000;
 
 const normalizedRequirementSchema = {
   type: "object",
@@ -87,48 +98,49 @@ const normalizeJobSchema = {
   schema: normalizedJobBriefSchema,
 } as const;
 
-const jobFitResultSchema = {
-  name: "job_fit_result",
+const groundedMatchSchema = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    text: { type: "string" },
+    evidenceIds: {
+      type: "array",
+      minItems: 1,
+      maxItems: 3,
+      items: { type: "string" },
+    },
+  },
+  required: ["text", "evidenceIds"],
+} as const;
+
+const groundedGapSchema = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    text: { type: "string" },
+    requirementId: { type: "string" },
+  },
+  required: ["text", "requirementId"],
+} as const;
+
+const jobFitNarrativeSchema = {
+  name: "job_fit_narrative",
   schema: {
     type: "object",
     additionalProperties: false,
     properties: {
-      verdict: {
-        type: "string",
-        enum: ["Strong fit", "Moderate fit", "Stretch", "Not ideal"],
-      },
-      scoreBreakdown: {
-        type: "object",
-        additionalProperties: false,
-        properties: {
-          overallScore: { type: "number", minimum: 0, maximum: 100 },
-          skillsMatch: { type: "number", minimum: 0, maximum: 100 },
-          experienceRelevance: { type: "number", minimum: 0, maximum: 100 },
-          domainAlignment: { type: "number", minimum: 0, maximum: 100 },
-          seniorityFit: { type: "number", minimum: 0, maximum: 100 },
-          scoreRationale: { type: "string" },
-        },
-        required: [
-          "overallScore",
-          "skillsMatch",
-          "experienceRelevance",
-          "domainAlignment",
-          "seniorityFit",
-          "scoreRationale",
-        ],
-      },
       summary: { type: "string" },
       topMatches: {
         type: "array",
         minItems: 3,
         maxItems: 3,
-        items: { type: "string" },
+        items: groundedMatchSchema,
       },
       topGaps: {
         type: "array",
         minItems: 3,
         maxItems: 3,
-        items: { type: "string" },
+        items: groundedGapSchema,
       },
       recruiterInsight: {
         type: "object",
@@ -155,48 +167,14 @@ const jobFitResultSchema = {
           required: ["question", "whyAsk"],
         },
       },
-      requirementMap: {
-        type: "array",
-        minItems: 4,
-        maxItems: 6,
-        items: {
-          type: "object",
-          additionalProperties: false,
-          properties: {
-            requirement: { type: "string" },
-            category: {
-              type: "string",
-              enum: ["Capability", "Tool", "Stakeholder", "Domain", "Seniority", "Constraint"],
-            },
-            importance: { type: "string", enum: ["Core", "Secondary"] },
-            evidenceStrength: {
-              type: "string",
-              enum: ["Direct evidence", "Adjacent evidence", "No clear evidence"],
-            },
-            matchedEvidence: { type: "string" },
-            recruiterNote: { type: "string" },
-          },
-          required: [
-            "requirement",
-            "category",
-            "importance",
-            "evidenceStrength",
-            "matchedEvidence",
-            "recruiterNote",
-          ],
-        },
-      },
     },
     required: [
-      "verdict",
-      "scoreBreakdown",
       "summary",
       "topMatches",
       "topGaps",
       "recruiterInsight",
       "screeningRecommendation",
       "screeningQuestions",
-      "requirementMap",
     ],
   },
 } as const;
@@ -215,42 +193,24 @@ const normalizeJobPrompt = [
 
 const analyzeJobFitPrompt = [
   "You are AkshayGPT, a recruiter-facing candidate evaluation analyst for Akshay Jain.",
-  "Use only the normalized job brief and the portfolio evidence units provided.",
-  "Your job is to help a recruiter decide whether Akshay is worth screening, not to sell him uncritically.",
-  "Be evidence-first, conservative, concise, and balanced.",
+  "The backend has already retrieved evidence, mapped requirements, computed scores, and selected the verdict.",
+  "Your job is to explain those backend-computed facts clearly for a recruiter.",
   "Never invent experience, seniority, technologies, or scale that are not supported by the evidence units.",
-  "Do not treat tool-name overlap alone as qualification if the evidence does not show meaningful usage.",
-  "Do not inflate scores to be polite. Missing direct evidence should lower the relevant component score.",
-  "Distinguish direct matches, adjacent/transferable matches, and gaps.",
-  "If a core requirement lacks explicit support, say so plainly and factor it into the verdict.",
+  "Do not create, alter, or mention a different score than the provided backend score.",
+  "Do not create, alter, or mention a different verdict than the provided backend verdict.",
+  "Use the requirementMap and scoreBreakdown as source-of-truth.",
+  "Every topMatches item must include evidenceIds from retrievedEvidence.",
+  "Every topGaps item must include a requirementId from requirementMap.",
+  "Use missing or adjacent mappings honestly; do not soften gaps into strengths.",
   "Recognize synonyms and related tools conservatively: SQL can transfer across warehouses, Power BI can transfer to BI/reporting roles, Python analytics can transfer to data workflow roles, but do not claim exact tool experience unless evidenced.",
-  "Scoring rules:",
-  "- overallScore is a weighted recruiter estimate: skillsMatch 35%, experienceRelevance 30%, domainAlignment 15%, seniorityFit 20%.",
-  "- 85-100 means strong direct evidence across nearly all core requirements.",
-  "- 70-84 means credible fit with one or two validation areas.",
-  "- 50-69 means plausible but meaningfully adjacent or incomplete.",
-  "- Below 50 means important core requirements are unsupported.",
-  "- Cap overallScore at 84 if any must-have/core requirement has No clear evidence.",
-  "- Cap overallScore at 69 if two or more core requirements have No clear evidence.",
-  "- Cap overallScore at 59 if the role appears clearly senior/lead/staff and the evidence does not support that level.",
-  "Verdict rules:",
-  "- Strong fit: direct evidence for most core requirements, no major missing must-have, overallScore normally 85+.",
-  "- Moderate fit: strong overlap overall, but at least one area should be validated in screening, overallScore normally 70-84.",
-  "- Stretch: some overlap, but multiple core gaps or depth concerns remain.",
-  "- Not ideal: limited overlap or several important core requirements lack evidence.",
   "topMatches should be exactly 3 specific bullets tied to direct or transferable evidence.",
   "topGaps should be exactly 3 specific bullets. Include missing skills, partial depth, seniority concerns, domain gaps, or uncertainty when relevant.",
   "recruiterInsight.differentiator should explain what stands out beyond keyword overlap, especially problem-solving, business stakeholder partnership, and consultative execution when supported.",
   "recruiterInsight.tradeoff should state the main hiring trade-off honestly.",
   "recruiterInsight.screeningFocus should say what a recruiter should validate in a first call.",
   "screeningQuestions should include 2-3 practical questions that test gaps or depth, not softball questions.",
-  "requirementMap should include the 4-6 highest-signal requirements from the normalized brief.",
-  "For evidenceStrength use exactly one of: Direct evidence, Adjacent evidence, No clear evidence.",
   "screeningRecommendation must be one concise sentence for a recruiter.",
   "Return JSON only.",
-  "",
-  "Portfolio evidence units:",
-  portfolioEvidenceContext,
 ].join("\n");
 
 function extractJson(text: string) {
@@ -261,6 +221,51 @@ function extractJson(text: string) {
 
   const match = trimmed.match(/\{[\s\S]*\}/);
   return match?.[0] ?? null;
+}
+
+async function hashText(value: string) {
+  const buffer = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
+  return [...new Uint8Array(buffer)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+function cleanJobDescription(value: string) {
+  return value.replace(/\s+/g, " ").trim();
+}
+
+function buildAnalysisPacket({
+  normalizedBrief,
+  retrievedEvidence,
+  requirementMap,
+  scoreBreakdown,
+  verdict,
+}: {
+  normalizedBrief: NormalizedJobBrief;
+  retrievedEvidence: JobFitResult["retrievedEvidence"];
+  requirementMap: RequirementMapItem[];
+  scoreBreakdown: JobFitResult["scoreBreakdown"];
+  verdict: JobFitResult["verdict"];
+}) {
+  return JSON.stringify(
+    {
+      backendInstructions:
+        "Explain the backend-computed score and verdict. Use only retrievedEvidence IDs and requirementMap IDs.",
+      verdict,
+      scoreBreakdown,
+      normalizedJobBrief: normalizedBrief,
+      requirementMap,
+      retrievedEvidence: retrievedEvidence.map((evidence) => ({
+        id: evidence.id,
+        sourceArea: evidence.sourceArea,
+        claim: evidence.claim,
+        capabilities: evidence.capabilities,
+        tools: evidence.tools,
+        metric: evidence.metric,
+        evidenceStrength: evidence.evidenceStrength,
+      })),
+    },
+    null,
+    2,
+  );
 }
 
 function extractResponseText(payload: unknown) {
@@ -321,6 +326,7 @@ function isRequirementMapItem(value: unknown): value is RequirementMapItem {
   const validEvidence = new Set(["Direct evidence", "Adjacent evidence", "No clear evidence"]);
 
   return (
+    typeof item.requirementId === "string" &&
     typeof item.requirement === "string" &&
     typeof item.category === "string" &&
     validCategories.has(item.category) &&
@@ -328,9 +334,28 @@ function isRequirementMapItem(value: unknown): value is RequirementMapItem {
     validImportance.has(item.importance) &&
     typeof item.evidenceStrength === "string" &&
     validEvidence.has(item.evidenceStrength) &&
+    isStringArray(item.matchedEvidenceIds) &&
     typeof item.matchedEvidence === "string" &&
     typeof item.recruiterNote === "string"
   );
+}
+
+function isGroundedMatchItem(value: unknown): value is GroundedMatchItem {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const item = value as Record<string, unknown>;
+  return typeof item.text === "string" && isStringArray(item.evidenceIds) && item.evidenceIds.length > 0;
+}
+
+function isGroundedGapItem(value: unknown): value is GroundedGapItem {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const item = value as Record<string, unknown>;
+  return typeof item.text === "string" && typeof item.requirementId === "string";
 }
 
 function isFiniteScore(value: unknown) {
@@ -438,10 +463,12 @@ function validateJobFitResult(payload: unknown): payload is JobFitResult {
     validVerdicts.has(result.verdict) &&
     isScoreBreakdown(result.scoreBreakdown) &&
     typeof result.summary === "string" &&
-    isStringArray(result.topMatches) &&
+    Array.isArray(result.topMatches) &&
     result.topMatches.length === 3 &&
-    isStringArray(result.topGaps) &&
+    result.topMatches.every(isGroundedMatchItem) &&
+    Array.isArray(result.topGaps) &&
     result.topGaps.length === 3 &&
+    result.topGaps.every(isGroundedGapItem) &&
     isRecruiterInsight(result.recruiterInsight) &&
     typeof result.screeningRecommendation === "string" &&
     Array.isArray(result.screeningQuestions) &&
@@ -449,10 +476,74 @@ function validateJobFitResult(payload: unknown): payload is JobFitResult {
     result.screeningQuestions.length <= 3 &&
     result.screeningQuestions.every(isScreeningQuestion) &&
     Array.isArray(result.requirementMap) &&
-    result.requirementMap.length >= 4 &&
-    result.requirementMap.length <= 6 &&
-    result.requirementMap.every(isRequirementMapItem)
+    result.requirementMap.length >= 1 &&
+    result.requirementMap.every(isRequirementMapItem) &&
+    Array.isArray(result.retrievedEvidence)
   );
+}
+
+type JobFitNarrative = {
+  summary: string;
+  topMatches: GroundedMatchItem[];
+  topGaps: GroundedGapItem[];
+  recruiterInsight: JobFitResult["recruiterInsight"];
+  screeningRecommendation: string;
+  screeningQuestions: ScreeningQuestion[];
+};
+
+function validateJobFitNarrative(payload: unknown): payload is JobFitNarrative {
+  if (!payload || typeof payload !== "object") {
+    return false;
+  }
+
+  const result = payload as Record<string, unknown>;
+  return (
+    typeof result.summary === "string" &&
+    Array.isArray(result.topMatches) &&
+    result.topMatches.length === 3 &&
+    result.topMatches.every(isGroundedMatchItem) &&
+    Array.isArray(result.topGaps) &&
+    result.topGaps.length === 3 &&
+    result.topGaps.every(isGroundedGapItem) &&
+    isRecruiterInsight(result.recruiterInsight) &&
+    typeof result.screeningRecommendation === "string" &&
+    Array.isArray(result.screeningQuestions) &&
+    result.screeningQuestions.length >= 2 &&
+    result.screeningQuestions.length <= 3 &&
+    result.screeningQuestions.every(isScreeningQuestion)
+  );
+}
+
+function enforceNarrativeGrounding(
+  narrative: JobFitNarrative,
+  requirementMap: RequirementMapItem[],
+  retrievedEvidence: JobFitResult["retrievedEvidence"],
+) {
+  const validEvidenceIds = new Set(retrievedEvidence.map((evidence) => evidence.id));
+  const validRequirementIds = new Set(requirementMap.map((item) => item.requirementId));
+  const fallbackEvidenceIds = requirementMap.flatMap((item) => item.matchedEvidenceIds);
+  const fallbackEvidenceId = fallbackEvidenceIds.find((id) => validEvidenceIds.has(id)) ?? retrievedEvidence[0]?.id;
+  const fallbackGapRequirement =
+    requirementMap.find((item) => item.evidenceStrength === "No clear evidence") ??
+    requirementMap.find((item) => item.evidenceStrength === "Adjacent evidence") ??
+    requirementMap[0];
+
+  return {
+    ...narrative,
+    topMatches: narrative.topMatches.map((item) => {
+      const evidenceIds = item.evidenceIds.filter((id) => validEvidenceIds.has(id));
+      return {
+        ...item,
+        evidenceIds: evidenceIds.length ? evidenceIds : fallbackEvidenceId ? [fallbackEvidenceId] : [],
+      };
+    }),
+    topGaps: narrative.topGaps.map((item) => ({
+      ...item,
+      requirementId: validRequirementIds.has(item.requirementId)
+        ? item.requirementId
+        : fallbackGapRequirement.requirementId,
+    })),
+  } satisfies JobFitNarrative;
 }
 
 async function callStructuredModel<T>({
@@ -463,17 +554,22 @@ async function callStructuredModel<T>({
 }: {
   apiKey: string;
   instructions: string;
-  schema: typeof normalizeJobSchema | typeof jobFitResultSchema;
+  schema: typeof normalizeJobSchema | typeof jobFitNarrativeSchema;
   input: string;
 }) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 20000);
+
   const openAiResponse = await fetch("https://api.openai.com/v1/responses", {
     method: "POST",
+    signal: controller.signal,
     headers: {
       Authorization: `Bearer ${apiKey}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
       model: "gpt-4o-mini",
+      max_output_tokens: 1800,
       text: {
         format: {
           type: "json_schema",
@@ -490,6 +586,7 @@ async function callStructuredModel<T>({
       ],
     }),
   });
+  clearTimeout(timeout);
 
   if (!openAiResponse.ok) {
     const errorText = await openAiResponse.text();
@@ -529,15 +626,30 @@ export async function POST(request: Request) {
 
   try {
     const { jobDescription } = (await request.json()) as { jobDescription?: string };
-    if (!jobDescription?.trim()) {
+    const cleanedJobDescription = cleanJobDescription(jobDescription ?? "");
+
+    if (!cleanedJobDescription) {
       return Response.json({ error: "Please paste a job description to analyze." }, { status: 400 });
+    }
+
+    if (cleanedJobDescription.length > maxJobDescriptionLength) {
+      return Response.json(
+        { error: `Please keep the job description under ${maxJobDescriptionLength.toLocaleString()} characters.` },
+        { status: 413 },
+      );
+    }
+
+    const cacheKey = await hashText(cleanedJobDescription.toLowerCase());
+    const cached = responseCache.get(cacheKey);
+    if (cached) {
+      return Response.json({ ...cached, cacheStatus: "hit" });
     }
 
     const normalizedBrief = await callStructuredModel<NormalizedJobBrief>({
       apiKey,
       instructions: normalizeJobPrompt,
       schema: normalizeJobSchema,
-      input: `Normalize this pasted job description into a compact hiring brief:\n\n${jobDescription.trim()}`,
+      input: `Normalize this pasted job description into a compact hiring brief:\n\n${cleanedJobDescription}`,
     });
 
     if (!validateNormalizedJobBrief(normalizedBrief)) {
@@ -547,16 +659,41 @@ export async function POST(request: Request) {
       );
     }
 
-    const result = await callStructuredModel<Omit<JobFitResult, "normalizedJobBrief">>({
+    const retrievedEvidence = retrieveRelevantEvidence(normalizedBrief, allPortfolioEvidenceUnits, 10);
+    const requirementMap = mapRequirementsToEvidence(normalizedBrief, retrievedEvidence);
+    const scoreBreakdown = computeScore(normalizedBrief, requirementMap);
+    const verdict = verdictFromScore(scoreBreakdown);
+
+    const narrative = await callStructuredModel<JobFitNarrative>({
       apiKey,
       instructions: analyzeJobFitPrompt,
-      schema: jobFitResultSchema,
-      input: `Analyze Akshay's fit using this normalized job brief:\n\n${JSON.stringify(normalizedBrief, null, 2)}`,
+      schema: jobFitNarrativeSchema,
+      input: buildAnalysisPacket({
+        normalizedBrief,
+        retrievedEvidence,
+        requirementMap,
+        scoreBreakdown,
+        verdict,
+      }),
     });
 
+    if (!validateJobFitNarrative(narrative)) {
+      return Response.json(
+        { error: "The model returned an unexpected fit narrative shape. Please try again." },
+        { status: 502 },
+      );
+    }
+
+    const groundedNarrative = enforceNarrativeGrounding(narrative, requirementMap, retrievedEvidence);
+
     const responsePayload = {
-      ...result,
+      verdict,
+      scoreBreakdown,
+      ...groundedNarrative,
+      requirementMap,
       normalizedJobBrief: normalizedBrief,
+      retrievedEvidence,
+      cacheStatus: "miss",
     } satisfies JobFitResult;
 
     if (!validateJobFitResult(responsePayload)) {
@@ -566,9 +703,12 @@ export async function POST(request: Request) {
       );
     }
 
+    responseCache.set(cacheKey, responsePayload);
+
     return Response.json(responsePayload);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Internal Server Error";
-    return Response.json({ error: message }, { status: message.includes("rate-limited") ? 429 : 500 });
+    const status = message.includes("rate-limited") ? 429 : message.includes("abort") ? 408 : 500;
+    return Response.json({ error: message }, { status });
   }
 }

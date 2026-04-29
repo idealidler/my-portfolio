@@ -11,6 +11,7 @@ export type JobRequirementCategory =
   | "Constraint";
 
 export type EvidenceStrength = "Direct evidence" | "Adjacent evidence" | "No clear evidence";
+export type RequirementEvidenceClassification = "direct" | "adjacent" | "missing";
 
 export type NormalizedJobRequirement = {
   canonicalLabel: string;
@@ -34,12 +35,24 @@ export type NormalizedJobBrief = {
 };
 
 export type RequirementMapItem = {
+  requirementId: string;
   requirement: string;
   category: JobRequirementCategory;
   importance: JobRequirementImportance;
   evidenceStrength: EvidenceStrength;
+  matchedEvidenceIds: string[];
   matchedEvidence: string;
   recruiterNote: string;
+};
+
+export type GroundedMatchItem = {
+  text: string;
+  evidenceIds: string[];
+};
+
+export type GroundedGapItem = {
+  text: string;
+  requirementId: string;
 };
 
 export type MatchScoreBreakdown = {
@@ -66,16 +79,19 @@ export type JobFitResult = {
   verdict: JobFitVerdict;
   scoreBreakdown: MatchScoreBreakdown;
   summary: string;
-  topMatches: string[];
-  topGaps: string[];
+  topMatches: GroundedMatchItem[];
+  topGaps: GroundedGapItem[];
   recruiterInsight: RecruiterInsight;
   screeningRecommendation: string;
   screeningQuestions: ScreeningQuestion[];
   requirementMap: RequirementMapItem[];
   normalizedJobBrief: NormalizedJobBrief;
+  retrievedEvidence: PortfolioEvidenceUnit[];
+  cacheStatus?: "hit" | "miss";
 };
 
 export type PortfolioEvidenceUnit = {
+  id: string;
   claim: string;
   sourceArea: string;
   capabilities: string[];
