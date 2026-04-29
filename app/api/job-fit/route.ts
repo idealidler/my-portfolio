@@ -95,7 +95,27 @@ const jobFitResultSchema = {
     properties: {
       verdict: {
         type: "string",
-        enum: ["Strong", "Plausible", "Stretch", "Weak"],
+        enum: ["Strong fit", "Moderate fit", "Stretch", "Not ideal"],
+      },
+      scoreBreakdown: {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+          overallScore: { type: "number", minimum: 0, maximum: 100 },
+          skillsMatch: { type: "number", minimum: 0, maximum: 100 },
+          experienceRelevance: { type: "number", minimum: 0, maximum: 100 },
+          domainAlignment: { type: "number", minimum: 0, maximum: 100 },
+          seniorityFit: { type: "number", minimum: 0, maximum: 100 },
+          scoreRationale: { type: "string" },
+        },
+        required: [
+          "overallScore",
+          "skillsMatch",
+          "experienceRelevance",
+          "domainAlignment",
+          "seniorityFit",
+          "scoreRationale",
+        ],
       },
       summary: { type: "string" },
       topMatches: {
@@ -106,11 +126,35 @@ const jobFitResultSchema = {
       },
       topGaps: {
         type: "array",
-        minItems: 2,
-        maxItems: 2,
+        minItems: 3,
+        maxItems: 3,
         items: { type: "string" },
       },
+      recruiterInsight: {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+          differentiator: { type: "string" },
+          tradeoff: { type: "string" },
+          screeningFocus: { type: "string" },
+        },
+        required: ["differentiator", "tradeoff", "screeningFocus"],
+      },
       screeningRecommendation: { type: "string" },
+      screeningQuestions: {
+        type: "array",
+        minItems: 2,
+        maxItems: 3,
+        items: {
+          type: "object",
+          additionalProperties: false,
+          properties: {
+            question: { type: "string" },
+            whyAsk: { type: "string" },
+          },
+          required: ["question", "whyAsk"],
+        },
+      },
       requirementMap: {
         type: "array",
         minItems: 4,
@@ -145,10 +189,13 @@ const jobFitResultSchema = {
     },
     required: [
       "verdict",
+      "scoreBreakdown",
       "summary",
       "topMatches",
       "topGaps",
+      "recruiterInsight",
       "screeningRecommendation",
+      "screeningQuestions",
       "requirementMap",
     ],
   },
@@ -167,19 +214,36 @@ const normalizeJobPrompt = [
 ].join("\n");
 
 const analyzeJobFitPrompt = [
-  "You are AkshayGPT, a recruiter-facing portfolio analyst for Akshay Jain.",
+  "You are AkshayGPT, a recruiter-facing candidate evaluation analyst for Akshay Jain.",
   "Use only the normalized job brief and the portfolio evidence units provided.",
-  "Be evidence-first, conservative, and concise.",
+  "Your job is to help a recruiter decide whether Akshay is worth screening, not to sell him uncritically.",
+  "Be evidence-first, conservative, concise, and balanced.",
   "Never invent experience, seniority, technologies, or scale that are not supported by the evidence units.",
   "Do not treat tool-name overlap alone as qualification if the evidence does not show meaningful usage.",
+  "Do not inflate scores to be polite. Missing direct evidence should lower the relevant component score.",
+  "Distinguish direct matches, adjacent/transferable matches, and gaps.",
   "If a core requirement lacks explicit support, say so plainly and factor it into the verdict.",
+  "Recognize synonyms and related tools conservatively: SQL can transfer across warehouses, Power BI can transfer to BI/reporting roles, Python analytics can transfer to data workflow roles, but do not claim exact tool experience unless evidenced.",
+  "Scoring rules:",
+  "- overallScore is a weighted recruiter estimate: skillsMatch 35%, experienceRelevance 30%, domainAlignment 15%, seniorityFit 20%.",
+  "- 85-100 means strong direct evidence across nearly all core requirements.",
+  "- 70-84 means credible fit with one or two validation areas.",
+  "- 50-69 means plausible but meaningfully adjacent or incomplete.",
+  "- Below 50 means important core requirements are unsupported.",
+  "- Cap overallScore at 84 if any must-have/core requirement has No clear evidence.",
+  "- Cap overallScore at 69 if two or more core requirements have No clear evidence.",
+  "- Cap overallScore at 59 if the role appears clearly senior/lead/staff and the evidence does not support that level.",
   "Verdict rules:",
-  "- Strong: direct evidence for most core requirements, with no major missing must-have.",
-  "- Plausible: strong overlap overall, but at least one area should be validated in screening.",
+  "- Strong fit: direct evidence for most core requirements, no major missing must-have, overallScore normally 85+.",
+  "- Moderate fit: strong overlap overall, but at least one area should be validated in screening, overallScore normally 70-84.",
   "- Stretch: some overlap, but multiple core gaps or depth concerns remain.",
-  "- Weak: limited overlap or several important core requirements lack evidence.",
-  "topMatches should be exactly 3 short bullets.",
-  "topGaps should be exactly 2 short bullets.",
+  "- Not ideal: limited overlap or several important core requirements lack evidence.",
+  "topMatches should be exactly 3 specific bullets tied to direct or transferable evidence.",
+  "topGaps should be exactly 3 specific bullets. Include missing skills, partial depth, seniority concerns, domain gaps, or uncertainty when relevant.",
+  "recruiterInsight.differentiator should explain what stands out beyond keyword overlap, especially problem-solving, business stakeholder partnership, and consultative execution when supported.",
+  "recruiterInsight.tradeoff should state the main hiring trade-off honestly.",
+  "recruiterInsight.screeningFocus should say what a recruiter should validate in a first call.",
+  "screeningQuestions should include 2-3 practical questions that test gaps or depth, not softball questions.",
   "requirementMap should include the 4-6 highest-signal requirements from the normalized brief.",
   "For evidenceStrength use exactly one of: Direct evidence, Adjacent evidence, No clear evidence.",
   "screeningRecommendation must be one concise sentence for a recruiter.",
@@ -269,6 +333,48 @@ function isRequirementMapItem(value: unknown): value is RequirementMapItem {
   );
 }
 
+function isFiniteScore(value: unknown) {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0 && value <= 100;
+}
+
+function isScoreBreakdown(value: unknown) {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const item = value as Record<string, unknown>;
+  return (
+    isFiniteScore(item.overallScore) &&
+    isFiniteScore(item.skillsMatch) &&
+    isFiniteScore(item.experienceRelevance) &&
+    isFiniteScore(item.domainAlignment) &&
+    isFiniteScore(item.seniorityFit) &&
+    typeof item.scoreRationale === "string"
+  );
+}
+
+function isRecruiterInsight(value: unknown) {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const item = value as Record<string, unknown>;
+  return (
+    typeof item.differentiator === "string" &&
+    typeof item.tradeoff === "string" &&
+    typeof item.screeningFocus === "string"
+  );
+}
+
+function isScreeningQuestion(value: unknown) {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const item = value as Record<string, unknown>;
+  return typeof item.question === "string" && typeof item.whyAsk === "string";
+}
+
 function isNormalizedRequirement(value: unknown) {
   if (!value || typeof value !== "object") {
     return false;
@@ -325,17 +431,23 @@ function validateJobFitResult(payload: unknown): payload is JobFitResult {
   }
 
   const result = payload as Record<string, unknown>;
-  const validVerdicts = new Set(["Strong", "Plausible", "Stretch", "Weak"]);
+  const validVerdicts = new Set(["Strong fit", "Moderate fit", "Stretch", "Not ideal"]);
 
   return (
     typeof result.verdict === "string" &&
     validVerdicts.has(result.verdict) &&
+    isScoreBreakdown(result.scoreBreakdown) &&
     typeof result.summary === "string" &&
     isStringArray(result.topMatches) &&
     result.topMatches.length === 3 &&
     isStringArray(result.topGaps) &&
-    result.topGaps.length === 2 &&
+    result.topGaps.length === 3 &&
+    isRecruiterInsight(result.recruiterInsight) &&
     typeof result.screeningRecommendation === "string" &&
+    Array.isArray(result.screeningQuestions) &&
+    result.screeningQuestions.length >= 2 &&
+    result.screeningQuestions.length <= 3 &&
+    result.screeningQuestions.every(isScreeningQuestion) &&
     Array.isArray(result.requirementMap) &&
     result.requirementMap.length >= 4 &&
     result.requirementMap.length <= 6 &&

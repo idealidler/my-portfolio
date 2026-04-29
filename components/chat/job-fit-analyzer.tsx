@@ -9,9 +9,9 @@ import { cn } from "@/lib/utils";
 
 function verdictToneClasses(verdict: JobFitResult["verdict"]) {
   switch (verdict) {
-    case "Strong":
+    case "Strong fit":
       return "border-emerald-300 bg-white text-emerald-700";
-    case "Plausible":
+    case "Moderate fit":
       return "border-sky-300 bg-white text-sky-700";
     case "Stretch":
       return "border-amber-300 bg-white text-amber-700";
@@ -33,6 +33,38 @@ function evidenceToneClasses(evidenceStrength: JobFitResult["requirementMap"][nu
 
 function compactList(items: string[]) {
   return items.length ? items.join(", ") : "None identified";
+}
+
+function scoreToneClass(score: number) {
+  if (score >= 85) {
+    return "bg-emerald-500";
+  }
+
+  if (score >= 70) {
+    return "bg-sky-500";
+  }
+
+  if (score >= 50) {
+    return "bg-amber-500";
+  }
+
+  return "bg-rose-500";
+}
+
+function ScoreBar({ label, score }: { label: string; score: number }) {
+  const boundedScore = Math.max(0, Math.min(100, Math.round(score)));
+
+  return (
+    <div>
+      <div className="flex items-center justify-between gap-4 text-sm">
+        <span className="font-medium text-slate-700">{label}</span>
+        <span className="font-semibold text-slate-950">{boundedScore}%</span>
+      </div>
+      <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-100">
+        <div className={cn("h-full rounded-full", scoreToneClass(boundedScore))} style={{ width: `${boundedScore}%` }} />
+      </div>
+    </div>
+  );
 }
 
 export function JobFitAnalyzer() {
@@ -86,14 +118,31 @@ export function JobFitAnalyzer() {
     }
 
     const text = [
-      `Verdict: ${result.verdict}`,
+      `Verdict: ${result.verdict} (${Math.round(result.scoreBreakdown.overallScore)}%)`,
+      `Score rationale: ${result.scoreBreakdown.scoreRationale}`,
       `Summary: ${result.summary}`,
+      "",
+      "Score breakdown:",
+      `Skills match: ${Math.round(result.scoreBreakdown.skillsMatch)}%`,
+      `Experience relevance: ${Math.round(result.scoreBreakdown.experienceRelevance)}%`,
+      `Domain alignment: ${Math.round(result.scoreBreakdown.domainAlignment)}%`,
+      `Seniority fit: ${Math.round(result.scoreBreakdown.seniorityFit)}%`,
       "",
       "Strongest alignment:",
       ...result.topMatches.map((item, index) => `${index + 1}. ${item}`),
       "",
-      "Key gaps:",
+      "Gaps and risks:",
       ...result.topGaps.map((item, index) => `${index + 1}. ${item}`),
+      "",
+      "Recruiter insight:",
+      `Differentiator: ${result.recruiterInsight.differentiator}`,
+      `Trade-off: ${result.recruiterInsight.tradeoff}`,
+      `Screening focus: ${result.recruiterInsight.screeningFocus}`,
+      "",
+      "Screening questions:",
+      ...result.screeningQuestions.map(
+        (item, index) => `${index + 1}. ${item.question}\nWhy ask: ${item.whyAsk}`,
+      ),
       "",
       `Recommendation: ${result.screeningRecommendation}`,
       "",
@@ -126,8 +175,8 @@ export function JobFitAnalyzer() {
                 Job Fit Analyzer
               </h2>
               <p className="mt-3 text-sm leading-7 text-slate-600 sm:text-base">
-                Paste a JD and get a concise recruiter summary grounded only in Akshay&apos;s
-                portfolio evidence.
+                Paste a JD and get a balanced recruiter-style evaluation grounded only in
+                Akshay&apos;s portfolio evidence.
               </p>
             </div>
             <button
@@ -182,15 +231,15 @@ export function JobFitAnalyzer() {
             <div className="rounded-[1.75rem] border border-slate-200/80 bg-white/82 p-4 sm:p-5">
               {result ? (
                 <div>
-                  <div className="rounded-[1.75rem] border border-emerald-200/80 bg-[linear-gradient(135deg,rgba(236,253,245,0.95),rgba(240,253,244,0.92),rgba(255,255,255,0.9))] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] sm:p-6">
-                    <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                  <div className="rounded-[1.75rem] border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6">
+                    <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
                       <div className="max-w-3xl">
                         <div className="flex flex-wrap items-center gap-3">
                           <Badge className={verdictToneClasses(result.verdict)}>{result.verdict}</Badge>
-                          <p className="text-sm text-emerald-800/80">Recruiter summary</p>
+                          <p className="text-sm text-slate-500">Recruiter decision signal</p>
                         </div>
                         <p className="mt-4 text-base leading-7 text-slate-800">{result.summary}</p>
-                        <div className="mt-4 rounded-[1.25rem] border border-emerald-200/80 bg-white/80 p-4">
+                        <div className="mt-4 rounded-[1.25rem] border border-slate-200/80 bg-slate-50/80 p-4">
                           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">
                             Recommendation
                           </p>
@@ -200,17 +249,44 @@ export function JobFitAnalyzer() {
                         </div>
                       </div>
 
-                      <div className="job-fit-print-hidden flex justify-end lg:min-w-[150px]">
+                      <div className="flex flex-col gap-4 lg:min-w-[230px]">
+                        <div className="rounded-[1.25rem] border border-slate-200 bg-slate-50/85 p-4 text-center">
+                          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                            Match score
+                          </p>
+                          <p className="mt-2 text-4xl font-semibold tracking-tight text-slate-950">
+                            {Math.round(result.scoreBreakdown.overallScore)}
+                          </p>
+                          <p className="mt-1 text-xs text-slate-500">out of 100</p>
+                        </div>
                         <button
                           type="button"
                           onClick={() => void copyTakeaway()}
-                          className={cn(buttonVariants({ variant: "secondary", size: "sm" }))}
+                          className={cn(
+                            buttonVariants({ variant: "secondary", size: "sm" }),
+                            "job-fit-print-hidden",
+                          )}
                         >
                           <Copy className="mr-2 h-4 w-4" />
                           {copied ? "Copied" : "Copy"}
                         </button>
                       </div>
                     </div>
+                  </div>
+
+                  <div className="mt-5 rounded-[1.5rem] border border-slate-200/70 bg-slate-50/70 p-4">
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+                      Score breakdown
+                    </p>
+                    <div className="mt-4 grid gap-4 md:grid-cols-2">
+                      <ScoreBar label="Skills match" score={result.scoreBreakdown.skillsMatch} />
+                      <ScoreBar label="Experience relevance" score={result.scoreBreakdown.experienceRelevance} />
+                      <ScoreBar label="Domain alignment" score={result.scoreBreakdown.domainAlignment} />
+                      <ScoreBar label="Seniority fit" score={result.scoreBreakdown.seniorityFit} />
+                    </div>
+                    <p className="mt-4 text-sm leading-6 text-slate-600">
+                      {result.scoreBreakdown.scoreRationale}
+                    </p>
                   </div>
 
                   <div className="mt-5 grid gap-4 lg:grid-cols-2">
@@ -230,7 +306,7 @@ export function JobFitAnalyzer() {
 
                     <div className="rounded-[1.5rem] border border-amber-200/70 bg-amber-50/65 p-4">
                       <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
-                        Key gaps
+                        Gaps and risks
                       </p>
                       <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-600">
                         {result.topGaps.map((item) => (
@@ -240,6 +316,51 @@ export function JobFitAnalyzer() {
                           </li>
                         ))}
                       </ul>
+                    </div>
+                  </div>
+
+                  <div className="mt-5 grid gap-4 lg:grid-cols-3">
+                    <div className="rounded-[1.5rem] border border-slate-200/70 bg-white/85 p-4">
+                      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+                        Differentiator
+                      </p>
+                      <p className="mt-3 text-sm leading-6 text-slate-600">
+                        {result.recruiterInsight.differentiator}
+                      </p>
+                    </div>
+                    <div className="rounded-[1.5rem] border border-slate-200/70 bg-white/85 p-4">
+                      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+                        Hiring trade-off
+                      </p>
+                      <p className="mt-3 text-sm leading-6 text-slate-600">
+                        {result.recruiterInsight.tradeoff}
+                      </p>
+                    </div>
+                    <div className="rounded-[1.5rem] border border-slate-200/70 bg-white/85 p-4">
+                      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+                        Screen for
+                      </p>
+                      <p className="mt-3 text-sm leading-6 text-slate-600">
+                        {result.recruiterInsight.screeningFocus}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mt-5 rounded-[1.5rem] border border-slate-200/70 bg-white/85 p-4">
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+                      Screening questions
+                    </p>
+                    <div className="mt-4 grid gap-3 lg:grid-cols-2">
+                      {result.screeningQuestions.map((item) => (
+                        <div key={item.question} className="rounded-[1.25rem] border border-slate-200/70 bg-slate-50/80 p-4">
+                          <p className="text-sm font-semibold leading-6 text-slate-950">
+                            {item.question}
+                          </p>
+                          <p className="mt-2 text-sm leading-6 text-slate-500">
+                            {item.whyAsk}
+                          </p>
+                        </div>
+                      ))}
                     </div>
                   </div>
 
@@ -386,7 +507,7 @@ export function JobFitAnalyzer() {
                         Akshay Jain Recruiter Tool Summary
                       </p>
                       <h3 className="mt-3 text-2xl font-semibold text-slate-950">
-                        {result.verdict}
+                        {result.verdict} ({Math.round(result.scoreBreakdown.overallScore)}/100)
                       </h3>
                       <p className="mt-3 text-sm leading-7 text-slate-700">{result.summary}</p>
                       <div className="mt-6">
@@ -405,7 +526,7 @@ export function JobFitAnalyzer() {
                           </ul>
                         </div>
                         <div>
-                          <p className="text-sm font-semibold text-slate-900">Key gaps</p>
+                          <p className="text-sm font-semibold text-slate-900">Gaps and risks</p>
                           <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-600">
                             {result.topGaps.map((item) => (
                               <li key={item}>{item}</li>
@@ -472,10 +593,10 @@ export function JobFitAnalyzer() {
                     What recruiters get
                   </p>
                   <ul className="mt-4 space-y-3 text-sm leading-6 text-slate-600">
-                    <li>A concise verdict and one clear recommendation.</li>
+                    <li>A transparent score with skills, experience, domain, and seniority breakdowns.</li>
                     <li>Three strongest alignment signals recruiters can scan quickly.</li>
-                    <li>Two key gaps to validate before the screening call.</li>
-                    <li>Detailed JD brief and requirement mapping only when deeper review is needed.</li>
+                    <li>Three gaps or risks to validate before the screening call.</li>
+                    <li>Screening questions and requirement mapping when deeper review is needed.</li>
                   </ul>
                 </div>
               )}

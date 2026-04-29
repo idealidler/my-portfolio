@@ -1,4 +1,4 @@
-export type JobFitVerdict = "Strong" | "Plausible" | "Stretch" | "Weak";
+export type JobFitVerdict = "Strong fit" | "Moderate fit" | "Stretch" | "Not ideal";
 
 export type JobRequirementImportance = "Core" | "Secondary";
 
@@ -42,12 +42,35 @@ export type RequirementMapItem = {
   recruiterNote: string;
 };
 
+export type MatchScoreBreakdown = {
+  overallScore: number;
+  skillsMatch: number;
+  experienceRelevance: number;
+  domainAlignment: number;
+  seniorityFit: number;
+  scoreRationale: string;
+};
+
+export type RecruiterInsight = {
+  differentiator: string;
+  tradeoff: string;
+  screeningFocus: string;
+};
+
+export type ScreeningQuestion = {
+  question: string;
+  whyAsk: string;
+};
+
 export type JobFitResult = {
   verdict: JobFitVerdict;
+  scoreBreakdown: MatchScoreBreakdown;
   summary: string;
   topMatches: string[];
   topGaps: string[];
+  recruiterInsight: RecruiterInsight;
   screeningRecommendation: string;
+  screeningQuestions: ScreeningQuestion[];
   requirementMap: RequirementMapItem[];
   normalizedJobBrief: NormalizedJobBrief;
 };

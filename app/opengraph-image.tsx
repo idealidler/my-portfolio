@@ -55,7 +55,7 @@ export default function OpenGraphImage() {
             <div style={{ color: "#526077", fontSize: 26, letterSpacing: "0.26em", textTransform: "uppercase" }}>
               Akshay Jain
             </div>
-            <div style={{ fontSize: 30 }}>Analytics Engineer and Data Product Builder</div>
+            <div style={{ fontSize: 30 }}>Consultative Data & Analytics Professional</div>
           </div>
         </div>
         <div
@@ -67,10 +67,10 @@ export default function OpenGraphImage() {
           }}
         >
           <div style={{ fontSize: 72, fontWeight: 700, lineHeight: 1.06 }}>
-            Portfolio, AkshayGPT, and recruiter-ready role-fit analysis.
+            Business-facing analytics, AkshayGPT, and recruiter-ready role-fit analysis.
           </div>
           <div style={{ color: "#526077", fontSize: 30, lineHeight: 1.35 }}>
-            Enterprise BI impact, modern data products, and honest recruiter-focused evaluation.
+            Turning ambiguous problems into BI systems, data products, and clearer decisions.
           </div>
         </div>
       </div>

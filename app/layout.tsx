@@ -6,9 +6,9 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.akshayjain.vip"
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: "Akshay Jain | Analytics Engineer",
+  title: "Akshay Jain | Data & Analytics",
   description:
-    "Premium portfolio experience for Akshay Jain, showcasing analytics engineering, data products, featured GitHub projects, and AkshayGPT.",
+    "Portfolio for Akshay Jain, showcasing business-facing analytics, BI systems, data products, featured GitHub projects, and AkshayGPT.",
   alternates: {
     canonical: "/",
   },
@@ -17,9 +17,9 @@ export const metadata: Metadata = {
     apple: "/apple-icon",
   },
   openGraph: {
-    title: "Akshay Jain | Analytics Engineer",
+    title: "Akshay Jain | Data & Analytics",
     description:
-      "Portfolio for Akshay Jain, featuring analytics engineering impact, modern data products, AkshayGPT, and recruiter-ready job-fit analysis.",
+      "Portfolio for Akshay Jain, featuring business-facing analytics impact, modern data products, AkshayGPT, and recruiter-ready job-fit analysis.",
     url: siteUrl,
     siteName: "Akshay Jain Portfolio",
     type: "website",
@@ -34,9 +34,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Akshay Jain | Analytics Engineer",
+    title: "Akshay Jain | Data & Analytics",
     description:
-      "Analytics engineering portfolio with recruiter-fit analysis, AkshayGPT, and enterprise BI impact.",
+      "Business-facing analytics portfolio with recruiter-fit analysis, AkshayGPT, and enterprise BI impact.",
     images: ["/twitter-image"],
   },
 };

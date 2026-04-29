@@ -73,12 +73,12 @@ export function HomePage() {
           <div className="hero-orb hero-orb-three right-1/3 top-12" />
           <div className="bg-shimmer absolute inset-x-0 top-0 h-px animate-shimmer" />
           <h1 className="max-w-4xl text-balance text-4xl font-semibold leading-tight tracking-tight text-slate-950 sm:text-5xl lg:text-6xl">
-            I build reporting systems and data products that make complex decisions easier to act on.
+            I turn ambiguous business questions into data products people use to make better decisions.
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600">
-            My work spans enterprise analytics engineering, productized dashboards, ETL pipelines,
-            and user-facing data applications. This portfolio brings together measurable business
-            impact, newer GitHub builds, and an AI guide that speaks from the same structured source of truth.
+            My work spans stakeholder discovery, enterprise BI, data modeling, automation, and user-facing analytics apps.
+            This portfolio brings together measurable business impact, newer GitHub builds, and an AI guide that answers from
+            the same structured source of truth.
           </p>
 
           <div className="mt-8 rounded-[1.75rem] border border-white/70 bg-white/80 p-5 shadow-card">
@@ -135,7 +135,7 @@ export function HomePage() {
               Based in Philadelphia
             </p>
             <h2 className="mt-2 text-2xl font-semibold text-slate-950">Akshay Jain</h2>
-            <p className="text-base text-slate-600">Analytics Engineer and Data Product Builder</p>
+            <p className="text-base text-slate-600">Consultative Data & Analytics Professional</p>
           </div>
 
           <div className="mt-8 rounded-[1.5rem] border border-sky-100 bg-gradient-to-br from-sky-50 via-white to-sky-50 p-5">
@@ -144,9 +144,9 @@ export function HomePage() {
             </p>
             <div className="mt-4 space-y-3">
               {[
-                "Analytics engineering roles with strong stakeholder ownership",
-                "BI teams modernizing from reporting into reusable semantic models",
-                "Product-minded data roles that need both execution and business communication",
+                "Analytics roles that need close stakeholder partnership",
+                "BI teams turning messy reporting into reusable decision systems",
+                "Product-minded data roles that value initiative in undefined problems",
               ].map((item) => (
                 <p key={item} className="text-sm leading-6 text-slate-700">
                   {item}
@@ -193,8 +193,8 @@ export function HomePage() {
       <section id="proof" className="mx-auto max-w-7xl scroll-mt-28 py-10 sm:py-12">
         <SectionHeading
           eyebrow="Why this format works"
-          title="Recruiter clarity, hiring-manager depth, and AI-assisted exploration in one product"
-          description="Instead of splitting the portfolio into disconnected experiences, the site now tells one clearer story with tailored entry points and shared data underneath."
+          title="Recruiter clarity, hiring-manager depth, and AI-assisted exploration in one place"
+          description="The portfolio is organized around one story: business problems clarified, data systems built, and decisions made easier."
         />
         <div className="mt-8 grid gap-5 lg:grid-cols-3">
           {audiencePaths.map((path) => (
@@ -220,8 +220,8 @@ export function HomePage() {
       <section id="experience" className="mx-auto max-w-7xl scroll-mt-28 py-10 sm:py-12">
         <SectionHeading
           eyebrow="Career history"
-          title="Enterprise delivery depth first, with independent product building alongside it"
-          description="The strongest signal in this portfolio is Holman: owning modern BI systems, operational analytics, stakeholder alignment, and adoption at enterprise scale."
+          title="Enterprise analytics delivery with independent product building alongside it"
+          description="The strongest signal is Holman: clarifying stakeholder needs, shaping modern BI systems, and driving adoption at enterprise scale."
         />
         <div className="mt-10 grid gap-6 lg:grid-cols-[1.35fr_0.65fr]">
           <div className="space-y-6">
@@ -264,9 +264,9 @@ export function HomePage() {
             <div className="surface rounded-[2rem] p-6">
               <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Snapshot</p>
               <ul className="mt-5 space-y-4 text-sm leading-6 text-slate-600">
-                <li>Authorized to work in the U.S. with STEM OPT through May 2026.</li>
-                <li>Open to relocation and conversations around analytics engineering, BI, and data product roles.</li>
-                <li>Strongest in roles that need both technical execution and stakeholder-facing clarity.</li>
+                <li>Authorized to work in the U.S. on an H-1B visa.</li>
+                <li>Open to relocation and conversations around analytics engineering, data engineering, BI, and data product roles.</li>
+                <li>Strongest in roles that need business-facing problem solving and strong technical follow-through.</li>
               </ul>
             </div>
 
@@ -276,7 +276,7 @@ export function HomePage() {
                 {[
                   "Owns both backend data shaping and frontend reporting experiences.",
                   "Works comfortably with stakeholders, executives, and operational teams.",
-                  "Builds systems that get adopted, not just dashboards that get demoed.",
+                  "Looks beyond the initial ask to suggest simpler, clearer, or more useful approaches.",
                 ].map((item) => (
                   <div key={item} className="rounded-[1.5rem] border border-slate-200/70 bg-white/80 p-4">
                     <p className="text-sm leading-6 text-slate-700">{item}</p>
@@ -306,8 +306,8 @@ export function HomePage() {
       <section id="projects" className="mx-auto max-w-7xl scroll-mt-28 py-10 sm:py-12">
         <SectionHeading
           eyebrow="Featured work"
-          title="Recent GitHub projects that show a broader analytics + data product range"
-          description="The portfolio now leads with newer public repos that demonstrate geospatial tooling, production backend thinking, product UX, and developer tooling."
+          title="Recent GitHub projects that show applied problem solving"
+          description="These public builds demonstrate geospatial decision support, production backend thinking, product UX, and developer workflow design."
         />
         <div className="mt-10 grid gap-6 lg:grid-cols-2">
           {featuredProjects.map((project) => (
@@ -467,8 +467,8 @@ export function HomePage() {
       <section id="skills" className="mx-auto max-w-7xl scroll-mt-28 py-10 sm:py-12">
         <SectionHeading
           eyebrow="Skills & toolbox"
-          title="Built around BI rigor, application-layer execution, and shipping useful systems"
-          description="The strongest thread across my work is turning data into something decision-makers can actually use."
+          title="Tools organized around decision support"
+          description="The toolset matters most because it helps turn unclear business questions into trusted, usable systems."
         />
         <div className="mt-10 grid gap-6 lg:grid-cols-4">
           {skillGroups.map((group) => (
@@ -493,10 +493,10 @@ export function HomePage() {
                 Get in touch
               </p>
               <h2 className="mt-4 max-w-2xl text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
-                Open to teams that care about durable analytics systems and thoughtful data products.
+                Open to teams that need data work close to real business decisions.
               </h2>
               <p className="mt-4 max-w-2xl text-base leading-7 text-slate-600">
-                If you&apos;re hiring for analytics engineering, BI, or product-minded data work, I&apos;d love to connect.
+                If you&apos;re hiring for analytics, BI, or product-minded data work, I&apos;d love to connect.
               </p>
             </div>
 

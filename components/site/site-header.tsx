@@ -53,7 +53,7 @@ export function SiteHeader() {
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
               Akshay Jain
             </p>
-            <p className="text-sm text-slate-700">Analytics Engineer and Data Product Builder</p>
+            <p className="text-sm text-slate-700">Consultative Data & Analytics Professional</p>
           </div>
         </Link>
 
