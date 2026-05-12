@@ -88,6 +88,11 @@ export type JobFitResult = {
   normalizedJobBrief: NormalizedJobBrief;
   retrievedEvidence: PortfolioEvidenceUnit[];
   cacheStatus?: "hit" | "miss";
+  analysisMeta?: {
+    mode: "model" | "degraded";
+    confidenceLabel: "Evidence-backed" | "Directional";
+    notes: string[];
+  };
 };
 
 export type PortfolioEvidenceUnit = {

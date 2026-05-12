@@ -31,6 +31,14 @@ function evidenceToneClasses(evidenceStrength: JobFitResult["requirementMap"][nu
   }
 }
 
+function confidenceToneClasses(confidenceLabel: NonNullable<JobFitResult["analysisMeta"]>["confidenceLabel"]) {
+  if (confidenceLabel === "Evidence-backed") {
+    return "border-emerald-200 bg-emerald-50 text-emerald-700";
+  }
+
+  return "border-amber-200 bg-amber-50 text-amber-700";
+}
+
 function compactList(items: string[]) {
   return items.length ? items.join(", ") : "None identified";
 }
@@ -158,6 +166,10 @@ export function JobFitAnalyzer() {
       "",
       `Recommendation: ${result.screeningRecommendation}`,
       "",
+      "Analysis quality:",
+      `${result.analysisMeta?.confidenceLabel ?? "Evidence-backed"} (${result.analysisMeta?.mode ?? "model"})`,
+      ...(result.analysisMeta?.notes ?? []).map((note) => `- ${note}`),
+      "",
       "Requirement map:",
       ...result.requirementMap.map(
         (item, index) =>
@@ -248,7 +260,12 @@ export function JobFitAnalyzer() {
                       <div className="max-w-3xl">
                         <div className="flex flex-wrap items-center gap-3">
                           <Badge className={verdictToneClasses(result.verdict)}>{result.verdict}</Badge>
-                          <p className="text-sm text-slate-500">Recruiter decision signal</p>
+                          <Badge
+                            className={confidenceToneClasses(result.analysisMeta?.confidenceLabel ?? "Evidence-backed")}
+                          >
+                            {result.analysisMeta?.confidenceLabel ?? "Evidence-backed"}
+                          </Badge>
+                          <p className="text-sm text-slate-500">Recruiter evidence signal</p>
                         </div>
                         <p className="mt-4 text-base leading-7 text-slate-800">{result.summary}</p>
                         <div className="mt-4 rounded-[1.25rem] border border-slate-200/80 bg-slate-50/80 p-4">
@@ -264,12 +281,12 @@ export function JobFitAnalyzer() {
                       <div className="flex flex-col gap-4 lg:min-w-[230px]">
                         <div className="rounded-[1.25rem] border border-slate-200 bg-slate-50/85 p-4 text-center">
                           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
-                            Match score
+                            Directional score
                           </p>
                           <p className="mt-2 text-4xl font-semibold tracking-tight text-slate-950">
                             {Math.round(result.scoreBreakdown.overallScore)}
                           </p>
-                          <p className="mt-1 text-xs text-slate-500">out of 100</p>
+                          <p className="mt-1 text-xs text-slate-500">evidence-weighted / 100</p>
                         </div>
                         <button
                           type="button"
@@ -299,6 +316,21 @@ export function JobFitAnalyzer() {
                     <p className="mt-4 text-sm leading-6 text-slate-600">
                       {result.scoreBreakdown.scoreRationale}
                     </p>
+                    <p className="mt-2 text-sm leading-6 text-slate-500">
+                      Treat the number as a directional summary. The requirement map below is the source of truth.
+                    </p>
+                    {result.analysisMeta?.notes.length ? (
+                      <div className="mt-4 rounded-[1.25rem] border border-slate-200/70 bg-white/80 p-4">
+                        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                          Analysis quality
+                        </p>
+                        <ul className="mt-2 space-y-2 text-sm leading-6 text-slate-600">
+                          {result.analysisMeta.notes.map((note) => (
+                            <li key={note}>{note}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    ) : null}
                   </div>
 
                   <div className="mt-5 grid gap-4 lg:grid-cols-2">
@@ -524,8 +556,11 @@ export function JobFitAnalyzer() {
                         Akshay Jain Recruiter Tool Summary
                       </p>
                       <h3 className="mt-3 text-2xl font-semibold text-slate-950">
-                        {result.verdict} ({Math.round(result.scoreBreakdown.overallScore)}/100)
+                        {result.verdict} ({Math.round(result.scoreBreakdown.overallScore)}/100 directional)
                       </h3>
+                      <p className="mt-2 text-sm leading-6 text-slate-500">
+                        Analysis quality: {result.analysisMeta?.confidenceLabel ?? "Evidence-backed"}
+                      </p>
                       <p className="mt-3 text-sm leading-7 text-slate-700">{result.summary}</p>
                       <div className="mt-6">
                         <p className="text-sm font-semibold text-slate-900">Recommendation</p>
@@ -615,7 +650,7 @@ export function JobFitAnalyzer() {
                     What recruiters get
                   </p>
                   <ul className="mt-4 space-y-3 text-sm leading-6 text-slate-600">
-                    <li>A transparent score with skills, experience, domain, and seniority breakdowns.</li>
+                    <li>A directional score with skills, experience, domain, and seniority breakdowns.</li>
                     <li>Three strongest alignment signals recruiters can scan quickly.</li>
                     <li>Three gaps or risks to validate before the screening call.</li>
                     <li>Screening questions and requirement mapping when deeper review is needed.</li>
