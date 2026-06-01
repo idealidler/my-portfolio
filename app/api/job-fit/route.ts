@@ -14,13 +14,15 @@ import {
   verdictFromScore,
 } from "@/lib/job-fit-engine";
 import { buildPortfolioEvidenceUnits } from "@/lib/portfolio-evidence";
+import { aiConfig } from "@/lib/server/config/ai-config";
+import { parseAiEnvironment } from "@/lib/server/config/env";
+import { parseJobFitRequestBody } from "@/lib/server/contracts/job-fit";
+import { createLogger, createRequestId } from "@/lib/server/observability/logger";
 
 export const runtime = "edge";
 
 const allPortfolioEvidenceUnits = buildPortfolioEvidenceUnits();
 const responseCache = new Map<string, JobFitResult>();
-const maxJobDescriptionLength = 20000;
-const modelTimeoutMs = 12000;
 
 const normalizedRequirementSchema = {
   type: "object",
@@ -232,10 +234,6 @@ function extractJson(text: string) {
 async function hashText(value: string) {
   const buffer = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
   return [...new Uint8Array(buffer)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
-}
-
-function cleanJobDescription(value: string) {
-  return value.replace(/\s+/g, " ").trim();
 }
 
 function includesAny(value: string, terms: string[]) {
@@ -789,9 +787,13 @@ function isRecoverableModelError(error: unknown) {
   return isAbortLikeError(error) || /fetch failed|network|econnreset|socket/i.test(error.message);
 }
 
-function logDegradedAnalysis(step: "normalization" | "narrative", error: unknown) {
+function logDegradedAnalysis(
+  logger: ReturnType<typeof createLogger>,
+  step: "normalization" | "narrative",
+  error: unknown,
+) {
   const message = error instanceof Error ? error.message : "Unknown model error";
-  console.warn(`[job-fit] ${step} fell back to deterministic analysis: ${message}`);
+  logger.warn("analysis.degraded", { step, error: message });
 }
 
 async function callStructuredModel<T>({
@@ -799,14 +801,16 @@ async function callStructuredModel<T>({
   instructions,
   schema,
   input,
+  clientRequestId,
 }: {
   apiKey: string;
   instructions: string;
   schema: typeof normalizeJobSchema | typeof jobFitNarrativeSchema;
   input: string;
+  clientRequestId: string;
 }) {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), modelTimeoutMs);
+  const timeout = setTimeout(() => controller.abort(), aiConfig.jobFit.modelTimeoutMs);
 
   try {
     const openAiResponse = await fetch("https://api.openai.com/v1/responses", {
@@ -815,10 +819,11 @@ async function callStructuredModel<T>({
       headers: {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
+        "X-Client-Request-Id": clientRequestId,
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini",
-        max_output_tokens: 1800,
+        model: aiConfig.jobFit.model,
+        max_output_tokens: aiConfig.jobFit.maxOutputTokens,
         text: {
           format: {
             type: "json_schema",
@@ -873,33 +878,37 @@ async function callStructuredModel<T>({
 }
 
 export async function POST(request: Request) {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) {
-    return Response.json(
-      { error: "OPENAI_API_KEY is missing. Add it to your environment to enable AkshayGPT." },
-      { status: 500 },
-    );
-  }
+  const requestId = createRequestId();
+  const logger = createLogger({ requestId, route: "job-fit" });
+  const jsonResponse = (body: unknown, status = 200) =>
+    Response.json(body, { status, headers: { "X-Request-Id": requestId } });
 
   try {
-    const { jobDescription } = (await request.json()) as { jobDescription?: string };
-    const cleanedJobDescription = cleanJobDescription(jobDescription ?? "");
-
-    if (!cleanedJobDescription) {
-      return Response.json({ error: "Please paste a job description to analyze." }, { status: 400 });
+    let cleanedJobDescription: string;
+    try {
+      ({ jobDescription: cleanedJobDescription } = parseJobFitRequestBody(await request.text()));
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Invalid job fit request.";
+      logger.warn("request.validation_failed", { reason: message });
+      return jsonResponse({ error: message, requestId }, 400);
     }
 
-    if (cleanedJobDescription.length > maxJobDescriptionLength) {
-      return Response.json(
-        { error: `Please keep the job description under ${maxJobDescriptionLength.toLocaleString()} characters.` },
-        { status: 413 },
+    let apiKey: string;
+    try {
+      ({ OPENAI_API_KEY: apiKey } = parseAiEnvironment());
+    } catch {
+      logger.error("environment.invalid");
+      return jsonResponse(
+        { error: "OPENAI_API_KEY is missing. Add it to your environment to enable AkshayGPT.", requestId },
+        500,
       );
     }
 
     const cacheKey = await hashText(cleanedJobDescription.toLowerCase());
     const cached = responseCache.get(cacheKey);
     if (cached) {
-      return Response.json({ ...cached, cacheStatus: "hit" });
+      logger.info("cache.hit");
+      return jsonResponse({ ...cached, cacheStatus: "hit" });
     }
 
     let normalizedBrief: NormalizedJobBrief;
@@ -911,6 +920,7 @@ export async function POST(request: Request) {
         instructions: normalizeJobPrompt,
         schema: normalizeJobSchema,
         input: `Normalize this pasted job description into a compact hiring brief:\n\n${cleanedJobDescription}`,
+        clientRequestId: `${requestId}:normalization`,
       });
 
       normalizedBrief = validateNormalizedJobBrief(modelBrief)
@@ -918,14 +928,14 @@ export async function POST(request: Request) {
         : buildFallbackNormalizedBrief(cleanedJobDescription);
       if (!validateNormalizedJobBrief(modelBrief)) {
         analysisNotes.push("JD extraction used deterministic parsing because model output was incomplete.");
-        console.warn("[job-fit] normalization returned an invalid shape; using deterministic parser.");
+        logger.warn("analysis.invalid_model_shape", { step: "normalization" });
       }
     } catch (error) {
       if (!isRecoverableModelError(error)) {
         throw error;
       }
 
-      logDegradedAnalysis("normalization", error);
+      logDegradedAnalysis(logger, "normalization", error);
       analysisNotes.push("JD extraction used deterministic parsing because the model step was unavailable.");
       normalizedBrief = buildFallbackNormalizedBrief(cleanedJobDescription);
     }
@@ -949,6 +959,7 @@ export async function POST(request: Request) {
           scoreBreakdown,
           verdict,
         }),
+        clientRequestId: `${requestId}:narrative`,
       });
 
       narrative = validateJobFitNarrative(modelNarrative)
@@ -961,14 +972,14 @@ export async function POST(request: Request) {
           });
       if (!validateJobFitNarrative(modelNarrative)) {
         analysisNotes.push("Narrative used deterministic wording because model output was incomplete.");
-        console.warn("[job-fit] narrative returned an invalid shape; using deterministic narrative.");
+        logger.warn("analysis.invalid_model_shape", { step: "narrative" });
       }
     } catch (error) {
       if (!isRecoverableModelError(error)) {
         throw error;
       }
 
-      logDegradedAnalysis("narrative", error);
+      logDegradedAnalysis(logger, "narrative", error);
       analysisNotes.push("Narrative used deterministic wording because the model step was unavailable.");
       narrative = buildFallbackNarrative({
         verdict,
@@ -998,18 +1009,18 @@ export async function POST(request: Request) {
     } satisfies JobFitResult;
 
     if (!validateJobFitResult(responsePayload)) {
-      return Response.json(
-        { error: "The model returned an unexpected fit analysis shape. Please try again." },
-        { status: 502 },
-      );
+      logger.error("response.validation_failed");
+      return jsonResponse({ error: "The model returned an unexpected fit analysis shape. Please try again.", requestId }, 502);
     }
 
     responseCache.set(cacheKey, responsePayload);
 
-    return Response.json(responsePayload);
+    logger.info("request.completed", { cacheStatus: "miss", mode: responsePayload.analysisMeta.mode });
+    return jsonResponse(responsePayload);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Internal Server Error";
     const status = message.includes("rate-limited") ? 429 : message.includes("abort") ? 408 : 500;
-    return Response.json({ error: message }, { status });
+    logger.error("request.failed", { status, error: message });
+    return jsonResponse({ error: message, requestId }, status);
   }
 }

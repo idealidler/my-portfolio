@@ -1,9 +1,12 @@
 import { retrievePortfolioContext } from "@/lib/portfolio-retrieval";
+import { aiConfig } from "@/lib/server/config/ai-config";
+import { parseAiEnvironment } from "@/lib/server/config/env";
+import { requestLimits } from "@/lib/server/config/limits";
+import { type ChatMessage, parseChatRequestBody } from "@/lib/server/contracts/chat";
+import { createLogger, createRequestId } from "@/lib/server/observability/logger";
 
 export const runtime = "edge";
 
-const maxHistoryMessages = 6;
-const maxCachedResponses = 24;
 const responseCache = new Map<string, string>();
 
 const baseSystemPrompt = [
@@ -21,11 +24,6 @@ const baseSystemPrompt = [
   "If mentioning a URL that exists in the portfolio context, format it as a proper Markdown link.",
   "Prefer short sections and readable spacing over dense paragraphs.",
 ].join("\n");
-
-type ChatMessage = {
-  role: "user" | "assistant" | "system";
-  content: string;
-};
 
 function buildSystemPrompt(latestUserMessage: string) {
   return [
@@ -46,10 +44,10 @@ function toOpenAIInput(messages: ChatMessage[]) {
 function trimConversation(messages: ChatMessage[]) {
   return messages
     .filter((message) => message.role !== "system")
-    .slice(-maxHistoryMessages)
+    .slice(-requestLimits.chat.maxHistoryMessages)
     .map((message) => ({
       role: message.role,
-      content: message.content.slice(0, 2400),
+      content: message.content.slice(0, requestLimits.chat.maxMessageCharacters),
     }));
 }
 
@@ -64,7 +62,7 @@ function setCachedResponse(key: string, value: string) {
 
   responseCache.set(key, value);
 
-  if (responseCache.size > maxCachedResponses) {
+  if (responseCache.size > requestLimits.chat.maxCachedResponses) {
     const oldestKey = responseCache.keys().next().value as string | undefined;
     if (oldestKey) {
       responseCache.delete(oldestKey);
@@ -72,12 +70,13 @@ function setCachedResponse(key: string, value: string) {
   }
 }
 
-function createCachedJsonLineResponse(content: string) {
+function createCachedJsonLineResponse(content: string, requestId: string) {
   return new Response(`${JSON.stringify({ message: { content } })}\n`, {
     headers: {
-      "Content-Type": "application/json",
+      "Content-Type": "application/x-ndjson",
       "Cache-Control": "private, max-age=60",
       "X-AkshayGPT-Cache": "HIT",
+      "X-Request-Id": requestId,
     },
   });
 }
@@ -173,23 +172,37 @@ function createJsonLineStream(
 }
 
 export async function POST(request: Request) {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) {
-    return Response.json(
-      { error: "OPENAI_API_KEY is missing. Add it to your environment to enable AkshayGPT." },
-      { status: 500 },
-    );
-  }
+  const requestId = createRequestId();
+  const logger = createLogger({ requestId, route: "chat" });
+  const jsonResponse = (body: unknown, status: number) =>
+    Response.json(body, { status, headers: { "X-Request-Id": requestId } });
 
   try {
-    const { messages } = (await request.json()) as { messages?: ChatMessage[] };
-    if (!messages?.length) {
-      return Response.json({ error: "Missing messages." }, { status: 400 });
+    let messages: ChatMessage[];
+    try {
+      ({ messages } = parseChatRequestBody(await request.text()));
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Invalid chat request.";
+      logger.warn("request.validation_failed", { reason: message });
+      return jsonResponse({ error: message, requestId }, 400);
+    }
+
+    let apiKey: string;
+    try {
+      ({ OPENAI_API_KEY: apiKey } = parseAiEnvironment());
+    } catch {
+      logger.error("environment.invalid");
+      return jsonResponse(
+        { error: "OPENAI_API_KEY is missing. Add it to your environment to enable AkshayGPT.", requestId },
+        500,
+      );
     }
 
     const latestUserMessage = [...messages].reverse().find((message) => message.role === "user");
     if (!latestUserMessage?.content.trim()) {
-      return Response.json({ error: "Please ask a question to start the conversation." }, { status: 400 });
+      const message = "Please ask a question to start the conversation.";
+      logger.warn("request.validation_failed", { reason: message });
+      return jsonResponse({ error: message, requestId }, 400);
     }
 
     const cacheKey = normalizeCacheKey(latestUserMessage.content);
@@ -197,7 +210,8 @@ export async function POST(request: Request) {
     const cachedResponse = canUseCache ? responseCache.get(cacheKey) : undefined;
 
     if (cachedResponse) {
-      return createCachedJsonLineResponse(cachedResponse);
+      logger.info("cache.hit");
+      return createCachedJsonLineResponse(cachedResponse, requestId);
     }
 
     const openAiResponse = await fetch("https://api.openai.com/v1/responses", {
@@ -205,9 +219,11 @@ export async function POST(request: Request) {
       headers: {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
+        "X-Client-Request-Id": requestId,
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini",
+        model: aiConfig.chat.model,
+        max_output_tokens: aiConfig.chat.maxOutputTokens,
         stream: true,
         instructions: buildSystemPrompt(latestUserMessage.content),
         input: toOpenAIInput(trimConversation(messages)),
@@ -227,27 +243,28 @@ export async function POST(request: Request) {
         }
       }
 
-      return Response.json({ error: message }, { status: openAiResponse.status || 500 });
+      logger.warn("openai.request_failed", { status: openAiResponse.status });
+      return jsonResponse({ error: message, requestId }, openAiResponse.status || 500);
     }
 
     const stream = createJsonLineStream(openAiResponse.body, (content) => {
       if (canUseCache) {
         setCachedResponse(cacheKey, content);
       }
+      logger.info("request.completed", { cacheStatus: "miss" });
     });
 
     return new Response(stream, {
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "application/x-ndjson",
         "Cache-Control": "no-store",
         "X-AkshayGPT-Cache": "MISS",
+        "X-Request-Id": requestId,
       },
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Internal Server Error";
-    return Response.json(
-      { error: "Internal Server Error", details: message },
-      { status: 500 },
-    );
+    logger.error("request.failed", { error: message });
+    return jsonResponse({ error: "Internal Server Error", details: message, requestId }, 500);
   }
 }

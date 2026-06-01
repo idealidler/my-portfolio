@@ -6,6 +6,8 @@ import dynamic from "next/dynamic";
 import { ArrowLeft, Send, Trash2 } from "lucide-react";
 import { chatPrompts } from "@/data/portfolio";
 import { buttonVariants } from "@/components/ui/button";
+import { readNdjsonStream } from "@/lib/client/ndjson-stream-reader";
+import { requestLimits } from "@/lib/server/config/limits";
 import { cn } from "@/lib/utils";
 
 type Message = {
@@ -31,12 +33,20 @@ const BotMessageMarkdown = dynamic(
 );
 
 function toApiMessages(messages: Message[], latestQuestion: string) {
-  const history = messages.map((message) => ({
-    role: message.role === "bot" ? "assistant" : "user",
-    content: message.content,
-  }));
+  const history = messages
+    .slice(-(requestLimits.chat.maxSubmittedMessages - 1))
+    .map((message) => ({
+      role: message.role === "bot" ? "assistant" : "user",
+      content: message.content.slice(0, requestLimits.chat.maxMessageCharacters),
+    }));
 
-  return [...history, { role: "user", content: latestQuestion }] as Array<{
+  return [
+    ...history,
+    {
+      role: "user",
+      content: latestQuestion.slice(0, requestLimits.chat.maxMessageCharacters),
+    },
+  ] as Array<{
     role: "user" | "assistant";
     content: string;
   }>;
@@ -50,10 +60,13 @@ export function AkshayGptShell() {
   const [phraseIndex, setPhraseIndex] = useState(0);
   const listRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
+  const requestControllerRef = useRef<AbortController | null>(null);
   const hasMessages = messages.length > 0;
 
   useEffect(() => {
     inputRef.current?.focus();
+
+    return () => requestControllerRef.current?.abort();
   }, []);
 
   useEffect(() => {
@@ -102,8 +115,11 @@ export function AkshayGptShell() {
     setIsAnswering(true);
 
     try {
+      const controller = new AbortController();
+      requestControllerRef.current = controller;
       const response = await fetch("/api/chat", {
         method: "POST",
+        signal: controller.signal,
         headers: {
           "Content-Type": "application/json",
         },
@@ -117,42 +133,29 @@ export function AkshayGptShell() {
         throw new Error(payload.error || "The chat request failed.");
       }
 
-      const reader = response.body?.getReader();
-      if (!reader) {
+      if (!response.body) {
         throw new Error("Streaming is unavailable in this environment.");
       }
 
-      const decoder = new TextDecoder();
       const botId = `bot-${Date.now()}`;
       let buffer = "";
 
       setMessages((prev) => [...prev, { id: botId, role: "bot", content: "" }]);
 
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) {
-          break;
-        }
-
-        const chunk = decoder.decode(value);
-        const lines = chunk.split("\n").filter(Boolean);
-
-        for (const line of lines) {
-          try {
-            const parsed = JSON.parse(line) as { message?: { content?: string } };
-            if (parsed.message?.content) {
-              buffer += parsed.message.content;
-              setMessages((prev) =>
-                prev.map((message) =>
-                  message.id === botId ? { ...message, content: buffer } : message,
-                ),
-              );
-            }
-          } catch {
-            // Ignore malformed stream fragments and continue.
+      await readNdjsonStream<{ message?: { content?: string } }>({
+        stream: response.body,
+        signal: controller.signal,
+        onFrame: (parsed) => {
+          if (parsed.message?.content) {
+            buffer += parsed.message.content;
+            setMessages((prev) =>
+              prev.map((message) =>
+                message.id === botId ? { ...message, content: buffer } : message,
+              ),
+            );
           }
-        }
-      }
+        },
+      });
 
       if (!buffer) {
         setMessages((prev) =>
@@ -167,6 +170,10 @@ export function AkshayGptShell() {
         );
       }
     } catch (chatError) {
+      if (chatError instanceof Error && chatError.name === "AbortError") {
+        return;
+      }
+
       const message =
         chatError instanceof Error ? chatError.message : "Something went wrong while answering.";
       setError(message);
@@ -179,6 +186,7 @@ export function AkshayGptShell() {
         },
       ]);
     } finally {
+      requestControllerRef.current = null;
       setIsAnswering(false);
       window.requestAnimationFrame(() => inputRef.current?.focus());
     }
@@ -197,6 +205,7 @@ export function AkshayGptShell() {
   }
 
   function clearConversation() {
+    requestControllerRef.current?.abort();
     setMessages([]);
     setError(null);
     setQuestion("");
@@ -239,6 +248,7 @@ export function AkshayGptShell() {
                       onChange={(event) => setQuestion(event.target.value)}
                       onKeyDown={handleComposerKeyDown}
                       rows={1}
+                      maxLength={requestLimits.chat.maxMessageCharacters}
                       placeholder="Ask about my work at Holman, projects, strengths, impact..."
                       className="max-h-40 min-h-12 flex-1 resize-none bg-transparent px-3 py-2 text-sm leading-6 text-slate-900 outline-none placeholder:text-slate-400"
                       disabled={isAnswering}
@@ -317,6 +327,7 @@ export function AkshayGptShell() {
                   onChange={(event) => setQuestion(event.target.value)}
                   onKeyDown={handleComposerKeyDown}
                   rows={1}
+                  maxLength={requestLimits.chat.maxMessageCharacters}
                   placeholder="Ask about my work at Holman, projects, strengths, impact..."
                   className="max-h-40 min-h-12 flex-1 resize-none bg-transparent px-3 py-2 text-sm leading-6 text-slate-900 outline-none placeholder:text-slate-400"
                   disabled={isAnswering}
