@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
-  ArrowUpRight,
   Calendar,
   Download,
   ExternalLink,
@@ -10,8 +9,6 @@ import {
   Mail,
   MapPin,
   MoveRight,
-  Sparkles,
-  TrendingUp,
 } from "lucide-react";
 import {
   audiencePaths,
@@ -19,9 +16,6 @@ import {
   education,
   experience,
   featuredProjects,
-  heroStats,
-  highlights,
-  profileNarratives,
   recruiterSignals,
   selectedAnalysisProjects,
   skillGroups,
@@ -67,130 +61,28 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-7xl gap-8 pb-18 pt-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-stretch lg:pb-24 lg:pt-16">
-        <div className="surface relative overflow-hidden rounded-[2rem] px-6 py-8 sm:px-8 sm:py-10 lg:px-10 lg:py-12">
+      <section className="mx-auto max-w-7xl pb-6 pt-4 sm:pb-8 sm:pt-5 lg:pb-10 lg:pt-6">
+        <div className="surface relative overflow-hidden rounded-[2rem] px-6 py-8 sm:px-8 sm:py-10 lg:px-12 lg:py-12">
           <div className="hero-orb hero-orb-one -left-10 -top-10" />
           <div className="hero-orb hero-orb-three right-1/3 top-12" />
           <div className="bg-shimmer absolute inset-x-0 top-0 h-px animate-shimmer" />
           <h1 className="max-w-4xl text-balance text-4xl font-semibold leading-tight tracking-tight text-slate-950 sm:text-5xl lg:text-6xl">
-            I turn ambiguous business questions into data products people use to make better decisions.
+            I build data products that turn unclear business questions into better decisions.
           </h1>
-          <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600">
-            My work spans stakeholder discovery, enterprise BI, data modeling, automation, and user-facing analytics apps.
-            This portfolio brings together measurable business impact, newer GitHub builds, and an AI guide that answers from
-            the same structured source of truth.
+          <p className="mt-6 max-w-xl text-lg leading-8 text-slate-600">
+            Business-facing analytics, BI systems, and automation with practical product judgment.
           </p>
 
-          <div className="mt-8 rounded-[1.75rem] border border-white/70 bg-white/80 p-5 shadow-card">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-              Why teams hire me
-            </p>
-            <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              {highlights.slice(0, 2).map((item) => (
-                <div key={item.title} className="rounded-[1.25rem] border border-slate-200/70 bg-white/85 p-4">
-                  <p className="text-sm font-semibold text-slate-950">{item.title}</p>
-                  <p className="mt-2 text-sm leading-6 text-slate-600">{item.detail}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="mt-8 flex flex-wrap gap-3">
+          <div className="mt-8">
             <Link href="#projects" className={cn(buttonVariants({ variant: "primary", size: "lg" }))}>
               Explore featured work
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
-            <Link href="/akshaygpt" className={cn(buttonVariants({ variant: "secondary", size: "lg" }))}>
-              <Sparkles className="mr-2 h-4 w-4" />
-              Launch AkshayGPT
-            </Link>
-          </div>
-
-          <div className="mt-10 grid gap-4 md:grid-cols-3">
-            {heroStats.map((stat) => (
-              <div
-                key={stat.label}
-                className="rounded-[1.5rem] border border-white/60 bg-white/80 p-5 shadow-card transition duration-200 hover:-translate-y-1"
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="rounded-full border border-emerald-200 bg-emerald-50 p-2 text-emerald-700">
-                    <TrendingUp className="h-4 w-4" />
-                  </div>
-                  <div className="flex items-center gap-1 text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700">
-                    Impact
-                    <ArrowUpRight className="h-3.5 w-3.5" />
-                  </div>
-                </div>
-                <p className="mt-5 text-3xl font-semibold text-slate-950">{stat.value}</p>
-                <p className="mt-2 text-sm font-medium text-slate-700">{stat.label}</p>
-                <p className="mt-2 text-sm leading-6 text-slate-500">{stat.detail}</p>
-              </div>
-            ))}
           </div>
         </div>
-
-        <aside className="surface h-full rounded-[2rem] p-6 sm:p-8">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
-              Based in Philadelphia
-            </p>
-            <h2 className="mt-2 text-2xl font-semibold text-slate-950">Akshay Jain</h2>
-            <p className="text-base text-slate-600">Consultative Data & Analytics Professional</p>
-          </div>
-
-          <div className="mt-8 rounded-[1.5rem] border border-sky-100 bg-gradient-to-br from-sky-50 via-white to-sky-50 p-5">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-              Best fit
-            </p>
-            <div className="mt-4 space-y-3">
-              {[
-                "Analytics roles that need close stakeholder partnership",
-                "BI teams turning messy reporting into reusable decision systems",
-                "Product-minded data roles that value initiative in undefined problems",
-              ].map((item) => (
-                <p key={item} className="text-sm leading-6 text-slate-700">
-                  {item}
-                </p>
-              ))}
-            </div>
-          </div>
-
-          <div className="mt-6 grid gap-3 sm:grid-cols-2">
-            <div className="rounded-[1.5rem] border border-slate-200/70 bg-white/80 p-5">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Working style</p>
-              <p className="mt-3 text-sm leading-6 text-slate-600">{profileNarratives.workStyle.body}</p>
-            </div>
-            <div className="rounded-[1.5rem] border border-slate-200/70 bg-white/80 p-5">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Career direction</p>
-              <p className="mt-3 text-sm leading-6 text-slate-600">{profileNarratives.careerGoals.body}</p>
-            </div>
-          </div>
-
-          <div className="mt-8 grid gap-3 sm:grid-cols-2">
-            <a href={contactLinks.resume} className={cn(buttonVariants({ variant: "secondary" }), "justify-center")}>
-              <Download className="mr-2 h-4 w-4" />
-              Resume
-            </a>
-            <a
-              href={contactLinks.linkedin}
-              target="_blank"
-              rel="noreferrer"
-              className={cn(buttonVariants({ variant: "ghost" }), "justify-center rounded-full border border-slate-200 bg-white/70")}
-            >
-              LinkedIn
-            </a>
-          </div>
-
-          <div className="mt-8 rounded-[1.5rem] border border-slate-900/90 bg-slate-950 p-5 text-white">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sky-300">
-              Current positioning
-            </p>
-            <p className="mt-3 text-sm leading-6 text-slate-300">{profileNarratives.problemSolving.body}</p>
-          </div>
-        </aside>
       </section>
 
-      <section id="proof" className="mx-auto max-w-7xl scroll-mt-28 py-10 sm:py-12">
+      <section id="proof" className="mx-auto max-w-7xl scroll-mt-28 pb-10 pt-6 sm:pb-12 sm:pt-8">
         <SectionHeading
           eyebrow="Why this format works"
           title="Recruiter clarity, hiring-manager depth, and AI-assisted exploration in one place"
