@@ -17,6 +17,18 @@ type PortfolioSection = {
   priority: number;
 };
 
+type QueryIntent =
+  | "education"
+  | "contact"
+  | "skills"
+  | "projects"
+  | "experience"
+  | "holman"
+  | "impact"
+  | "fit"
+  | "working-style"
+  | "authorization";
+
 const stopWords = new Set([
   "a",
   "about",
@@ -74,7 +86,177 @@ const synonymGroups = [
   ["contact", "email", "linkedin", "calendly", "resume"],
   ["backend", "python", "sql", "dbt", "databricks", "fabric", "etl"],
   ["bi", "power", "dashboard", "dashboards", "reporting", "semantic", "model"],
+  [
+    "education",
+    "school",
+    "college",
+    "university",
+    "degree",
+    "graduate",
+    "graduated",
+    "graduation",
+    "alma",
+    "mater",
+    "master",
+    "masters",
+    "bachelor",
+    "bachelors",
+    "undergrad",
+    "undergraduate",
+  ],
 ];
+
+const intentTerms: Record<QueryIntent, string[]> = {
+  education: [
+    "education",
+    "school",
+    "college",
+    "university",
+    "degree",
+    "graduate",
+    "graduated",
+    "graduation",
+    "study",
+    "studied",
+    "major",
+    "masters",
+    "bachelors",
+    "undergrad",
+  ],
+  contact: [
+    "contact",
+    "email",
+    "reach",
+    "linkedin",
+    "calendly",
+    "calendar",
+    "schedule",
+    "resume",
+    "cv",
+  ],
+  skills: [
+    "skill",
+    "skills",
+    "tool",
+    "tools",
+    "stack",
+    "technology",
+    "technologies",
+    "sql",
+    "python",
+    "power",
+    "bi",
+    "dbt",
+    "databricks",
+    "fabric",
+    "dax",
+    "react",
+    "next",
+    "typescript",
+  ],
+  projects: [
+    "project",
+    "projects",
+    "portfolio",
+    "github",
+    "demo",
+    "built",
+    "build",
+    "app",
+    "application",
+    "product",
+    "products",
+    "h1b",
+    "gitdecode",
+    "contextly",
+    "tracker",
+  ],
+  experience: [
+    "experience",
+    "work",
+    "worked",
+    "job",
+    "jobs",
+    "company",
+    "companies",
+    "employer",
+    "employers",
+    "career",
+    "professional",
+    "intern",
+    "internship",
+  ],
+  holman: [
+    "holman",
+    "fleet",
+    "flagship",
+    "call",
+    "center",
+    "po",
+    "asa",
+    "medallion",
+    "gold",
+    "client",
+    "account",
+  ],
+  impact: [
+    "impact",
+    "metric",
+    "metrics",
+    "result",
+    "results",
+    "outcome",
+    "outcomes",
+    "saved",
+    "reduced",
+    "improved",
+    "increase",
+    "lift",
+    "users",
+    "hours",
+  ],
+  fit: [
+    "fit",
+    "role",
+    "roles",
+    "suited",
+    "target",
+    "targeting",
+    "hire",
+    "hiring",
+    "recruiter",
+    "manager",
+    "analyst",
+    "engineer",
+  ],
+  "working-style": [
+    "style",
+    "strength",
+    "strengths",
+    "approach",
+    "approaches",
+    "problem",
+    "problems",
+    "ambiguous",
+    "ambiguity",
+    "stakeholder",
+    "stakeholders",
+    "communicate",
+    "communication",
+  ],
+  authorization: [
+    "authorization",
+    "authorized",
+    "visa",
+    "h1b",
+    "1b",
+    "sponsorship",
+    "sponsor",
+    "immigration",
+    "relocate",
+    "relocation",
+  ],
+};
 
 function tokenize(value: string) {
   return value
@@ -94,6 +276,86 @@ function expandTokens(tokens: string[]) {
   }
 
   return expanded;
+}
+
+function detectIntents(queryTokens: Set<string>) {
+  const intents = new Set<QueryIntent>();
+
+  for (const [intent, terms] of Object.entries(intentTerms) as [QueryIntent, string[]][]) {
+    if (terms.some((term) => queryTokens.has(term))) {
+      intents.add(intent);
+    }
+  }
+
+  return intents;
+}
+
+function intentSectionIds(intents: Set<QueryIntent>) {
+  const ids = new Set<string>();
+
+  if (intents.has("education")) {
+    ids.add("education");
+  }
+
+  if (intents.has("contact")) {
+    ids.add("contact");
+  }
+
+  if (intents.has("skills")) {
+    ids.add("skills");
+  }
+
+  if (intents.has("projects")) {
+    for (const sectionItem of portfolioSections) {
+      if (sectionItem.kind === "project") {
+        ids.add(sectionItem.id);
+      }
+    }
+  }
+
+  if (intents.has("experience")) {
+    for (const sectionItem of portfolioSections) {
+      if (sectionItem.kind === "experience") {
+        ids.add(sectionItem.id);
+      }
+    }
+  }
+
+  if (intents.has("holman") || intents.has("impact")) {
+    ids.add("experience-holman");
+  }
+
+  if (intents.has("fit")) {
+    ids.add("profile-careerGoals");
+    ids.add("profile-about");
+    ids.add("skills");
+    ids.add("experience-holman");
+  }
+
+  if (intents.has("working-style")) {
+    ids.add("profile-workStyle");
+    ids.add("profile-problemSolving");
+    ids.add("profile-about");
+  }
+
+  if (intents.has("authorization")) {
+    ids.add("profile-work-authorization");
+  }
+
+  return ids;
+}
+
+function uniqueSections(sections: PortfolioSection[]) {
+  const seen = new Set<string>();
+
+  return sections.filter((sectionItem) => {
+    if (seen.has(sectionItem.id)) {
+      return false;
+    }
+
+    seen.add(sectionItem.id);
+    return true;
+  });
 }
 
 function section({
@@ -120,6 +382,23 @@ const portfolioSections: PortfolioSection[] = [
       `Calendly: ${contactLinks.calendly}`,
       `Resume: ${contactLinks.resume}`,
     ].join("\n"),
+  }),
+  section({
+    id: "profile-work-authorization",
+    title: "Work Authorization",
+    kind: "profile",
+    priority: 1.35,
+    keywords: [
+      "work authorization",
+      "authorized",
+      "visa",
+      "H-1B",
+      "H1B",
+      "sponsorship",
+      "immigration",
+      "relocation",
+    ],
+    text: "Authorized to work in the U.S. on an H-1B visa. Open to relocation and conversations around analytics engineering, data engineering, BI, and data product roles.",
   }),
   ...Object.entries(profileNarratives).map(([key, item]) =>
     section({
@@ -184,8 +463,21 @@ const portfolioSections: PortfolioSection[] = [
     id: "education",
     title: "Education",
     kind: "education",
-    priority: 1,
-    keywords: ["education", "school", "degree", ...education.flatMap((item) => [item.school, item.degree])],
+    priority: 1.25,
+    keywords: [
+      "education",
+      "school",
+      "college",
+      "university",
+      "degree",
+      "graduate",
+      "graduated",
+      "graduation",
+      "alma mater",
+      "master",
+      "bachelor",
+      ...education.flatMap((item) => [item.school, item.degree, item.location, item.period]),
+    ],
     text: education
       .map((item) => `${item.degree} — ${item.school} (${item.period}, ${item.location})`)
       .join("\n"),
@@ -195,6 +487,10 @@ const portfolioSections: PortfolioSection[] = [
 const compactOverview = [
   "Portfolio owner: Akshay Jain",
   "Positioning: business-facing data professional focused on analytics, BI, data products, stakeholder problem solving, and durable reporting systems.",
+  "Work authorization: Authorized to work in the U.S. on an H-1B visa; open to relocation for the right analytics, BI, data engineering, or data product role.",
+  `Education: ${education
+    .map((item) => `${item.degree} from ${item.school} (${item.period}, ${item.location})`)
+    .join(" | ")}`,
   `Primary skills: ${skillGroups
     .map((group) => `${group.label}: ${group.items.join(", ")}`)
     .join(" | ")}`,
@@ -226,6 +522,7 @@ function scoreSection(sectionItem: PortfolioSection, queryTokens: Set<string>) {
 
 export function retrievePortfolioContext(query: string, maxSections = 5) {
   const queryTokens = expandTokens(tokenize(query));
+  const forcedSectionIds = intentSectionIds(detectIntents(queryTokens));
   const rankedSections = portfolioSections
     .map((sectionItem) => ({
       section: sectionItem,
@@ -233,10 +530,11 @@ export function retrievePortfolioContext(query: string, maxSections = 5) {
     }))
     .sort((left, right) => right.score - left.score);
 
-  const selected = rankedSections
+  const forcedSections = portfolioSections.filter((sectionItem) => forcedSectionIds.has(sectionItem.id));
+  const rankedMatches = rankedSections
     .filter((item) => item.score > 0)
-    .slice(0, maxSections)
     .map((item) => item.section);
+  const selected = uniqueSections([...forcedSections, ...rankedMatches]).slice(0, maxSections);
 
   const fallbackSections =
     selected.length > 0
