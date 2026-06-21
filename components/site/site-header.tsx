@@ -85,6 +85,9 @@ export function SiteHeader() {
           >
             <BriefcaseBusiness className="mr-2 h-4 w-4" />
             Recruiter Tool
+            <span className="ml-2 rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500">
+              Popular
+            </span>
           </Link>
           <Link
             href="/akshaygpt"
@@ -96,6 +99,9 @@ export function SiteHeader() {
           >
             <Sparkles className="mr-2 h-4 w-4" />
             AkshayGPT
+            <span className="ml-2 rounded-full border border-sky-100 bg-sky-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-sky-700">
+              AI
+            </span>
           </Link>
         </div>
 
