@@ -3,7 +3,7 @@ export const aiConfig = {
     model: "gpt-5-mini",
     maxOutputTokens: 700,
     reasoningEffort: "minimal",
-    verbosity: "low",
+    verbosity: "medium",
   },
   jobFit: {
     model: "gpt-4o-mini",

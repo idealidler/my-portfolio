@@ -7,6 +7,9 @@ describe("buildChatSystemPrompt", () => {
 
     expect(prompt).toContain("Your only source of truth is the Akshay Profile Context");
     expect(prompt).toContain("SUPPORTED, PARTIAL, or UNSUPPORTED");
+    expect(prompt).toContain("Never output the words SUPPORTED, PARTIAL, or UNSUPPORTED");
+    expect(prompt).toContain("Use tasteful Markdown");
+    expect(prompt).toContain("Start with a direct answer, not a status label");
     expect(prompt).toContain("Analytics Engineer at Holman");
     expect(prompt).toContain("Data Science Intern at LabWare");
     expect(prompt).toContain("Drexel University");
@@ -15,4 +18,3 @@ describe("buildChatSystemPrompt", () => {
     expect(prompt).not.toContain("Retrieved portfolio evidence");
   });
 });
-

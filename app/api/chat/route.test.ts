@@ -68,7 +68,7 @@ describe("POST /api/chat", () => {
       model: "gpt-5-mini",
       max_output_tokens: 700,
       reasoning: { effort: "minimal" },
-      text: { verbosity: "low" },
+      text: { verbosity: "medium" },
     });
     const body = JSON.parse(String(init.body)) as { instructions: string };
     expect(body.instructions).toContain("Your only source of truth is the Akshay Profile Context");
@@ -129,5 +129,36 @@ describe("POST /api/chat", () => {
 
     expect(lastResponse?.status).toBe(429);
     expect(lastResponse?.headers.get("Retry-After")).toBeTruthy();
+  });
+
+  it("strips leaked grounding labels without breaking Markdown formatting", async () => {
+    vi.stubEnv("OPENAI_API_KEY", "test-key");
+    vi.stubEnv("UPSTASH_REDIS_REST_URL", undefined);
+    vi.stubEnv("UPSTASH_REDIS_REST_TOKEN", undefined);
+    const openAiStream = new ReadableStream<Uint8Array>({
+      start(controller) {
+        controller.enqueue(
+          encoder.encode(
+            'data: {"type":"response.output_text.delta","delta":"SUP"}\n\n' +
+              'data: {"type":"response.output_text.delta","delta":"PORTED\\n\\n**Impact**\\n- Built dashboards."}\n\n' +
+              "data: [DONE]\n\n",
+          ),
+        );
+        controller.close();
+      },
+    });
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(openAiStream, { status: 200 })));
+
+    const response = await POST(
+      new Request("http://localhost/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-forwarded-for": "198.51.100.30" },
+        body: JSON.stringify({ messages: [{ role: "user", content: "what impact has he had?" }] }),
+      }),
+    );
+
+    await expect(response.text()).resolves.toBe(
+      `${JSON.stringify({ message: { content: "**Impact**\n- Built dashboards." } })}\n`,
+    );
   });
 });

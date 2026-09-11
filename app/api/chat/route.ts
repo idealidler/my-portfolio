@@ -58,12 +58,50 @@ function createCachedJsonLineResponse(content: string, requestId: string) {
   });
 }
 
+function createLeadingGroundingLabelStripper() {
+  let prefixResolved = false;
+  let pendingPrefix = "";
+  const labels = ["SUPPORTED", "PARTIAL", "UNSUPPORTED"];
+
+  return (delta: string) => {
+    if (prefixResolved) {
+      return delta;
+    }
+
+    pendingPrefix += delta;
+    const leadingWhitespace = pendingPrefix.match(/^\s*/)?.[0] ?? "";
+    const candidate = pendingPrefix.slice(leadingWhitespace.length);
+    const labelMatch = candidate.match(/^(SUPPORTED|PARTIAL|UNSUPPORTED)\b\s*[:\-]?\s*/i);
+
+    if (labelMatch) {
+      prefixResolved = true;
+      pendingPrefix = "";
+      return candidate.slice(labelMatch[0].length);
+    }
+
+    const normalizedCandidate = candidate.toUpperCase();
+    const couldStillBeLabel =
+      candidate.length === 0 ||
+      (candidate.length < 16 && labels.some((label) => label.startsWith(normalizedCandidate)));
+
+    if (couldStillBeLabel) {
+      return "";
+    }
+
+    prefixResolved = true;
+    const content = pendingPrefix;
+    pendingPrefix = "";
+    return content;
+  };
+}
+
 function createJsonLineStream(
   openAiStream: ReadableStream<Uint8Array>,
   onComplete?: (content: string) => void,
 ) {
   const decoder = new TextDecoder();
   const encoder = new TextEncoder();
+  const stripLeadingGroundingLabel = createLeadingGroundingLabelStripper();
   let buffer = "";
   let fullContent = "";
 
@@ -109,10 +147,16 @@ function createJsonLineStream(
                 | undefined;
 
               if (parsed?.type === "response.output_text.delta" && parsed.delta) {
-                fullContent += parsed.delta;
+                const contentDelta = stripLeadingGroundingLabel(parsed.delta);
+
+                if (!contentDelta) {
+                  continue;
+                }
+
+                fullContent += contentDelta;
                 controller.enqueue(
                   encoder.encode(
-                    `${JSON.stringify({ message: { content: parsed.delta } })}\n`,
+                    `${JSON.stringify({ message: { content: contentDelta } })}\n`,
                   ),
                 );
               }
