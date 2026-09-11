@@ -18,10 +18,10 @@ describe("parseChatRequestBody", () => {
     ["unknown fields", JSON.stringify({ messages: [{ role: "user", content: "hello" }], extra: true })],
     ["empty messages", request([])],
     ["too many messages", request(Array.from({ length: 7 }, () => ({ role: "user", content: "a" })))],
-    ["oversized message", request([{ role: "user", content: "a".repeat(2401) }])],
+    ["oversized message", request([{ role: "user", content: "a".repeat(1801) }])],
     [
       "oversized combined content",
-      request(Array.from({ length: 6 }, () => ({ role: "user", content: "a".repeat(2401) }))),
+      request(Array.from({ length: 6 }, () => ({ role: "user", content: "a".repeat(1800) }))),
     ],
     ["malformed JSON", "{"],
   ])("rejects %s", (_caseName, rawBody) => {
@@ -29,6 +29,6 @@ describe("parseChatRequestBody", () => {
   });
 
   it("rejects an oversized raw body", () => {
-    expect(() => parseChatRequestBody(" ".repeat(18001))).toThrow(/18000/);
+    expect(() => parseChatRequestBody(" ".repeat(9001))).toThrow(/9000/);
   });
 });

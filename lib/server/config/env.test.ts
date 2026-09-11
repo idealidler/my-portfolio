@@ -23,7 +23,12 @@ describe("environment configuration", () => {
 
   it("keeps the Stage 1 AI defaults centralized", () => {
     expect(aiConfig).toEqual({
-      chat: { model: "gpt-4o-mini", maxOutputTokens: 700 },
+      chat: {
+        model: "gpt-5-mini",
+        maxOutputTokens: 700,
+        reasoningEffort: "minimal",
+        verbosity: "low",
+      },
       jobFit: { model: "gpt-4o-mini", maxOutputTokens: 1800, modelTimeoutMs: 12000 },
     });
   });

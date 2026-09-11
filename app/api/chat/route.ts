@@ -1,39 +1,15 @@
-import { retrievePortfolioContext } from "@/lib/portfolio-retrieval";
 import { aiConfig } from "@/lib/server/config/ai-config";
 import { parseAiEnvironment } from "@/lib/server/config/env";
 import { requestLimits } from "@/lib/server/config/limits";
+import { validateLatestUserMessage } from "@/lib/server/chat/abuse-guard";
+import { buildChatSystemPrompt } from "@/lib/server/chat/prompt";
+import { enforceChatRateLimit } from "@/lib/server/chat/rate-limit";
 import { type ChatMessage, parseChatRequestBody } from "@/lib/server/contracts/chat";
 import { createLogger, createRequestId } from "@/lib/server/observability/logger";
 
 export const runtime = "edge";
 
 const responseCache = new Map<string, string>();
-
-const baseSystemPrompt = [
-  "You are AkshayGPT, a professional portfolio assistant for Akshay Jain.",
-  "Answer only from the provided portfolio context and the conversation.",
-  "Sound like a polished, consultative version of Akshay: practical, specific, business-aware, and direct.",
-  "Emphasize Akshay's problem-solving ability, business stakeholder partnership, and systems-thinking when the evidence supports it.",
-  "If the portfolio context does not support a claim, say that you do not have that detail in the portfolio data.",
-  "Do not invent dates, metrics, employers, technologies, or project outcomes.",
-  "For education, college, university, or graduation questions, use the Education context and include degree, school, location, and period when available.",
-  "If the user asks a vague question, answer with the most relevant portfolio evidence and ask one useful follow-up question only when it would materially improve the answer.",
-  "Prioritize the strongest, most relevant evidence first.",
-  "Format answers in clean Markdown.",
-  "Use short bullet points when listing skills, projects, or outcomes.",
-  "Use bold text sparingly for section labels or the most important phrases.",
-  "If mentioning a URL that exists in the portfolio context, format it as a proper Markdown link.",
-  "Prefer short sections and readable spacing over dense paragraphs.",
-].join("\n");
-
-function buildSystemPrompt(latestUserMessage: string) {
-  return [
-    baseSystemPrompt,
-    "",
-    "Portfolio context:",
-    retrievePortfolioContext(latestUserMessage),
-  ].join("\n");
-}
 
 function toOpenAIInput(messages: ChatMessage[]) {
   return messages.map((message) => ({
@@ -200,13 +176,30 @@ export async function POST(request: Request) {
     }
 
     const latestUserMessage = [...messages].reverse().find((message) => message.role === "user");
-    if (!latestUserMessage?.content.trim()) {
-      const message = "Please ask a question to start the conversation.";
-      logger.warn("request.validation_failed", { reason: message });
-      return jsonResponse({ error: message, requestId }, 400);
+    const validationMessage = validateLatestUserMessage(latestUserMessage?.content ?? "");
+    if (validationMessage) {
+      logger.warn("request.validation_failed", { reason: validationMessage });
+      return jsonResponse({ error: validationMessage, requestId }, 400);
     }
 
-    const cacheKey = normalizeCacheKey(latestUserMessage.content);
+    const rateLimit = await enforceChatRateLimit(request);
+    if (!rateLimit.allowed) {
+      logger.warn("request.rate_limited", { backend: rateLimit.backend });
+      return Response.json(
+        { error: rateLimit.reason, requestId },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": String(rateLimit.retryAfterSeconds),
+            "X-Request-Id": requestId,
+          },
+        },
+      );
+    }
+
+    logger.info("request.rate_limit_allowed", { backend: rateLimit.backend });
+
+    const cacheKey = normalizeCacheKey(latestUserMessage?.content ?? "");
     const canUseCache = messages.length <= 1 && cacheKey.length > 0;
     const cachedResponse = canUseCache ? responseCache.get(cacheKey) : undefined;
 
@@ -225,8 +218,10 @@ export async function POST(request: Request) {
       body: JSON.stringify({
         model: aiConfig.chat.model,
         max_output_tokens: aiConfig.chat.maxOutputTokens,
+        reasoning: { effort: aiConfig.chat.reasoningEffort },
+        text: { verbosity: aiConfig.chat.verbosity },
         stream: true,
-        instructions: buildSystemPrompt(latestUserMessage.content),
+        instructions: buildChatSystemPrompt(),
         input: toOpenAIInput(trimConversation(messages)),
       }),
     });

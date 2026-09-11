@@ -1,7 +1,9 @@
 export const aiConfig = {
   chat: {
-    model: "gpt-4o-mini",
+    model: "gpt-5-mini",
     maxOutputTokens: 700,
+    reasoningEffort: "minimal",
+    verbosity: "low",
   },
   jobFit: {
     model: "gpt-4o-mini",

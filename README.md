@@ -44,6 +44,10 @@ Create a `.env.local` file using `.env.example` as a reference:
 ```bash
 OPENAI_API_KEY=your_openai_api_key_here
 NEXT_PUBLIC_SITE_URL=https://your-domain.com
+
+# Optional production rate limiting
+UPSTASH_REDIS_REST_URL=
+UPSTASH_REDIS_REST_TOKEN=
 ```
 
 ### Run Locally
@@ -81,6 +85,9 @@ To use these features locally, set `OPENAI_API_KEY` in `.env.local`.
 ## Notes
 
 - Portfolio content is centralized in `data/portfolio.ts`
+- AkshayGPT injects the full approved portfolio context into the system instructions because the corpus is small enough to avoid vector retrieval failure modes
+- AkshayGPT uses strict grounding instructions, prompt-extraction preflight checks, capped request sizes, streaming responses, response caching, and per-IP rate limits
+- Set both Upstash Redis variables in production to share rate limits across edge instances; without them, the route falls back to in-memory limits for local development
 - The recruiter tool uses normalized job briefs plus portfolio evidence for fit analysis
 - The chat and recruiter flows both rely on the OpenAI Responses API
 
