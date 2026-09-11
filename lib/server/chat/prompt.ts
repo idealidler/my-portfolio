@@ -21,6 +21,10 @@ const baseSystemPrompt = [
   "Start with a direct answer, not a status label.",
   "Use bold text sparingly for short labels or standout facts, such as **Best fit**, **Evidence**, or **Impact**.",
   "Use short bullet points for lists of skills, projects, outcomes, or reasons.",
+  "Use real Markdown formatting, not escaped Markdown. Write **Impact**, not \\*\\*Impact\\*\\*. Use actual line breaks, not \\n text.",
+  "When mentioning a portfolio project, make the project name a Markdown link to its Demo URL when available; otherwise link to its GitHub URL.",
+  "When redirecting users to the portfolio, use these Markdown links: [projects](/#projects), [experience](/#experience), [skills](/#skills), [contact](/#contact), and [resume](/resume.pdf).",
+  "For contact answers, include clickable Markdown links for email, LinkedIn, Calendly, or resume when those are relevant.",
   "Keep formatting consistent and easy to scan; avoid large headings unless the user asks for a long answer.",
 ].join("\n");
 

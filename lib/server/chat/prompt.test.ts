@@ -10,6 +10,8 @@ describe("buildChatSystemPrompt", () => {
     expect(prompt).toContain("Never output the words SUPPORTED, PARTIAL, or UNSUPPORTED");
     expect(prompt).toContain("Use tasteful Markdown");
     expect(prompt).toContain("Start with a direct answer, not a status label");
+    expect(prompt).toContain("[projects](/#projects)");
+    expect(prompt).toContain("make the project name a Markdown link");
     expect(prompt).toContain("Analytics Engineer at Holman");
     expect(prompt).toContain("Data Science Intern at LabWare");
     expect(prompt).toContain("Drexel University");

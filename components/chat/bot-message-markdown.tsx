@@ -8,7 +8,36 @@ type BotMessageMarkdownProps = {
   content: string;
 };
 
+export function normalizeBotMarkdown(content: string) {
+  const hasEscapedLineBreaks = content.includes("\\n");
+  const hasActualLineBreaks = content.includes("\n");
+
+  return content
+    .trimStart()
+    .replace(hasEscapedLineBreaks && !hasActualLineBreaks ? /\\n/g : /$^/, "\n")
+    .replace(/\\([*_`\[\]()#+\-.!>])/g, "$1");
+}
+
+function getSafeHref(href: string | undefined) {
+  if (!href) {
+    return undefined;
+  }
+
+  if (href.startsWith("/") || href.startsWith("#") || href.startsWith("mailto:")) {
+    return href;
+  }
+
+  try {
+    const url = new URL(href);
+    return url.protocol === "https:" ? href : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 export function BotMessageMarkdown({ content }: BotMessageMarkdownProps) {
+  const normalizedContent = normalizeBotMarkdown(content);
+
   return (
     <div className="max-w-none text-slate-700">
       <ReactMarkdown
@@ -65,20 +94,30 @@ export function BotMessageMarkdown({ content }: BotMessageMarkdownProps) {
             );
           },
           pre: ({ node: _node, ...props }) => <pre className="my-4 overflow-x-auto" {...props} />,
-          a: ({ node: _node, children, ...props }) => (
-            <a
-              {...props}
-              target="_blank"
-              rel="noreferrer noopener"
-              className="inline-flex items-center gap-1 rounded-md px-0.5 font-medium text-sky-700 underline decoration-sky-200 underline-offset-4 transition hover:text-sky-800 hover:decoration-sky-400"
-            >
-              <span>{children}</span>
-              <ArrowUpRight className="h-3.5 w-3.5 shrink-0" />
-            </a>
-          ),
+          a: ({ node: _node, children, href, ...props }) => {
+            const safeHref = getSafeHref(href);
+            const isExternal = safeHref?.startsWith("https://");
+
+            if (!safeHref) {
+              return <span>{children}</span>;
+            }
+
+            return (
+              <a
+                {...props}
+                href={safeHref}
+                target={isExternal ? "_blank" : undefined}
+                rel={isExternal ? "noreferrer noopener" : undefined}
+                className="inline-flex items-center gap-1 rounded-md px-0.5 font-medium text-sky-700 underline decoration-sky-200 underline-offset-4 transition hover:text-sky-800 hover:decoration-sky-400"
+              >
+                <span>{children}</span>
+                {isExternal ? <ArrowUpRight className="h-3.5 w-3.5 shrink-0" /> : null}
+              </a>
+            );
+          },
         }}
       >
-        {content}
+        {normalizedContent}
       </ReactMarkdown>
     </div>
   );
