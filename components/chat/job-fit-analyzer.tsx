@@ -5,6 +5,7 @@ import { Copy, Loader2, Sparkles } from "lucide-react";
 import { jobFitSampleDescription, type JobFitResult } from "@/lib/job-fit";
 import { buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { BotMessageMarkdown } from "@/components/chat/bot-message-markdown";
 import { cn } from "@/lib/utils";
 
 function verdictToneClasses(verdict: JobFitResult["verdict"]) {
@@ -133,51 +134,65 @@ export function JobFitAnalyzer() {
       return;
     }
 
+    const scoreBreakdown = result.scoreBreakdown;
     const text = [
-      `Verdict: ${result.verdict} (${Math.round(result.scoreBreakdown.overallScore)}%)`,
-      `Score rationale: ${result.scoreBreakdown.scoreRationale}`,
-      `Summary: ${result.summary}`,
+      "## Job Fit Analysis",
       "",
-      "Score breakdown:",
-      `Skills match: ${Math.round(result.scoreBreakdown.skillsMatch)}%`,
-      `Experience relevance: ${Math.round(result.scoreBreakdown.experienceRelevance)}%`,
-      `Domain alignment: ${Math.round(result.scoreBreakdown.domainAlignment)}%`,
-      `Seniority fit: ${Math.round(result.scoreBreakdown.seniorityFit)}%`,
+      `**Verdict:** ${result.verdict}  **Overall score:** ${Math.round(scoreBreakdown.overallScore)}/100`,
       "",
-      "Strongest alignment:",
+      `_${scoreBreakdown.scoreRationale}_`,
+      "",
+      result.summary,
+      "",
+      "---",
+      "",
+      "### Score breakdown",
+      `- **Skills match:** ${Math.round(scoreBreakdown.skillsMatch)}%`,
+      `- **Experience relevance:** ${Math.round(scoreBreakdown.experienceRelevance)}%`,
+      `- **Domain alignment:** ${Math.round(scoreBreakdown.domainAlignment)}%`,
+      `- **Seniority fit:** ${Math.round(scoreBreakdown.seniorityFit)}%`,
+      "",
+      "---",
+      "",
+      "### Strongest alignment",
       ...result.topMatches.map(
-        (item, index) => `${index + 1}. ${item.text}\nEvidence IDs: ${item.evidenceIds.join(", ")}`,
+        (item, index) => `${index + 1}. ${item.text} *(evidence: ${item.evidenceIds.join(", ")})*`,
       ),
       "",
-      "Gaps and risks:",
+      "### Gaps and risks",
       ...result.topGaps.map(
-        (item, index) => `${index + 1}. ${item.text}\nRequirement ID: ${item.requirementId}`,
+        (item, index) => `${index + 1}. ${item.text} *(requirement: ${item.requirementId})*`,
       ),
       "",
-      "Recruiter insight:",
-      `Differentiator: ${result.recruiterInsight.differentiator}`,
-      `Trade-off: ${result.recruiterInsight.tradeoff}`,
-      `Screening focus: ${result.recruiterInsight.screeningFocus}`,
+      "---",
       "",
-      "Screening questions:",
+      "### Recruiter insight",
+      `- **Differentiator:** ${result.recruiterInsight.differentiator}`,
+      `- **Trade-off:** ${result.recruiterInsight.tradeoff}`,
+      `- **Screening focus:** ${result.recruiterInsight.screeningFocus}`,
+      "",
+      "### Screening questions",
       ...result.screeningQuestions.map(
-        (item, index) => `${index + 1}. ${item.question}\nWhy ask: ${item.whyAsk}`,
+        (item, index) => `${index + 1}. **${item.question}**\n   _Why ask:_ ${item.whyAsk}`,
       ),
       "",
-      `Recommendation: ${result.screeningRecommendation}`,
+      `**Recommendation:** ${result.screeningRecommendation}`,
       "",
-      "Analysis quality:",
-      `${result.analysisMeta?.confidenceLabel ?? "Evidence-backed"} (${result.analysisMeta?.mode ?? "model"})`,
+      "---",
+      "",
+      "### Analysis quality",
+      `**${result.analysisMeta?.confidenceLabel ?? "Evidence-backed"}** (${result.analysisMeta?.mode ?? "model"})`,
       ...(result.analysisMeta?.notes ?? []).map((note) => `- ${note}`),
       "",
-      "Requirement map:",
+      "### Requirement map",
       ...result.requirementMap.map(
         (item, index) =>
-          `${index + 1}. ${item.requirement} [${item.requirementId}; ${item.importance}; ${item.evidenceStrength}]\nEvidence IDs: ${item.matchedEvidenceIds.join(", ") || "None"}\nEvidence: ${item.matchedEvidence}\nNote: ${item.recruiterNote}`,
+          `${index + 1}. **${item.requirement}** _(${item.importance}, ${item.evidenceStrength})_\n   Evidence: ${item.matchedEvidence}\n   Note: ${item.recruiterNote}`,
       ),
       "",
-      "JD brief:",
-      result.normalizedJobBrief.roleSummary,
+      "### JD brief",
+      `**Role summary:** ${result.normalizedJobBrief.roleSummary}`,
+      "",
       result.normalizedJobBrief.cleanedJobDescription,
     ].join("\n");
 
@@ -249,6 +264,13 @@ export function JobFitAnalyzer() {
                   {isLoading ? "Analyzing..." : "Analyze fit"}
                 </button>
               </div>
+              {isLoading ? (
+                <p className="mt-3 text-sm italic text-slate-500">
+                  Running a full evidence match against Akshay&apos;s portfolio — the first analysis for a new
+                  JD can take up to <strong className="not-italic font-semibold text-slate-600">~20 seconds</strong>.
+                  Please keep this tab open.
+                </p>
+              ) : null}
               {error ? <p className="mt-3 text-sm text-red-600">{error}</p> : null}
             </div>
 
@@ -267,14 +289,16 @@ export function JobFitAnalyzer() {
                           </Badge>
                           <p className="text-sm text-slate-500">Recruiter evidence signal</p>
                         </div>
-                        <p className="mt-4 text-base leading-7 text-slate-800">{result.summary}</p>
+                        <div className="mt-4 text-base text-slate-800">
+                          <BotMessageMarkdown content={result.summary} />
+                        </div>
                         <div className="mt-4 rounded-[1.25rem] border border-slate-200/80 bg-slate-50/80 p-4">
                           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">
                             Recommendation
                           </p>
-                          <p className="mt-2 text-sm leading-6 text-slate-700">
-                            {result.screeningRecommendation}
-                          </p>
+                          <div className="mt-2 text-sm text-slate-700">
+                            <BotMessageMarkdown content={result.screeningRecommendation} />
+                          </div>
                         </div>
                       </div>
 
@@ -313,9 +337,9 @@ export function JobFitAnalyzer() {
                       <ScoreBar label="Domain alignment" score={result.scoreBreakdown.domainAlignment} />
                       <ScoreBar label="Seniority fit" score={result.scoreBreakdown.seniorityFit} />
                     </div>
-                    <p className="mt-4 text-sm leading-6 text-slate-600">
-                      {result.scoreBreakdown.scoreRationale}
-                    </p>
+                    <div className="mt-4 text-sm text-slate-600">
+                      <BotMessageMarkdown content={result.scoreBreakdown.scoreRationale} />
+                    </div>
                     <p className="mt-2 text-sm leading-6 text-slate-500">
                       Treat the number as a directional summary. The requirement map below is the source of truth.
                     </p>
@@ -341,8 +365,10 @@ export function JobFitAnalyzer() {
                       <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-600">
                         {result.topMatches.map((item) => (
                           <li key={item.text} className="flex gap-3">
-                            <span className="mt-2 h-2 w-2 rounded-full bg-emerald-400" />
-                            <span>{item.text}</span>
+                            <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-emerald-400" />
+                            <span className="[&_p]:my-0">
+                              <BotMessageMarkdown content={item.text} />
+                            </span>
                           </li>
                         ))}
                       </ul>
@@ -355,8 +381,10 @@ export function JobFitAnalyzer() {
                       <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-600">
                         {result.topGaps.map((item) => (
                           <li key={item.text} className="flex gap-3">
-                            <span className="mt-2 h-2 w-2 rounded-full bg-amber-400" />
-                            <span>{item.text}</span>
+                            <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-amber-400" />
+                            <span className="[&_p]:my-0">
+                              <BotMessageMarkdown content={item.text} />
+                            </span>
                           </li>
                         ))}
                       </ul>
@@ -368,25 +396,25 @@ export function JobFitAnalyzer() {
                       <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
                         Differentiator
                       </p>
-                      <p className="mt-3 text-sm leading-6 text-slate-600">
-                        {result.recruiterInsight.differentiator}
-                      </p>
+                      <div className="mt-3 text-sm text-slate-600">
+                        <BotMessageMarkdown content={result.recruiterInsight.differentiator} />
+                      </div>
                     </div>
                     <div className="rounded-[1.5rem] border border-slate-200/70 bg-white/85 p-4">
                       <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
                         Hiring trade-off
                       </p>
-                      <p className="mt-3 text-sm leading-6 text-slate-600">
-                        {result.recruiterInsight.tradeoff}
-                      </p>
+                      <div className="mt-3 text-sm text-slate-600">
+                        <BotMessageMarkdown content={result.recruiterInsight.tradeoff} />
+                      </div>
                     </div>
                     <div className="rounded-[1.5rem] border border-slate-200/70 bg-white/85 p-4">
                       <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
                         Screen for
                       </p>
-                      <p className="mt-3 text-sm leading-6 text-slate-600">
-                        {result.recruiterInsight.screeningFocus}
-                      </p>
+                      <div className="mt-3 text-sm text-slate-600">
+                        <BotMessageMarkdown content={result.recruiterInsight.screeningFocus} />
+                      </div>
                     </div>
                   </div>
 
@@ -397,12 +425,12 @@ export function JobFitAnalyzer() {
                     <div className="mt-4 grid gap-3 lg:grid-cols-2">
                       {result.screeningQuestions.map((item) => (
                         <div key={item.question} className="rounded-[1.25rem] border border-slate-200/70 bg-slate-50/80 p-4">
-                          <p className="text-sm font-semibold leading-6 text-slate-950">
-                            {item.question}
-                          </p>
-                          <p className="mt-2 text-sm leading-6 text-slate-500">
-                            {item.whyAsk}
-                          </p>
+                          <div className="text-sm font-semibold text-slate-950 [&_p]:my-0">
+                            <BotMessageMarkdown content={item.question} />
+                          </div>
+                          <div className="mt-2 text-sm text-slate-500 [&_p]:my-0">
+                            <BotMessageMarkdown content={item.whyAsk} />
+                          </div>
                         </div>
                       ))}
                     </div>

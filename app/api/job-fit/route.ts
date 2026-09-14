@@ -218,6 +218,7 @@ const analyzeJobFitPrompt = [
   "recruiterInsight.screeningFocus should say what a recruiter should validate in a first call.",
   "screeningQuestions should include 2-3 practical questions that test gaps or depth, not softball questions.",
   "screeningRecommendation must be one concise sentence for a recruiter.",
+  "Use light Markdown emphasis in summary, recruiterInsight, topMatches, topGaps, and screeningQuestions text: wrap key skill, tool, or requirement names in **bold**, and wrap caveats or uncertainty in *italics*. Do not use headings, tables, or code blocks.",
   "Return JSON only.",
 ].join("\n");
 
@@ -278,11 +279,29 @@ function normalizeRequirementLabel(value: string) {
     .replace(/\s+/g, " ")
     .trim();
 
-  return label.length > 90 ? `${label.slice(0, 87).trim()}...` : label;
+  if (label.length <= 90) {
+    return label;
+  }
+
+  const truncated = label.slice(0, 87);
+  const lastSpace = truncated.lastIndexOf(" ");
+  return `${(lastSpace > 40 ? truncated.slice(0, lastSpace) : truncated).trim()}...`;
+}
+
+// Company/role intro sentences ('The Opportunity: X is seeking...') often contain requirement
+// keywords like 'analytics' incidentally and must not be mistaken for actual requirements.
+const boilerplatePatterns = [
+  /^(the opportunity|the role|about (the|this) role|about us|about the company|about \w+|who we are|who you are|company overview|overview|our story|our mission|our team)\b/i,
+  /\b(is seeking|is looking for|is hiring|invites applications|we are seeking|we're seeking|we are looking for)\b/i,
+  /\bequal opportunity employer\b/i,
+];
+
+function isBoilerplateFragment(fragment: string) {
+  return boilerplatePatterns.some((pattern) => pattern.test(fragment)) || fragment.length > 200;
 }
 
 function buildFallbackRequirements(cleanedJobDescription: string): NormalizedJobRequirement[] {
-  const fragments = sentenceFragments(cleanedJobDescription);
+  const fragments = sentenceFragments(cleanedJobDescription).filter((fragment) => !isBoilerplateFragment(fragment));
   const requirementLike = fragments.filter((fragment) =>
     includesAny(fragment, [
       "experience",
@@ -374,6 +393,44 @@ function buildFallbackNormalizedBrief(cleanedJobDescription: string): Normalized
       : [],
     unclearItems: ["Model normalization was unavailable, so this brief uses deterministic parsing."],
   };
+}
+
+const minCitableEvidenceCount = 3;
+const maxRetrievedEvidenceCount = 15;
+
+// The evidence returned for narrative citation is grounded in what the requirement map actually
+// matched, not a separately-ranked global shortlist that may have excluded a requirement's real evidence.
+function collectRetrievedEvidence(
+  normalizedBrief: NormalizedJobBrief,
+  requirementMap: RequirementMapItem[],
+  allEvidence: JobFitResult["retrievedEvidence"],
+) {
+  const evidenceById = new Map(allEvidence.map((evidence) => [evidence.id, evidence]));
+  const seenIds = new Set<string>();
+  const matched: JobFitResult["retrievedEvidence"] = [];
+
+  for (const item of requirementMap) {
+    for (const id of item.matchedEvidenceIds) {
+      if (seenIds.has(id)) {
+        continue;
+      }
+      const evidence = evidenceById.get(id);
+      if (evidence) {
+        seenIds.add(id);
+        matched.push(evidence);
+      }
+    }
+  }
+
+  if (matched.length >= minCitableEvidenceCount) {
+    return matched.slice(0, maxRetrievedEvidenceCount);
+  }
+
+  const supplemental = retrieveRelevantEvidence(normalizedBrief, allEvidence, maxRetrievedEvidenceCount).filter(
+    (evidence) => !seenIds.has(evidence.id),
+  );
+
+  return [...matched, ...supplemental].slice(0, maxRetrievedEvidenceCount);
 }
 
 function buildAnalysisPacket({
@@ -662,32 +719,38 @@ function enforceNarrativeGrounding(
   narrative: JobFitNarrative,
   requirementMap: RequirementMapItem[],
   retrievedEvidence: JobFitResult["retrievedEvidence"],
+  fallbackNarrative: JobFitNarrative,
 ) {
   const validEvidenceIds = new Set(retrievedEvidence.map((evidence) => evidence.id));
   const validRequirementIds = new Set(requirementMap.map((item) => item.requirementId));
-  const fallbackEvidenceIds = requirementMap.flatMap((item) => item.matchedEvidenceIds);
-  const fallbackEvidenceId = fallbackEvidenceIds.find((id) => validEvidenceIds.has(id)) ?? retrievedEvidence[0]?.id;
-  const fallbackGapRequirement =
-    requirementMap.find((item) => item.evidenceStrength === "No clear evidence") ??
-    requirementMap.find((item) => item.evidenceStrength === "Adjacent evidence") ??
-    requirementMap[0];
+  let ungroundedClaimCount = 0;
+
+  // An ungrounded claim is replaced with the deterministic fallback bullet for that slot rather
+  // than patched with an unrelated evidence/requirement ID, so a citation never masks a claim it
+  // doesn't actually support.
+  const topMatches = narrative.topMatches.map((item, index) => {
+    const evidenceIds = item.evidenceIds.filter((id) => validEvidenceIds.has(id));
+    if (evidenceIds.length) {
+      return { ...item, evidenceIds };
+    }
+
+    ungroundedClaimCount += 1;
+    return fallbackNarrative.topMatches[index] ?? fallbackNarrative.topMatches[0];
+  });
+
+  const topGaps = narrative.topGaps.map((item, index) => {
+    if (validRequirementIds.has(item.requirementId)) {
+      return item;
+    }
+
+    ungroundedClaimCount += 1;
+    return fallbackNarrative.topGaps[index] ?? fallbackNarrative.topGaps[0];
+  });
 
   return {
-    ...narrative,
-    topMatches: narrative.topMatches.map((item) => {
-      const evidenceIds = item.evidenceIds.filter((id) => validEvidenceIds.has(id));
-      return {
-        ...item,
-        evidenceIds: evidenceIds.length ? evidenceIds : fallbackEvidenceId ? [fallbackEvidenceId] : [],
-      };
-    }),
-    topGaps: narrative.topGaps.map((item) => ({
-      ...item,
-      requirementId: validRequirementIds.has(item.requirementId)
-        ? item.requirementId
-        : fallbackGapRequirement.requirementId,
-    })),
-  } satisfies JobFitNarrative;
+    narrative: { ...narrative, topMatches, topGaps } satisfies JobFitNarrative,
+    ungroundedClaimCount,
+  };
 }
 
 function topRequirementItems(requirementMap: RequirementMapItem[], strength: RequirementMapItem["evidenceStrength"]) {
@@ -730,7 +793,7 @@ function buildFallbackNarrative({
       const evidence = evidenceIds.map((id) => evidenceById.get(id)?.claim).find(Boolean);
 
       return {
-        text: `${item.requirement}: ${evidence ?? item.recruiterNote}`,
+        text: `**${item.requirement}:** ${evidence ?? item.recruiterNote}`,
         evidenceIds: evidenceIds.length ? evidenceIds.slice(0, 3) : fallbackEvidenceId ? [fallbackEvidenceId] : [],
       };
     },
@@ -738,29 +801,29 @@ function buildFallbackNarrative({
   const topGaps = repeatToLength(riskRequirements, 3).map((item) => ({
     text:
       item.evidenceStrength === "No clear evidence"
-        ? `${item.requirement} has no clear retrieved portfolio evidence and should be validated directly.`
-        : `${item.requirement} has partial or transferable evidence; confirm exact depth in screening.`,
+        ? `**${item.requirement}** has no clear retrieved portfolio evidence and should be validated directly.`
+        : `**${item.requirement}** has partial or transferable evidence; *confirm exact depth in screening*.`,
     requirementId: item.requirementId,
   }));
   const strongestSupport = supportedRequirements[0]?.requirement ?? "business-facing analytics execution";
   const biggestRisk = riskRequirements[0]?.requirement ?? "exact role-specific depth";
 
   return {
-    summary: `${verdict} at ${Math.round(scoreBreakdown.overallScore)}%. ${scoreBreakdown.scoreRationale}`,
+    summary: `Strongest overlap is **${strongestSupport}**. ${scoreBreakdown.scoreRationale}`,
     topMatches,
     topGaps,
     recruiterInsight: {
-      differentiator: `Akshay's strongest signal is ${strongestSupport}, grounded in retrieved portfolio evidence.`,
-      tradeoff: `The main hiring trade-off is ${biggestRisk}; validate whether adjacent evidence is deep enough for this JD.`,
+      differentiator: `Akshay's strongest signal is **${strongestSupport}**, grounded in retrieved portfolio evidence.`,
+      tradeoff: `The main hiring trade-off is **${biggestRisk}**; *validate whether adjacent evidence is deep enough for this JD*.`,
       screeningFocus: "Use the first call to confirm exact tooling depth, ownership level, and domain expectations.",
     },
     screeningRecommendation:
       verdict === "Strong fit" || verdict === "Moderate fit"
-        ? "Proceed to screening with targeted validation of the highest-risk requirements."
+        ? "Proceed to screening with targeted validation of the **highest-risk requirements**."
         : "Screen only if the team is comfortable with the identified gaps or transferable evidence.",
     screeningQuestions: [
       {
-        question: `Can you walk through your hands-on depth with ${biggestRisk}?`,
+        question: `Can you walk through your hands-on depth with **${biggestRisk}**?`,
         whyAsk: "This directly tests the largest requirement risk in the mapping.",
       },
       {
@@ -824,7 +887,9 @@ async function callStructuredModel<T>({
       body: JSON.stringify({
         model: aiConfig.jobFit.model,
         max_output_tokens: aiConfig.jobFit.maxOutputTokens,
+        reasoning: { effort: aiConfig.jobFit.reasoningEffort },
         text: {
+          verbosity: aiConfig.jobFit.verbosity,
           format: {
             type: "json_schema",
             strict: true,
@@ -940,10 +1005,18 @@ export async function POST(request: Request) {
       normalizedBrief = buildFallbackNormalizedBrief(cleanedJobDescription);
     }
 
-    const retrievedEvidence = retrieveRelevantEvidence(normalizedBrief, allPortfolioEvidenceUnits, 10);
-    const requirementMap = mapRequirementsToEvidence(normalizedBrief, retrievedEvidence);
+    // Score every requirement against the full evidence corpus so a niche core requirement
+    // can't be crowded out by a pre-filtered global top-N shortlist.
+    const requirementMap = mapRequirementsToEvidence(normalizedBrief, allPortfolioEvidenceUnits);
+    const retrievedEvidence = collectRetrievedEvidence(normalizedBrief, requirementMap, allPortfolioEvidenceUnits);
     const scoreBreakdown = computeScore(normalizedBrief, requirementMap);
     const verdict = verdictFromScore(scoreBreakdown);
+    const fallbackNarrative = buildFallbackNarrative({
+      verdict,
+      scoreBreakdown,
+      requirementMap,
+      retrievedEvidence,
+    });
 
     let narrative: JobFitNarrative;
 
@@ -962,14 +1035,7 @@ export async function POST(request: Request) {
         clientRequestId: `${requestId}:narrative`,
       });
 
-      narrative = validateJobFitNarrative(modelNarrative)
-        ? modelNarrative
-        : buildFallbackNarrative({
-            verdict,
-            scoreBreakdown,
-            requirementMap,
-            retrievedEvidence,
-          });
+      narrative = validateJobFitNarrative(modelNarrative) ? modelNarrative : fallbackNarrative;
       if (!validateJobFitNarrative(modelNarrative)) {
         analysisNotes.push("Narrative used deterministic wording because model output was incomplete.");
         logger.warn("analysis.invalid_model_shape", { step: "narrative" });
@@ -981,15 +1047,21 @@ export async function POST(request: Request) {
 
       logDegradedAnalysis(logger, "narrative", error);
       analysisNotes.push("Narrative used deterministic wording because the model step was unavailable.");
-      narrative = buildFallbackNarrative({
-        verdict,
-        scoreBreakdown,
-        requirementMap,
-        retrievedEvidence,
-      });
+      narrative = fallbackNarrative;
     }
 
-    const groundedNarrative = enforceNarrativeGrounding(narrative, requirementMap, retrievedEvidence);
+    const { narrative: groundedNarrative, ungroundedClaimCount } = enforceNarrativeGrounding(
+      narrative,
+      requirementMap,
+      retrievedEvidence,
+      fallbackNarrative,
+    );
+    if (ungroundedClaimCount > 0) {
+      analysisNotes.push(
+        `${ungroundedClaimCount} narrative claim(s) cited an invalid evidence or requirement ID and were replaced with deterministic wording.`,
+      );
+      logger.warn("analysis.ungrounded_claims", { count: ungroundedClaimCount });
+    }
 
     const responsePayload = {
       verdict,

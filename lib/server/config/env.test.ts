@@ -29,7 +29,13 @@ describe("environment configuration", () => {
         reasoningEffort: "minimal",
         verbosity: "medium",
       },
-      jobFit: { model: "gpt-4o-mini", maxOutputTokens: 1800, modelTimeoutMs: 12000 },
+      jobFit: {
+        model: "gpt-5-mini",
+        maxOutputTokens: 3000,
+        reasoningEffort: "minimal",
+        verbosity: "medium",
+        modelTimeoutMs: 20000,
+      },
     });
   });
 });

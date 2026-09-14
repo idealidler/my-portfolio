@@ -111,6 +111,32 @@ function phraseMatches(needle: string, haystack: string) {
   return normalizedHaystack.includes(normalizedNeedle);
 }
 
+// Field weights make an exact tool/skill match outrank incidental word overlap in prose claims.
+const evidenceFieldWeights = {
+  tools: 3,
+  capabilities: 2.5,
+  sourceArea: 2,
+  claim: 1,
+} as const;
+
+const evidenceFieldTokenCache = new Map<string, Record<keyof typeof evidenceFieldWeights, Set<string>>>();
+
+function evidenceFieldTokens(evidence: PortfolioEvidenceUnit) {
+  const cached = evidenceFieldTokenCache.get(evidence.id);
+  if (cached) {
+    return cached;
+  }
+
+  const fields = {
+    tools: new Set(evidence.tools.flatMap(tokenize)),
+    capabilities: new Set(evidence.capabilities.flatMap(tokenize)),
+    sourceArea: new Set(tokenize(evidence.sourceArea)),
+    claim: new Set(tokenize(evidence.claim)),
+  };
+  evidenceFieldTokenCache.set(evidence.id, fields);
+  return fields;
+}
+
 function scoreEvidenceForRequirement(
   requirement: NormalizedJobRequirement,
   evidence: PortfolioEvidenceUnit,
@@ -122,13 +148,18 @@ function scoreEvidenceForRequirement(
     ...evidence.capabilities,
     ...evidence.tools,
   ].join(" ");
-  const evidenceTokenSet = new Set(evidenceTerms(evidence));
+  const fieldTokens = evidenceFieldTokens(evidence);
   let score = 0;
 
   for (const term of terms) {
-    if (evidenceTokenSet.has(term)) {
-      score += 2;
+    // Credit each term once, at the weight of the strongest field it appears in.
+    let bestFieldWeight = 0;
+    for (const field of Object.keys(evidenceFieldWeights) as (keyof typeof evidenceFieldWeights)[]) {
+      if (fieldTokens[field].has(term) && evidenceFieldWeights[field] > bestFieldWeight) {
+        bestFieldWeight = evidenceFieldWeights[field];
+      }
     }
+    score += bestFieldWeight;
   }
 
   const canonical = normalizeText(requirement.canonicalLabel).trim();
@@ -386,8 +417,8 @@ export function computeScore(
   ).length;
   const coreCount = requirementMap.filter((item) => item.importance === "Core").length;
   const scoreRationale = [
-    `Programmatic score based on ${directCoreCount}/${coreCount} core requirements with direct evidence.`,
-    caps.length ? `Rules applied: ${caps.join("; ")}.` : "No hard score caps were triggered.",
+    `Programmatic score based on **${directCoreCount}/${coreCount}** core requirements with direct evidence.`,
+    caps.length ? `*Rules applied:* ${caps.join("; ")}.` : "_No hard score caps were triggered._",
   ].join(" ");
 
   return {
