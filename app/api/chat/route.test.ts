@@ -66,8 +66,8 @@ describe("POST /api/chat", () => {
     expect(new Headers(init.headers).get("X-Client-Request-Id")).toBe(requestId);
     expect(JSON.parse(String(init.body))).toMatchObject({
       model: "gpt-5-mini",
-      max_output_tokens: 700,
-      reasoning: { effort: "minimal" },
+      max_output_tokens: 2200,
+      reasoning: { effort: "medium" },
       text: { verbosity: "medium" },
     });
     const body = JSON.parse(String(init.body)) as { instructions: string };

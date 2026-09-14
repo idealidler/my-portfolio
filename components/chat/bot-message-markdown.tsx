@@ -12,10 +12,15 @@ export function normalizeBotMarkdown(content: string) {
   const hasEscapedLineBreaks = content.includes("\\n");
   const hasActualLineBreaks = content.includes("\n");
 
-  return content
+  const unescaped = content
     .trimStart()
     .replace(hasEscapedLineBreaks && !hasActualLineBreaks ? /\\n/g : /$^/, "\n")
     .replace(/\\([*_`\[\]()#+\-.!>])/g, "$1");
+
+  // A model can occasionally wrap an entire answer in a fenced code block; unwrap it so
+  // bold/italic/list Markdown still renders instead of showing as flat, unstyled code text.
+  const fullMessageFence = unescaped.trim().match(/^```[a-zA-Z]*\n?([\s\S]*?)\n?```$/);
+  return fullMessageFence ? fullMessageFence[1] : unescaped;
 }
 
 function getSafeHref(href: string | undefined) {

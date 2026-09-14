@@ -61,12 +61,55 @@ export function AkshayGptShell() {
   const listRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const requestControllerRef = useRef<AbortController | null>(null);
+  const revealTargetRef = useRef("");
+  const revealedContentRef = useRef("");
+  const streamDoneRef = useRef(false);
+  const revealIntervalRef = useRef<number | null>(null);
   const hasMessages = messages.length > 0;
+
+  function stopReveal() {
+    if (revealIntervalRef.current !== null) {
+      window.clearInterval(revealIntervalRef.current);
+      revealIntervalRef.current = null;
+    }
+  }
+
+  function startReveal(botId: string) {
+    stopReveal();
+
+    revealIntervalRef.current = window.setInterval(() => {
+      const target = revealTargetRef.current;
+      const revealed = revealedContentRef.current;
+
+      if (revealed.length < target.length) {
+        // Reveal one word at a time for a ChatGPT-like typing feel; speed up if a large
+        // chunk arrived at once so the animation never lags far behind the real stream.
+        const remaining = target.slice(revealed.length);
+        const nextSpaceIndex = remaining.search(/\s/);
+        const wordChunkLength = nextSpaceIndex === -1 ? remaining.length : nextSpaceIndex + 1;
+        const catchUpChunkLength = Math.ceil(remaining.length / 40);
+        const chunkLength = Math.max(wordChunkLength, catchUpChunkLength);
+        const nextRevealed = target.slice(0, Math.min(target.length, revealed.length + chunkLength));
+
+        revealedContentRef.current = nextRevealed;
+        setMessages((prev) =>
+          prev.map((message) => (message.id === botId ? { ...message, content: nextRevealed } : message)),
+        );
+      }
+
+      if (revealedContentRef.current.length >= revealTargetRef.current.length && streamDoneRef.current) {
+        stopReveal();
+      }
+    }, 35);
+  }
 
   useEffect(() => {
     inputRef.current?.focus();
 
-    return () => requestControllerRef.current?.abort();
+    return () => {
+      requestControllerRef.current?.abort();
+      stopReveal();
+    };
   }, []);
 
   useEffect(() => {
@@ -138,26 +181,27 @@ export function AkshayGptShell() {
       }
 
       const botId = `bot-${Date.now()}`;
-      let buffer = "";
+      revealTargetRef.current = "";
+      revealedContentRef.current = "";
+      streamDoneRef.current = false;
 
       setMessages((prev) => [...prev, { id: botId, role: "bot", content: "" }]);
+      startReveal(botId);
 
       await readNdjsonStream<{ message?: { content?: string } }>({
         stream: response.body,
         signal: controller.signal,
         onFrame: (parsed) => {
           if (parsed.message?.content) {
-            buffer += parsed.message.content;
-            setMessages((prev) =>
-              prev.map((message) =>
-                message.id === botId ? { ...message, content: buffer } : message,
-              ),
-            );
+            revealTargetRef.current += parsed.message.content;
           }
         },
       });
 
-      if (!buffer) {
+      streamDoneRef.current = true;
+
+      if (!revealTargetRef.current) {
+        stopReveal();
         setMessages((prev) =>
           prev.map((message) =>
             message.id === botId
@@ -174,6 +218,7 @@ export function AkshayGptShell() {
         return;
       }
 
+      stopReveal();
       const message =
         chatError instanceof Error ? chatError.message : "Something went wrong while answering.";
       setError(message);

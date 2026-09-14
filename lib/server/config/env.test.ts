@@ -25,8 +25,8 @@ describe("environment configuration", () => {
     expect(aiConfig).toEqual({
       chat: {
         model: "gpt-5-mini",
-        maxOutputTokens: 700,
-        reasoningEffort: "minimal",
+        maxOutputTokens: 2200,
+        reasoningEffort: "medium",
         verbosity: "medium",
       },
       jobFit: {

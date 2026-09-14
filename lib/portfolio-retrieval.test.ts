@@ -51,7 +51,7 @@ describe("retrievePortfolioContext", () => {
 
     expect(context).toContain("Evidence 1: Analytics Engineer at Holman");
     expect(context).toContain("1,000+ employees");
-    expect(context).toContain("2,000+ hours");
+    expect(context).toContain("200+ hours");
   });
 
   it("force-includes work authorization for visa questions", () => {

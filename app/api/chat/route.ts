@@ -291,7 +291,13 @@ export async function POST(request: Request) {
       if (canUseCache) {
         setCachedResponse(cacheKey, content);
       }
-      logger.info("request.completed", { cacheStatus: "miss" });
+      if (!content.trim()) {
+        // Most commonly caused by max_output_tokens being too small for the model's reasoning
+        // budget, which silently truncates the visible answer to nothing.
+        logger.warn("request.completed_empty", { reasoningEffort: aiConfig.chat.reasoningEffort });
+      } else {
+        logger.info("request.completed", { cacheStatus: "miss" });
+      }
     });
 
     return new Response(stream, {

@@ -19,5 +19,14 @@ describe("normalizeBotMarkdown", () => {
       "**Skills**\n- Power BI",
     );
   });
+
+  it("unwraps an entire answer accidentally wrapped in a fenced code block", () => {
+    expect(normalizeBotMarkdown("```markdown\n**Impact**\n- Built dashboards.\n```")).toBe(
+      "**Impact**\n- Built dashboards.",
+    );
+    expect(normalizeBotMarkdown("```\n**Impact**\n- Built dashboards.\n```")).toBe(
+      "**Impact**\n- Built dashboards.",
+    );
+  });
 });
 
