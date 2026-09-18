@@ -6,8 +6,8 @@
 
 ## 0. Done in this pass
 
-- Switched `aiConfig.jobFit.model` from `gpt-4o-mini` to `gpt-5-mini` (same model family AkshayGPT chat uses).
-- Added `reasoning.effort` (`low`) and `text.verbosity` (`medium`) to the job-fit Responses API calls — `gpt-5-mini` is a reasoning model and ignores/ requires these differently than `gpt-4o-mini` did.
+- Switched `aiConfig.jobFit.model` to `gpt-5.6-luna` (the same model AkshayGPT chat uses).
+- Added `reasoning.effort` (`medium`) and `text.verbosity` (`medium`) to the job-fit Responses API calls; `gpt-5.6-luna` supports `medium` reasoning effort.
 - Raised `modelTimeoutMs` from 12s → 20s because reasoning models have higher tail latency than `gpt-4o-mini`, and job-fit already has two sequential model calls (normalize + narrative) that must each complete inside the request.
 
 Follow-up needed: watch p95 latency in production logs (`request.completed` / `analysis.degraded` log events) after this ships — if 20s is still too tight or too loose, tune it based on real data rather than guessing again.

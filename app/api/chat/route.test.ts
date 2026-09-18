@@ -65,7 +65,7 @@ describe("POST /api/chat", () => {
     const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
     expect(new Headers(init.headers).get("X-Client-Request-Id")).toBe(requestId);
     expect(JSON.parse(String(init.body))).toMatchObject({
-      model: "gpt-5-mini",
+      model: "gpt-5.6-luna",
       max_output_tokens: 2200,
       reasoning: { effort: "medium" },
       text: { verbosity: "medium" },
